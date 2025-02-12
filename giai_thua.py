@@ -14,6 +14,7 @@ def main():
     n = st.number_input("Nhập số nguyên n:", min_value=0, step=1, value=1)
     
     if st.button("Tính giai thừa"):
+        st.balloons()
         result = fact(n)
         st.write(f"Giai thừa của {n} là: {result}")
 
