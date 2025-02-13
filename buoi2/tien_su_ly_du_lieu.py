@@ -50,3 +50,5 @@ def tien_xu_ly_du_lieu():
     except Exception as e:
         st.error(f"⚠️ Lỗi khi xử lý dữ liệu: {e}")
 
+if __name__ == "__main__":
+    tien_xu_ly_du_lieu()
