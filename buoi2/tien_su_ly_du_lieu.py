@@ -6,6 +6,62 @@ from sklearn.model_selection import train_test_split
 def tien_xu_ly_du_lieu():
     st.title("📊 Xử lý Dữ liệu & Chia Train/Test/Validation")
 
+    # 📝 Giới thiệu lý thuyết
+    st.subheader("1️⃣ Giới thiệu về Tiền xử lý Dữ liệu")
+    st.write("""
+    Tiền xử lý dữ liệu là một bước quan trọng trong phân tích dữ liệu và học máy. Nó giúp dữ liệu trở nên sạch và phù hợp hơn để sử dụng. 
+    Một số vấn đề phổ biến trong dữ liệu:
+    - **Giá trị rỗng** (NaN, None)
+    - **Định dạng không đồng nhất** (chuỗi, số, ngày tháng)
+    - **Dữ liệu lỗi** (giá trị âm, không hợp lệ)
+    - **Dữ liệu trùng lặp**
+    """)
+    
+    st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
+
+    st.subheader("1️⃣ Xử lý giá trị rỗng")
+    st.write("""
+    Dữ liệu thường có những ô bị thiếu thông tin (NaN), có thể xử lý theo nhiều cách:
+    - **Xóa dòng/cột chứa giá trị rỗng**: Dùng `dropna()`
+    - **Điền giá trị mặc định**: Dùng `fillna()`
+    - **Dùng trung bình, trung vị, hoặc giá trị phổ biến nhất**:  
+      ```python
+      df['column'].fillna(df['column'].mean())
+      ```
+    """)
+
+    st.subheader("2️⃣ Chuyển đổi kiểu dữ liệu")
+    st.write("""
+    Một số cột có thể cần chuyển đổi kiểu dữ liệu:
+    - **Chuyển cột số thành dạng phân loại**:  
+      ```python
+      df['Pclass'] = df['Pclass'].astype('category')
+      ```
+    - **Mã hóa biến phân loại (ví dụ: giới tính)**:  
+      ```python
+      df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
+      ```
+    """)
+
+    st.subheader("3️⃣ Chuẩn hóa dữ liệu")
+    st.write("""
+    Để đảm bảo dữ liệu có cùng khoảng giá trị, ta chuẩn hóa bằng StandardScaler:
+    ```python
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    df[['Fare']] = scaler.fit_transform(df[['Fare']])
+    ```
+    """)
+
+    st.subheader("4️⃣ Chia dữ liệu thành Train - Validation - Test")
+    st.write("""
+    Dữ liệu được chia thành:
+    - **Tập Train (70%)**: Dùng để huấn luyện mô hình.
+    - **Tập Validation (15%)**: Dùng để điều chỉnh mô hình.
+    - **Tập Test (15%)**: Kiểm tra mô hình với dữ liệu mới.
+    """)
+    
+    
     # Upload file thay vì dùng đường dẫn cố định
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
 
