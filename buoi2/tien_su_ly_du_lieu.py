@@ -115,7 +115,7 @@ def tien_xu_ly_du_lieu():
                 'Cột': df.columns,
                 'Giá trị thiếu': missing_values,
                 'Giá trị âm': [invalid_values.get(col, "") for col in df.columns],
-                'Outlier (Z > 3)': [outlier_count.get(col, 0) for col in df.columns]
+                'Outlier': [outlier_count.get(col, 0) for col in df.columns]
             })
 
             # Hiển thị báo cáo lỗi
