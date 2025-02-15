@@ -95,28 +95,26 @@ def tien_xu_ly_du_lieu():
             # Kiểm tra giá trị thiếu
             missing_values = df.isnull().sum()
 
-            # Kiểm tra lỗi định dạng không đồng nhất
-            mixed_types = {col: df[col].apply(type).nunique() > 1 for col in df.columns}
-            mixed_types = {k: v for k, v in mixed_types.items() if v}
-
             # Kiểm tra dữ liệu trùng lặp
             duplicate_count = df.duplicated().sum()
 
-            # Kiểm tra giá trị âm
-            invalid_values = {col: (df[col] < 0).sum() for col in df.select_dtypes(include=['number']).columns}
+            # Kiểm tra giá trị âm (chỉ hiển thị nếu > 0)
+            invalid_values = {
+                col: (df[col] < 0).sum() for col in df.select_dtypes(include=['number']).columns
+            }
+            invalid_values = {k: v for k, v in invalid_values.items() if v > 0}  # Bỏ giá trị âm = 0
 
-            # Kiểm tra giá trị quá lớn (outlier)
-            outlier_count = {}
-            for col in df.select_dtypes(include=['number']).columns:
-                z_scores = zscore(df[col], nan_policy='omit')  # Tính Z-score
-                outlier_count[col] = (abs(z_scores) > 3).sum()  # Đếm số lượng outlier
+            # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
+            outlier_count = {
+                col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
+                for col in df.select_dtypes(include=['number']).columns
+            }
 
             # Tạo báo cáo lỗi
             error_report = pd.DataFrame({
                 'Cột': df.columns,
                 'Giá trị thiếu': missing_values,
-                'Lỗi định dạng': [mixed_types.get(col, False) for col in df.columns],
-                'Giá trị âm': [invalid_values.get(col, 0) for col in df.columns],
+                'Giá trị âm': [invalid_values.get(col, "") for col in df.columns],
                 'Outlier (Z > 3)': [outlier_count.get(col, 0) for col in df.columns]
             })
 
