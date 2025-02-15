@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-
+from scipy.stats import zscore
 def hien_thi_ly_thuyet():
     st.title("📊 Xử lý Dữ liệu & Chia Train/Test/Validation")
 
@@ -92,21 +92,32 @@ def tien_xu_ly_du_lieu():
             # Kiểm tra lỗi dữ liệu
             st.subheader("🚨 Kiểm tra lỗi dữ liệu")
 
-            # Kiểm tra giá trị rỗng
+            # Kiểm tra giá trị thiếu
             missing_values = df.isnull().sum()
 
-            # Kiểm tra lỗi định dạng (tìm cột có kiểu dữ liệu hỗn hợp)
+            # Kiểm tra lỗi định dạng không đồng nhất
             mixed_types = {col: df[col].apply(type).nunique() > 1 for col in df.columns}
-            mixed_types = {k: v for k, v in mixed_types.items() if v}  # Lọc các cột có lỗi định dạng
+            mixed_types = {k: v for k, v in mixed_types.items() if v}
 
             # Kiểm tra dữ liệu trùng lặp
             duplicate_count = df.duplicated().sum()
+
+            # Kiểm tra giá trị âm
+            invalid_values = {col: (df[col] < 0).sum() for col in df.select_dtypes(include=['number']).columns}
+
+            # Kiểm tra giá trị quá lớn (outlier)
+            outlier_count = {}
+            for col in df.select_dtypes(include=['number']).columns:
+                z_scores = zscore(df[col], nan_policy='omit')  # Tính Z-score
+                outlier_count[col] = (abs(z_scores) > 3).sum()  # Đếm số lượng outlier
 
             # Tạo báo cáo lỗi
             error_report = pd.DataFrame({
                 'Cột': df.columns,
                 'Giá trị thiếu': missing_values,
                 'Lỗi định dạng': [mixed_types.get(col, False) for col in df.columns],
+                'Giá trị âm': [invalid_values.get(col, 0) for col in df.columns],
+                'Outlier (Z > 3)': [outlier_count.get(col, 0) for col in df.columns]
             })
 
             # Hiển thị báo cáo lỗi
