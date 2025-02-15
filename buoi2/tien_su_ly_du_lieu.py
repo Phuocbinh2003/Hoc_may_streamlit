@@ -17,7 +17,8 @@ def hien_thi_ly_thuyet():
     """)
 
     st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
-    st.image("buoi2/img1.png", caption="Làm sạch dữ liệu", use_column_width=True)
+    st.image(r"buoi2\img1.png", caption="Làm sạch dữ liệu", use_column_width=True)
+
 
     st.subheader("1️⃣ Xử lý giá trị rỗng")
     st.write("""
