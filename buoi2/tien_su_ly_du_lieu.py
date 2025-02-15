@@ -51,8 +51,22 @@ def hien_thi_ly_thuyet():
     df[['Fare']] = scaler.fit_transform(df[['Fare']])
     ```
     """)
+    
 
-    st.subheader("4️⃣ Chia dữ liệu thành Train - Validation - Test")
+    st.subheader("4️⃣ Xử lý dữ liệu trùng lặp")
+    st.write("""
+    Dữ liệu có thể bị trùng, gây ảnh hưởng đến kết quả phân tích:
+    - **Kiểm tra dữ liệu trùng lặp**:  
+      ```python
+      df.duplicated().sum()
+      ```
+    - **Xóa dữ liệu trùng lặp**:  
+      ```python
+      df = df.drop_duplicates()
+      ```
+    """)
+
+    st.subheader("5️⃣ Chia dữ liệu thành Train - Validation - Test")
     st.write("""
     Dữ liệu được chia thành:
     - **Tập Train (70%)**: Dùng để huấn luyện mô hình.
