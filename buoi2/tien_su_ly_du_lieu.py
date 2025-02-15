@@ -91,9 +91,29 @@ def tien_xu_ly_du_lieu():
 
             # Kiểm tra lỗi dữ liệu
             st.subheader("🚨 Kiểm tra lỗi dữ liệu")
+
+            # Kiểm tra giá trị rỗng
             missing_values = df.isnull().sum()
-            error_report = pd.DataFrame({'Cột': df.columns, 'Giá trị thiếu': missing_values})
+
+            # Kiểm tra lỗi định dạng (tìm cột có kiểu dữ liệu hỗn hợp)
+            mixed_types = {col: df[col].apply(type).nunique() > 1 for col in df.columns}
+            mixed_types = {k: v for k, v in mixed_types.items() if v}  # Lọc các cột có lỗi định dạng
+
+            # Kiểm tra dữ liệu trùng lặp
+            duplicate_count = df.duplicated().sum()
+
+            # Tạo báo cáo lỗi
+            error_report = pd.DataFrame({
+                'Cột': df.columns,
+                'Giá trị thiếu': missing_values,
+                'Lỗi định dạng': [mixed_types.get(col, False) for col in df.columns],
+            })
+
+            # Hiển thị báo cáo lỗi
             st.table(error_report)
+
+            # Hiển thị số lượng dữ liệu trùng lặp
+            st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")
 
             # Xử lý lỗi dữ liệu
             if "Embarked" in df.columns:
