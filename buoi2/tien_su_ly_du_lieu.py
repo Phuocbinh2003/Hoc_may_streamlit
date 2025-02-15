@@ -10,7 +10,7 @@ def tien_xu_ly_du_lieu():
     st.title("📊 Xử lý Dữ liệu & Chia Train/Test/Validation")
     
     # Đường dẫn file data.txt
-    file_path = "buoi2\data.txt"
+    file_path = "buoi2/data.txt"
     
     # Kiểm tra file tồn tại
     try:
