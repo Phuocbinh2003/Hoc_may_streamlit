@@ -8,7 +8,7 @@ option = st.sidebar.selectbox(
 )
 if option == 'Giai thừa':
     GT()
-if option == 'Giai thừa':
+if option == 'Tiền xử lý dữ liệu':
     TXLDL() 
 else:
     st.write("Vui lòng chọn một ứng dụng từ thanh điều hướng.")
