@@ -62,11 +62,12 @@ def hien_thi_ly_thuyet():
 
 def tien_xu_ly_du_lieu():
     # Upload file
-    uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
+    uploaded_file = None
 
     if uploaded_file is None:
         hien_thi_ly_thuyet()  # Chỉ hiển thị lý thuyết nếu chưa có file tải lên
-    else:
+    uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
+    if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")  # Điều chỉnh delimiter nếu cần
 
