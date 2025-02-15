@@ -3,10 +3,9 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
-def tien_xu_ly_du_lieu():
+def hien_thi_ly_thuyet():
     st.title("📊 Xử lý Dữ liệu & Chia Train/Test/Validation")
 
-    # 📝 Giới thiệu lý thuyết
     st.subheader("1️⃣ Giới thiệu về Tiền xử lý Dữ liệu")
     st.write("""
     Tiền xử lý dữ liệu là một bước quan trọng trong phân tích dữ liệu và học máy. Nó giúp dữ liệu trở nên sạch và phù hợp hơn để sử dụng. 
@@ -16,7 +15,7 @@ def tien_xu_ly_du_lieu():
     - **Dữ liệu lỗi** (giá trị âm, không hợp lệ)
     - **Dữ liệu trùng lặp**
     """)
-    
+
     st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
 
     st.subheader("1️⃣ Xử lý giá trị rỗng")
@@ -60,32 +59,34 @@ def tien_xu_ly_du_lieu():
     - **Tập Validation (15%)**: Dùng để điều chỉnh mô hình.
     - **Tập Test (15%)**: Kiểm tra mô hình với dữ liệu mới.
     """)
-    
-    
-    # Upload file thay vì dùng đường dẫn cố định
+
+def tien_xu_ly_du_lieu():
+    # Upload file
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
 
-    if uploaded_file is not None:
+    if uploaded_file is None:
+        hien_thi_ly_thuyet()  # Chỉ hiển thị lý thuyết nếu chưa có file tải lên
+    else:
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")  # Điều chỉnh delimiter nếu cần
 
-            # 1️⃣ Hiển thị 10 dòng đầu tiên
+            # Hiển thị dữ liệu ban đầu
             st.subheader("📌 10 dòng đầu của dữ liệu gốc")
             st.write(df.head(10))
 
-            # 2️⃣ Kiểm tra lỗi dữ liệu
+            # Kiểm tra lỗi dữ liệu
             st.subheader("🚨 Kiểm tra lỗi dữ liệu")
             missing_values = df.isnull().sum()
             error_report = pd.DataFrame({'Cột': df.columns, 'Giá trị thiếu': missing_values})
             st.table(error_report)
 
-            # 3️⃣ Xử lý lỗi dữ liệu
+            # Xử lý lỗi dữ liệu
             if "Embarked" in df.columns:
                 df.dropna(subset=['Embarked'], inplace=True)
 
             if "Age" in df.columns:
                 df['Age'].fillna(df['Age'].mean(), inplace=True)
-                df['Age'] = df['Age'].astype(int)  # Đảm bảo Age là số nguyên
+                df['Age'] = df['Age'].astype(int)
 
             if "Cabin" in df.columns:
                 df['Cabin'].fillna('Unknown', inplace=True)
@@ -104,11 +105,11 @@ def tien_xu_ly_du_lieu():
             st.subheader("✅ Dữ liệu sau xử lý")
             st.write(df.head(10))
 
-            # 4️⃣ Chia dữ liệu: 70% train, 15% validation, 15% test
+            # Chia dữ liệu: 70% train, 15% validation, 15% test
             train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42)
             val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42)
 
-            # 5️⃣ In số lượng mẫu
+            # Hiển thị số lượng mẫu
             st.subheader("📊 Số lượng mẫu trong từng tập dữ liệu")
             summary_df = pd.DataFrame({
                 "Tập dữ liệu": ["Train", "Validation", "Test"],
