@@ -182,11 +182,11 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
     st.text(classification_report(y_val, y_val_pred))
     return model, valid_acc, test_acc
 
-def classification_report():
+def report():
     
         
     X_train, X_val, X_test, y_train, y_val, y_test = phan_gioi_thieu()
     phan_train(X_train, y_train, X_val, y_val, X_test, y_test)
 
 if __name__ == "__main__":
-    classification_report()
+    report()
