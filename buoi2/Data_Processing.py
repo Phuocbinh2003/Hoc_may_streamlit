@@ -230,14 +230,14 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
     st.write(f"✅ Validation Accuracy: {valid_acc:.4f}")
     st.write(f"✅ Test Accuracy: {test_acc:.4f}")
 
-    # Hiển thị báo cáo phân loại
-    st.write("📊 Classification Report (Validation):")
-    # Tạo báo cáo phân loại dưới dạng DataFrame
-    report = classification_report(y_val, y_val_pred, output_dict=True)
-    report_df = pd.DataFrame(report).transpose()
+    # # Hiển thị báo cáo phân loại
+    # st.write("📊 Classification Report (Validation):")
+    # # Tạo báo cáo phân loại dưới dạng DataFrame
+    # report = classification_report(y_val, y_val_pred, output_dict=True)
+    # report_df = pd.DataFrame(report).transpose()
 
-    # Hiển thị bảng báo cáo phân loại
-    st.dataframe(report_df)
+    # # Hiển thị bảng báo cáo phân loại
+    # st.dataframe(report_df)
     return model, valid_acc, test_acc
 
 def report():
