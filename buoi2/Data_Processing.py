@@ -126,9 +126,38 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
         - Mất hiệu suất khi số lượng cây lớn.
         - Không thể hiển thị quá trình học.
         """)
-    
-    
-    
+    st.image("buoi2/img2.png", caption="mô hình Random Forest", use_container_width =True)
+    st.write("📌 **Các bước để huấn luyện mô hình Random Forest:**")
+
+    st.markdown("""
+    ### 🌱 Bước 1: Chọn các tập con bằng Bootstrap
+    Tạo 3 tập con từ tập dữ liệu gốc bằng cách chọn ngẫu nhiên có lặp lại:  
+    Ví dụ:  
+    - **Tập con 1:** (ID 3, 5, 1, 7, 2, 6, 8, 4, 9, 10)  
+    - **Tập con 2:** (ID 6, 3, 5, 8, 2, 4, 9, 7, 1, 1)  
+    - **Tập con 3:** (ID 5, 6, 3, 9, 8, 2, 10, 4, 7, 1)  
+
+    ---
+
+    ### 🌳 Bước 2: Xây dựng 3 Cây quyết định  
+    Mỗi cây chỉ sử dụng một phần đặc trưng ngẫu nhiên để học:  
+
+    - **Cây 1:** Dùng `Giờ học` & `Số bài tập`  
+    - **Cây 2:** Dùng `Số bài tập` & `Thời gian ngủ`  
+    - **Cây 3:** Dùng `Giờ học` & `Thời gian ngủ`  
+
+    💡 **Mỗi cây học một quy tắc khác nhau**, ví dụ:  
+    - **Cây 1:** "Nếu Giờ học > 5 và Số bài tập > 2 → Điểm cao = Yes".  
+    - **Cây 2:** "Nếu Thời gian ngủ < 6 → Điểm cao = Yes".  
+    - **Cây 3:** "Nếu Giờ học > 4 và Thời gian ngủ < 8 → Điểm cao = Yes".  
+
+    ---
+
+    ### 🗳️ Bước 3: Dự đoán bằng bỏ phiếu đa số  
+    Mô hình lấy dự đoán của các cây quyết định và chọn kết quả xuất hiện nhiều nhất.  
+    """)
+
+                
     st.write("""
         Đến bước quan trọng nhất: huấn luyện mô hình. Chúng ta sẽ sử dụng mô hình Random Forest để dự đoán khả năng sống sót trên tàu Titanic.
         ```python
@@ -151,19 +180,43 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
     model.fit(X_train, y_train)
 
     st.write("🎯 Đánh giá mô hình bằng Cross-Validation")
-    st.write("""
-         Cross-Validation là một kỹ thuật đánh giá mô hình bằng cách chia dữ liệu thành nhiều phần, huấn luyện trên một phần và đánh giá trên phần còn lại.
-             
-        Để đánh giá mô hình, chúng ta sẽ sử dụng kỹ thuật Cross-Validation với 5 fold (cv=5).
-        ```python
-            from sklearn.model_selection import cross_val_score
+    st.markdown("""
+    ### 🔍 Cross-Validation là gì?
+    Cross-Validation (**CV**) là một kỹ thuật đánh giá mô hình giúp kiểm tra hiệu suất một cách khách quan.  
+    Thay vì chia dữ liệu thành một tập huấn luyện và một tập kiểm tra duy nhất, CV chia dữ liệu thành nhiều phần nhỏ (**folds**) và tiến hành huấn luyện, kiểm tra mô hình nhiều lần trên các phần này.
 
-            # Đánh giá mô hình bằng cross-validation
-            cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy')
-            cv_scores
-        ```
-        
-        """)
+    ---
+
+    ### 📌 Ví dụ minh họa:  
+    Hãy tưởng tượng bạn đang luyện tập cho một kỳ thi. Nếu bạn chỉ ôn luyện theo một bộ đề duy nhất, bạn có thể không đánh giá được toàn diện khả năng của mình.  
+    Thay vào đó, bạn chia tài liệu thành nhiều phần, ôn tập từng phần một cách luân phiên và tự kiểm tra kiến thức sau mỗi lần học.  
+    **Cross-Validation hoạt động theo nguyên tắc tương tự!**  
+
+    ---
+
+    ### 🔢 Các bước thực hiện Cross-Validation (5-Fold CV)
+    1️⃣ **Chia dữ liệu**:  
+    - Dữ liệu được chia thành 5 phần (**folds**) bằng nhau.  
+    - Mỗi phần lần lượt được sử dụng làm tập kiểm tra, phần còn lại làm tập huấn luyện.  
+
+    2️⃣ **Huấn luyện và kiểm tra**:  
+    - Lặp lại quá trình này 5 lần, mỗi lần chọn một fold khác nhau làm tập kiểm tra.  
+
+    3️⃣ **Tính điểm trung bình**:  
+    - Sau 5 lần lặp, tính trung bình các kết quả để đánh giá mô hình.  
+
+    ---
+    ### 🛠️ Cách thực hiện Cross-Validation trong Python:
+    Chúng ta có thể sử dụng `cross_val_score` từ `sklearn.model_selection`:
+
+    ```python
+    from sklearn.model_selection import cross_val_score
+
+    # Đánh giá mô hình bằng cross-validation (5-Fold CV)
+    cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy')
+    ```
+    
+    """)
     cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy')
     st.write(f"Cross-validation scores: {cv_scores}")
     st.write(f"Mean CV Accuracy: {cv_scores.mean():.4f}")
