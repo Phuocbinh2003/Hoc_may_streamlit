@@ -148,7 +148,7 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
 
     💡 **Mỗi cây học một quy tắc khác nhau**, ví dụ:  
     - **Cây 1:** "Nếu Giờ học > 5 và Số bài tập > 2 → Điểm cao = Yes".  
-    - **Cây 2:** "nếu Nếu Thời gian ngủ < 6 → Điểm cao = Yes".  
+    - **Cây 2:** "nếu  giờ Nếu Thời gian ngủ < 6 → Điểm cao = Yes".  
     - **Cây 3:** "Nếu Giờ học > 4 và Thời gian ngủ < 8 → Điểm cao = Yes".  
 
     ---
