@@ -111,7 +111,7 @@ def phan_gioi_thieu():
     st.write(f"👉 Validation: {X_val.shape[0]} mẫu")
     st.write(f"👉 Test: {X_test.shape[0]} mẫu")
     
-    return df, X_train, X_val, X_test, y_train, y_val, y_test
+    return  X_train, X_val, X_test, y_train, y_val, y_test
 def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
     st.title("🚀 Huấn luyện mô hình")
     st.subheader(" mô hình Random Forest")
