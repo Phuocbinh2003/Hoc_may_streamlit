@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from scipy.stats import zscore
 from PIL import Image
 def hien_thi_ly_thuyet():
-    st.title("📊 Xử lý Dữ liệu & Chia Train/Test/Validation")
+    st.title("📊 Xử lý Dữ liệu ")
 
     st.subheader("1️⃣ Giới thiệu về Tiền xử lý Dữ liệu")
     st.write("""
