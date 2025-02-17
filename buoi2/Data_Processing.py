@@ -165,8 +165,8 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
         
         """)
     cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy')
-    print(f"Cross-validation scores: {cv_scores}")
-    print(f"Mean CV Accuracy: {cv_scores.mean():.4f}")
+    st.write(f"Cross-validation scores: {cv_scores}")
+    st.write(f"Mean CV Accuracy: {cv_scores.mean():.4f}")
     model.fit(X_train, y_train)
     y_val_pred = model.predict(X_val)
     y_test_pred = model.predict(X_test)
