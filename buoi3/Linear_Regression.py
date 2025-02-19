@@ -46,7 +46,9 @@ def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio):
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / actual_train_size, stratify=y_train, random_state=42)
 
     # Sử dụng StratifiedKFold với số lần chia phù hợp
-    kf = StratifiedKFold(n_splits=int(1 / test_size), shuffle=True, random_state=42)
+    num_splits = max(2, int(1 / test_size))  # Đảm bảo n_splits >= 2
+    
+    kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
     
     return X_train, X_val, X_test, y_train, y_val, y_test, kf, df
 
