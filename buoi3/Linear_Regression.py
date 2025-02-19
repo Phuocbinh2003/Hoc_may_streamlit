@@ -320,8 +320,9 @@ def bt_buoi3():
     ax.legend()
     st.pyplot(fig)
     
-    uploaded_file = st.file_uploader("Upload file dữ liệu CSV", type=["csv"])
-
+    
+    
+    uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
 # Nếu có file upload, sử dụng nó, nếu không dùng file mặc định
     df = tien_xu_ly_du_lieu(uploaded_file)
     st.write(df.head(10))
