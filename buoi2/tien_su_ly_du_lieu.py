@@ -227,7 +227,36 @@ def tien_xu_ly_du_lieu():
     
     df = pd.read_csv(uploaded_file, delimiter=",")
     hien_thi_ly_thuyet(df)
-   
+    if "Age" in df.columns:
+        df["Age"].fillna(df["Age"].mean(), inplace=True)
+        df['Age'] = df['Age'].astype(int)
+        scaler = StandardScaler()
+        df[['Age']] = scaler.fit_transform(df[['Age']])
+                    
+    if "Fare" in df.columns:
+        df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị
+        df['Fare'] = df['Fare'].astype(int)
+    if "Embarked" in df.columns:
+        df.dropna(subset=['Embarked'], inplace=True)
+        df['Embarked'] = df['Embarked'].map({'C': 1, 'S': 2,'Q': 3})
+    if "Cabin" in df.columns:
+        df['Cabin'].fillna('Unknown', inplace=True)
+
+    if "Pclass" in df.columns:
+        df['Pclass'] = df['Pclass'].astype('category')
+
+                
+    if "Sex" in df.columns:
+        df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
+                
+    if "Fare" in df.columns and df['Fare'].nunique() > 1:
+        scaler = StandardScaler()
+        df[['Fare']] = scaler.fit_transform(df[['Fare']])
+
+                # Hiển thị dữ liệu sau khi xử lý
+        st.subheader("✅ Dữ liệu sau xử lý")
+        st.write(df.head(10))   
+    
         
 
 
