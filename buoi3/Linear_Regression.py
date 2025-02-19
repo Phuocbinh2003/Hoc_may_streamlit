@@ -61,10 +61,10 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
     st.write("X_train (sau khi loại bỏ cột đầu tiên):", X_train)
     m, n = X_train.shape
     X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
-    st.write("X_b (sau khi thêm bias):", X_b)
+    #st.write("X_b (sau khi thêm bias):", X_b)
 
     w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
-    st.write("Trọng số ban đầu:", w)
+    #st.write("Trọng số ban đầu:", w)
 
     # Chuyển đổi y_train thành NumPy array có dạng cột (n,1)
     if isinstance(y_train, pd.Series):  
