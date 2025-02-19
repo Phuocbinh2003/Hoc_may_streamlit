@@ -82,42 +82,40 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, learning_rate=0.001, n_iterations=200):
     """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
-    X_train_poly=X_train
-    X_valid_poly=X_valid
+
     # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
     
     # Chuyển đổi tập huấn luyện và tập kiểm tra thành dạng đa thức
-    # X_train_poly = poly.fit_transform(X_train)
-    # X_valid_poly = poly.transform(X_valid)
+    X_train_poly = poly.fit_transform(X_train)
+    X_valid_poly = poly.transform(X_valid)
 
     m, n = X_train_poly.shape
     st.write("X_train_poly shape:", X_train_poly.shape)
     
-    # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng (nhưng không xóa khỏi X_train gốc)
-    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]] # Bỏ cột đầu tiên và thêm bias
+    # Thêm bias vào tập huấn luyện (Không bỏ cột đầu tiên vì PolynomialFeatures đã thêm cột 1s)
+    X_b = np.c_[np.ones((m, 1)), X_train_poly] 
     
-    # Khởi tạo trọng số ngẫu nhiên cho mô hình, trọng số phải có kích thước (n, 1)
+    # Khởi tạo trọng số ngẫu nhiên
     w = np.random.randn(X_b.shape[1], 1)  
 
-    # Đảm bảo y_train và y_valid có hình dạng phù hợp
+    # Chuyển đổi y_train, y_valid về dạng (m,1)
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
     y_valid = y_valid.to_numpy().reshape(-1, 1) if isinstance(y_valid, pd.Series) else y_valid.reshape(-1, 1)
 
-    # Huấn luyện mô hình bằng gradient descent
+    # Huấn luyện bằng gradient descent
     for iteration in range(n_iterations):
-        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  # Tính gradient
-        w -= learning_rate * gradients  # Cập nhật trọng số
+        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  
+        w -= learning_rate * gradients  
 
-    # Bỏ qua cột đầu tiên và thêm bias vào ma trận đặc trưng của tập kiểm tra
-    
-    
+    # Thêm bias vào tập kiểm tra
+    X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly]
+
     # Debug kích thước ma trận
-    st.write("X_valid_b shape:", X_b.shape)
-    st.write(X_b)
+    st.write("X_valid_b shape:", X_valid_b.shape)
 
-    # Dự đoán kết quả cho tập kiểm tra
-    y_pred = X_b.dot(w)
+    # Dự đoán kết quả trên tập kiểm tra
+    y_pred = X_valid_b.dot(w)
 
     # Tính toán lỗi MSE
     mse = mean_squared_error(y_valid, y_pred)
