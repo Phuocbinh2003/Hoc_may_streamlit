@@ -87,11 +87,8 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     poly = PolynomialFeatures(degree=degree)
     
     
-    X_train = X_train.loc[:, ~X_train.columns.str.match(r'^\s*$')]
-    
-
+    X_train = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
     st.write("X_train2 shape:", X_train)
-    
     # Chuyển đổi tập huấn luyện thành dạng đa thức
     X_train_poly = poly.fit_transform(X_train)
     
