@@ -81,21 +81,8 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
 
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, learning_rate=0.001, n_iterations=200):
-    # """Huấn luyện hồi quy đa thức."""
+    """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
     
-    # poly = PolynomialFeatures(degree=degree)
-    # X_train_poly = poly.fit_transform(X_train)
-    # X_valid_poly = poly.transform(X_valid)
-
-    # model = LinearRegression()
-    # model.fit(X_train_poly, y_train)
-
-    # y_pred = model.predict(X_valid_poly)
-
-    # mse = mean_squared_error(y_valid.to_numpy().reshape(-1, 1), y_pred) if isinstance(y_valid, pd.Series) else mean_squared_error(y_valid.reshape(-1, 1), y_pred)
-
-    # return model, mse, poly  # Trả về model, MSE và poly để dùng tiếp
-
     # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
     
@@ -105,11 +92,11 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
 
     m, n = X_train_poly.shape
     
-    # Thêm cột bias (1) vào ma trận đặc trưng X_train_poly
-    X_b = np.c_[np.ones((m, 1)), X_train_poly]  # Thêm cột bias vào đầu X_train_poly
+    # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng (nhưng không xóa khỏi X_train gốc)
+    X_b = np.c_[np.ones((m, 1)), X_train_poly[:, 1:]]  # Bỏ cột đầu tiên và thêm bias
     
-    # Khởi tạo trọng số ngẫu nhiên cho mô hình, trọng số phải có kích thước (n+1, 1)
-    w = np.random.randn(X_b.shape[1], 1)  # X_b.shape[1] là số lượng đặc trưng + bias (n+1)
+    # Khởi tạo trọng số ngẫu nhiên cho mô hình, trọng số phải có kích thước (n, 1)
+    w = np.random.randn(X_b.shape[1], 1)  
 
     # Đảm bảo y_train và y_valid có hình dạng phù hợp
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
@@ -120,10 +107,13 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
         gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  # Tính gradient
         w -= learning_rate * gradients  # Cập nhật trọng số
 
-    # Thêm cột bias vào ma trận đặc trưng của tập kiểm tra
-    X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly]
-    st.write(X_valid_b.shape)
+    # Bỏ qua cột đầu tiên và thêm bias vào ma trận đặc trưng của tập kiểm tra
+    X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly[:, 1:]]
+    
+    # Debug kích thước ma trận
+    st.write("X_valid_b shape:", X_valid_b.shape)
     st.write(X_valid_b)
+
     # Dự đoán kết quả cho tập kiểm tra
     y_pred = X_valid_b.dot(w)
 
@@ -131,6 +121,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
     mse = mean_squared_error(y_valid, y_pred)
 
     return w, mse, poly  # Trả về trọng số, MSE và đối tượng PolynomialFeatures
+
 
 
 
