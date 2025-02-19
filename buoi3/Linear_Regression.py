@@ -67,7 +67,7 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
     
     m, n = X_train.shape
     X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
-
+    st.write(X_b.shape)
     w = np.random.randn(X_b.shape[1], 1)  
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
 
