@@ -91,6 +91,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
     X_valid_poly = poly.transform(X_valid)
 
     m, n = X_train_poly.shape
+    st.write("X_train_poly shape:", X_train_poly.shape)
     
     # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng (nhưng không xóa khỏi X_train gốc)
     X_b = np.c_[np.ones((m, 1)), X_train_poly[:, 1:]]  # Bỏ cột đầu tiên và thêm bias
