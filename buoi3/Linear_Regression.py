@@ -82,13 +82,14 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, learning_rate=0.001, n_iterations=200):
     """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
-    
+    X_train_poly=X_train
+    X_valid_poly=X_valid
     # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
     
     # Chuyển đổi tập huấn luyện và tập kiểm tra thành dạng đa thức
-    X_train_poly = poly.fit_transform(X_train)
-    X_valid_poly = poly.transform(X_valid)
+    # X_train_poly = poly.fit_transform(X_train)
+    # X_valid_poly = poly.transform(X_valid)
 
     m, n = X_train_poly.shape
     st.write("X_train_poly shape:", X_train_poly.shape)
