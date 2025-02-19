@@ -158,12 +158,12 @@ def bt_buoi3():
     st.markdown(r"""
     Trong đó:
     - $n$: Số lượng quan sát.
-    - $k $: Số lượng biến độc lập.
+    - $k$: Số lượng biến độc lập.
     - $\bar{y}$: Giá trị trung bình của biến phụ thuộc.
     """)
+
     st.write("""
     
-
     - **Sai số chuẩn (SE)**: Đánh giá mức độ phân tán của sai số dự đoán quanh giá trị thực tế:
     """)
     st.latex(r"""
