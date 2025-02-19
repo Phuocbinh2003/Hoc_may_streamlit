@@ -57,14 +57,15 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
     X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
     w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
 
-    # Đảm bảo y_train có shape (m,1)
-    y_train = y_train.reshape(-1, 1)
+    # Chuyển y_train thành mảng NumPy và reshape
+    y_train = y_train.to_numpy().reshape(-1, 1)
 
     for iteration in range(n_iterations):
         gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  # Tính gradient
         w -= learning_rate * gradients  # Cập nhật trọng số
 
     return w  # Trả về trọng số sau khi huấn luyện
+
 
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
@@ -78,10 +79,11 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
 
     y_pred = model.predict(X_valid_poly)
 
-    # Đảm bảo y_valid có shape (m,1) trước khi tính MSE
-    mse = mean_squared_error(y_valid.reshape(-1, 1), y_pred)
+    # Chuyển y_valid thành NumPy array trước khi tính MSE
+    mse = mean_squared_error(y_valid.to_numpy().reshape(-1, 1), y_pred)
 
     return model, mse, poly  # Trả về cả model và poly để sử dụng sau
+
 
 
 def chon_mo_hinh(model_type="linear", degree=2):
@@ -93,6 +95,10 @@ def chon_mo_hinh(model_type="linear", degree=2):
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
         X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
         y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
+
+        # Chuyển y_train và y_valid thành NumPy array
+        y_train = y_train.to_numpy().reshape(-1, 1)
+        y_valid = y_valid.to_numpy().reshape(-1, 1)
 
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
@@ -107,12 +113,13 @@ def chon_mo_hinh(model_type="linear", degree=2):
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
-        mse = mean_squared_error(y_valid.reshape(-1, 1), y_valid_pred)
+        mse = mean_squared_error(y_valid, y_valid_pred)
         fold_mse.append(mse)
 
         print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
     # 🔥 Huấn luyện lại trên toàn bộ tập train_full
+    y_train_full = y_train_full.to_numpy().reshape(-1, 1)  # Chuyển thành NumPy array
     if model_type == "linear":
         final_model = train_multiple_linear_regression(X_train_full, y_train_full)
     else:
@@ -121,19 +128,21 @@ def chon_mo_hinh(model_type="linear", degree=2):
         final_model.fit(X_train_full_poly, y_train_full)
 
     # 📌 Đánh giá trên tập test
+    y_test = y_test.to_numpy().reshape(-1, 1)  # Chuyển y_test thành NumPy array
     if model_type == "linear":
         X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]  # Thêm cột bias
         y_test_pred = X_test_b.dot(final_model)
     else:
         y_test_pred = final_model.predict(poly.transform(X_test))
 
-    test_mse = mean_squared_error(y_test.reshape(-1, 1), y_test_pred)
+    test_mse = mean_squared_error(y_test, y_test_pred)
     avg_mse = np.mean(fold_mse)  # Lấy trung bình MSE qua các folds
 
     st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
     st.success(f"MSE trên tập test: {test_mse:.4f}")
 
     return final_model, avg_mse, poly  # Trả về cả poly để dùng sau nếu cần
+
 
 
 def bt_buoi3():
