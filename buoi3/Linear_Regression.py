@@ -91,14 +91,14 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
 
     m, n = X_train_poly.shape
     
-    # Thêm bias vào X_train_poly
-    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
+    # Thêm bias (nếu chưa có)
+    X_b = X_train_poly  # PolynomialFeatures đã thêm bias term
     st.write("X_b shape:", X_b.shape)
-    st.write("X_b:", X_b)
+    
     # Khởi tạo trọng số ngẫu nhiên
-    w = np.random.randn(X_b.shape[1], 1)  
+    w = np.random.randn(n, 1)  
     st.write("w shape:", w.shape)
-    st.write("w:", w)
+    
     # Chuyển đổi y_train về dạng (m,1)
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
 
@@ -107,8 +107,7 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
         gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  
         w -= learning_rate * gradients  
 
-    return w  # Trả về trọng số sau khi huấn luyện
-
+    return w, poly  # Trả về trọng số sau khi huấn luyện và bộ biến đổi PolynomialFeatures
 
 
 
@@ -133,13 +132,9 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
             X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
             y_valid_pred = X_valid_b.dot(w)
         elif model_type == "polynomial":
-            poly = PolynomialFeatures(degree=degree)
-            X_train_poly = poly.fit_transform(X_train)
+            w, poly = train_polynomial_regression(X_train, y_train, degree=degree, learning_rate=learning_rate)
             X_valid_poly = poly.transform(X_valid)
-            
-            w = train_polynomial_regression(X_train_poly, y_train, degree=degree, learning_rate=learning_rate)
-            X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
-            y_valid_pred = X_valid_b.dot(w)
+            y_valid_pred = X_valid_poly.dot(w)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
@@ -156,12 +151,9 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
         X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
         y_test_pred = X_test_b.dot(w_final)
     else:
-        X_train_full_poly = poly.fit_transform(X_train_full)
-        w_final = train_polynomial_regression(X_train_full_poly, y_train_full, degree=degree, learning_rate=learning_rate)
-        
+        w_final, poly = train_polynomial_regression(X_train_full, y_train_full, degree=degree, learning_rate=learning_rate)
         X_test_poly = poly.transform(X_test)
-        X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
-        y_test_pred = X_test_b.dot(w_final)
+        y_test_pred = X_test_poly.dot(w_final)
 
     test_mse = mean_squared_error(y_test, y_test_pred)
     avg_mse = np.mean(fold_mse)
@@ -170,6 +162,7 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
 
     return w_final, avg_mse, poly
+
 
 
 
