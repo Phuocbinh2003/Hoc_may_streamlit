@@ -155,11 +155,14 @@ def bt_buoi3():
     R^2_{adj} = 1 - \left( \frac{(1 - R^2)(n - 1)}{n - k - 1} \right)
     """)
 
-    st.write("""
+    st.markdown(r"""
     Trong đó:
-    - \( n \): Số lượng quan sát.
-    - \( k \): Số lượng biến độc lập.
-    - \( \bar{y} \): Giá trị trung bình của biến phụ thuộc.
+    - $n$: Số lượng quan sát.
+    - $k $: Số lượng biến độc lập.
+    - $\bar{y}$: Giá trị trung bình của biến phụ thuộc.
+    """)
+    st.write("""
+    
 
     - **Sai số chuẩn (SE)**: Đánh giá mức độ phân tán của sai số dự đoán quanh giá trị thực tế:
     """)
