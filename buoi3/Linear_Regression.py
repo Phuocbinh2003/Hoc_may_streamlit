@@ -178,6 +178,7 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     return w_final, avg_mse, poly
 
 
+
 def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     degree = 2  
