@@ -103,9 +103,9 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     return model, mse, poly  # Trả về model, MSE và poly để dùng tiếp
 
 
-def chon_mo_hinh(model_type="linear", degree=2):
+def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    
+    degree=2
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
     fold_mse = []
     poly = None  
@@ -367,13 +367,13 @@ def bt_buoi3():
     # Chọn mô hình    
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
-    degree = 2
-    if model_type == "Polynomial Regression":
-        degree = st.slider("Chọn bậc của hồi quy đa thức:", min_value=2, max_value=5, value=2)
+    # Chọn tốc độ học (learning rate)
+    learning_rate = st.slider("Chọn tốc độ học:", min_value=0.001, max_value=0.1, value=0.01, step=0.001)
 
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
-        model, avg_mse ,poly= chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", degree=degree)
+        model, avg_mse, poly = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", learning_rate=learning_rate)
+
         
     
     
