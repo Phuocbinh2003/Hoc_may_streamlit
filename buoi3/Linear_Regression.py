@@ -130,7 +130,7 @@ def bt_buoi3():
     - \( n \): Số lượng điểm dữ liệu.
     - \( y_i \): Giá trị thực tế của biến phụ thuộc.
     """)
-    - st.markdown(r"$\hat{y}_i$")#: Giá trị dự đoán từ mô hình.
+    st.markdown(r"$\hat{y}_i$")#: Giá trị dự đoán từ mô hình.
     st.write("""
     Mục tiêu của hồi quy tuyến tính bội là tìm các hệ số trọng số \( w_0, w_1, w_2, ..., w_n \) sao cho giá trị MSE nhỏ nhất.
 
