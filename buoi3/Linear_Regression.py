@@ -2,475 +2,150 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-from scipy.stats import zscore
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-# Tiêu đề
-
 
 def tien_xu_ly_du_lieu():
-    df = pd.read_csv("buoi2/data.txt")
-
-    # Loại bỏ các cột không cần thiết
-    columns_to_drop = ["Cabin", "Ticket", "Name"]  # Cột không cần thiết
-    df.drop(columns=columns_to_drop, inplace=True)  # Loại bỏ cột
-    # Xử lý giá trị thiếu
-    df['Age'].fillna(df['Age'].mean(), inplace=True)
-    df['Fare'].fillna(df['Fare'].median(), inplace=True)
-    df.dropna(subset=['Embarked'], inplace=True)  # Xóa dòng nếu 'Embarked' bị thiếu
-
-    # Mã hóa giới tính: Male -> 1, Female -> 0
-    df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
-
-    # Mã hóa 'Embarked' bằng One-Hot Encoding
-    df['Embarked'] = df['Embarked'].map({'Q': 0, 'S': 1, 'C': 2})
-    
-
-    # Chuẩn hóa các giá trị số
-    scaler = StandardScaler()
-    df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
-
-    # Chia dữ liệu thành đầu vào (X) và nhãn (y)
-    X = df.drop(columns=['Survived'])
-    y = df['Survived']
-
-    # Chia tập train (70%), validation (15%), test (15%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=42)
-
-    # 2️⃣ Dùng StratifiedKFold với mỗi fold chọn 15% làm validation
-    kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
-    
-    return X_train, X_test, y_train, y_test, kf ,df
-
-# def train_multiple_linear_regression(X_train, y_train):
-#     """Huấn luyện mô hình hồi quy tuyến tính bội."""
-#     model = LinearRegression()
-#     model.fit(X_train, y_train)
-#     return model
-
-
-
-import numpy as np
-import pandas as pd
-import streamlit as st
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import KFold
-
-def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
-    """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
-    
-    m, n = X_train.shape
-    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
-    st.write(X_b.shape)
-    w = np.random.randn(X_b.shape[1], 1)  
-    y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
-
-    for iteration in range(n_iterations):
-        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)
-        w -= learning_rate * gradients
-
-    return w 
-
-def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=200):
-    """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
-
-    poly = PolynomialFeatures(degree=degree)
-
-    if isinstance(X_train, pd.DataFrame):
-        empty_columns = X_train.columns[X_train.columns.isna()]
-        nan_columns = X_train.columns[X_train.isna().any()]
-        
-        st.write("🔍 Các cột có tên trống:", empty_columns.tolist())
-        st.write("🔍 Các cột có chứa NaN:", nan_columns.tolist())
-        
-        X_train = X_train.loc[:, X_train.columns.notna()].dropna(axis=1)  # Loại bỏ các cột có tên trống
-
-    # Xử lý NaN bằng cách điền giá trị trung bình
-    X_train = np.nan_to_num(X_train, nan=np.nanmean(X_train))
-    y_train = np.nan_to_num(y_train, nan=np.nanmean(y_train))
-
-    m = X_train.shape[0]
-    X_train_poly = poly.fit_transform(X_train)
-    
-    m, n = X_train_poly.shape
-    w = np.random.randn(n, 1)
-
-    y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
-
-    for iteration in range(n_iterations):
-        gradients = 2/m * X_train_poly.T.dot(X_train_poly.dot(w) - y_train)
-        w -= learning_rate * gradients
-
-    return w, poly
-
-def chon_mo_hinh(model_type="linear", learning_rate=0.01):
-    """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    degree = 2  
-    X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
-    
-    # Loại bỏ các cột có tên trống
-    empty_columns = X_train_full.columns[X_train_full.columns.isna()]
-    nan_columns = X_train_full.columns[X_train_full.isna().any()]
-    
-    st.write("🔍 Các cột có tên trống trong tập train:", empty_columns.tolist())
-    st.write("🔍 Các cột có chứa NaN trong tập train:", nan_columns.tolist())
-    
-    X_train_full = X_train_full.loc[:, X_train_full.columns.notna()].dropna(axis=1)
-    X_test = X_test.loc[:, X_test.columns.notna()].dropna(axis=1)
-    
-    # Xử lý NaN trên toàn bộ dữ liệu
-    X_train_full = X_train_full.fillna(X_train_full.mean())
-    X_test = X_test.fillna(X_test.mean())
-    y_train_full = y_train_full.fillna(y_train_full.mean())
-    y_test = y_test.fillna(y_test.mean())
-    
-    fold_mse = []
-    poly = None  
-
-    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
-        X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
-        y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
-
-        y_train = y_train.to_numpy().reshape(-1, 1)
-        y_valid = y_valid.to_numpy().reshape(-1, 1)
-
-        st.write(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
-
-        if model_type == "linear":
-            w = train_multiple_linear_regression(X_train, y_train, learning_rate=learning_rate)
-            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
-            y_valid_pred = X_valid_b.dot(w)
-        elif model_type == "polynomial":
-            w, poly = train_polynomial_regression(X_train, y_train, degree=degree, learning_rate=learning_rate)
-            X_valid_poly = poly.transform(X_valid)  # Sửa lỗi kích thước
-            y_valid_pred = X_valid_poly.dot(w)
-        else:
-            raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
-
-        mse = mean_squared_error(y_valid, y_valid_pred)
-        fold_mse.append(mse)
-        st.write(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
-
-    y_train_full = y_train_full.to_numpy().reshape(-1, 1)
-    y_test = y_test.to_numpy().reshape(-1, 1)
-
-    if model_type == "linear":
-        w_final = train_multiple_linear_regression(X_train_full, y_train_full)
-        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
-        y_test_pred = X_test_b.dot(w_final)
-    else:
-        w_final, poly = train_polynomial_regression(X_train_full, y_train_full, degree=degree, learning_rate=learning_rate)
-        X_test_poly = poly.transform(X_test)  # Sửa lỗi kích thước
-        y_test_pred = X_test_poly.dot(w_final)
-
-    test_mse = mean_squared_error(y_test, y_test_pred)
-    avg_mse = np.mean(fold_mse)
-
-    st.success(f"📌 MSE trung bình qua các folds: {avg_mse:.4f}")
-    st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
-
-    return w_final, avg_mse, poly
-
-
-
-def chon_mo_hinh(model_type="linear", learning_rate=0.01):
-    """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    degree = 2  
-    X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
-    
-    # Loại bỏ các cột có tên trống
-    print("🔍 Các cột có tên trống trong tập train:", X_train_full.columns[X_train_full.columns.isna()])
-    print("🔍 Các cột có chứa NaN trong tập train:", X_train_full.columns[X_train_full.isna().any()])
-    X_train_full = X_train_full.loc[:, X_train_full.columns.notna()].dropna(axis=1)
-    X_test = X_test.loc[:, X_test.columns.notna()].dropna(axis=1)
-    
-    # Xử lý NaN trên toàn bộ dữ liệu
-    X_train_full = X_train_full.fillna(X_train_full.mean())
-    X_test = X_test.fillna(X_test.mean())
-    y_train_full = y_train_full.fillna(y_train_full.mean())
-    y_test = y_test.fillna(y_test.mean())
-    
-    fold_mse = []
-    poly = None  
-
-    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
-        X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
-        y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
-
-        y_train = y_train.to_numpy().reshape(-1, 1)
-        y_valid = y_valid.to_numpy().reshape(-1, 1)
-
-        print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
-
-        if model_type == "linear":
-            w = train_multiple_linear_regression(X_train, y_train, learning_rate=learning_rate)
-            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
-            y_valid_pred = X_valid_b.dot(w)
-        elif model_type == "polynomial":
-            w, poly = train_polynomial_regression(X_train, y_train, degree=degree, learning_rate=learning_rate)
-            X_valid_poly = poly.transform(X_valid)  # Sửa lỗi kích thước
-            y_valid_pred = X_valid_poly.dot(w)
-        else:
-            raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
-
-        mse = mean_squared_error(y_valid, y_valid_pred)
-        fold_mse.append(mse)
-        print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
-
-    y_train_full = y_train_full.to_numpy().reshape(-1, 1)
-    y_test = y_test.to_numpy().reshape(-1, 1)
-
-    if model_type == "linear":
-        w_final = train_multiple_linear_regression(X_train_full, y_train_full)
-        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
-        y_test_pred = X_test_b.dot(w_final)
-    else:
-        w_final, poly = train_polynomial_regression(X_train_full, y_train_full, degree=degree, learning_rate=learning_rate)
-        X_test_poly = poly.transform(X_test)  # Sửa lỗi kích thước
-        y_test_pred = X_test_poly.dot(w_final)
-
-    test_mse = mean_squared_error(y_test, y_test_pred)
-    avg_mse = np.mean(fold_mse)
-
-    st.success(f"📌 MSE trung bình qua các folds: {avg_mse:.4f}")
-    st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
-
-    return w_final, avg_mse, poly
-
-
-
-
-
-
-
-
-def bt_buoi3():
-    uploaded_file = "buoi2/data.txt"
+    # Đọc dữ liệu
     try:
-        df = pd.read_csv(uploaded_file, delimiter=",")
+        df = pd.read_csv("buoi2/data.txt")
     except FileNotFoundError:
         st.error("❌ Không tìm thấy tệp dữ liệu. Vui lòng kiểm tra lại đường dẫn.")
         st.stop()
-    st.title("🔍 Tiền xử lý dữ liệu")
+
+    # Xử lý dữ liệu
+    df = df.drop(columns=["Cabin", "Ticket", "Name"])
+    df['Age'].fillna(df['Age'].median(), inplace=True)
+    df['Fare'].fillna(df['Fare'].median(), inplace=True)
+    df.dropna(subset=['Embarked'], inplace=True)
     
-    st.subheader("📌 10 dòng đầu của dữ liệu gốc")
-    st.write(df.head(10))
+    # Mã hóa dữ liệu
+    df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
+    df['Embarked'] = df['Embarked'].map({'Q': 0, 'S': 1, 'C': 2})
     
-    st.subheader("🚨 Kiểm tra lỗi dữ liệu")
-
-                # Kiểm tra giá trị thiếu
-    missing_values = df.isnull().sum()
-
-                # Kiểm tra dữ liệu trùng lặp
-    duplicate_count = df.duplicated().sum()
-
-                
-                
-                # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
-    outlier_count = {
-        col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
-        for col in df.select_dtypes(include=['number']).columns
-    }
-
-                # Tạo báo cáo lỗi
-    error_report = pd.DataFrame({
-        'Cột': df.columns,
-        'Giá trị thiếu': missing_values,
-        'Outlier': [outlier_count.get(col, 0) for col in df.columns]
-    })
-
-                # Hiển thị báo cáo lỗ
-    st.table(error_report)
-
-                # Hiển thị số lượng dữ liệu trùng lặp
-    st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")         
+    # Chuẩn hóa dữ liệu
+    scaler = StandardScaler()
+    df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
     
-    st.title("🔍 Tiền xử lý dữ liệu")
-
-    # Loại bỏ các cột không cần thiết
-    st.subheader("1️⃣ Loại bỏ các cột không quan trọng")
-    st.write("""
-    Một số cột trong dữ liệu có thể không đóng góp nhiều vào kết quả dự đoán hoặc chứa quá nhiều giá trị thiếu. Việc loại bỏ các cột này giúp giảm độ phức tạp của mô hình và cải thiện hiệu suất.
-    """)
-
-    # Xử lý giá trị thiếu
-    st.subheader("2️⃣ Xử lý giá trị thiếu")
-    st.write("""
-    Dữ liệu thực tế thường chứa các giá trị bị thiếu. Ta cần lựa chọn phương pháp thích hợp như điền giá trị trung bình, loại bỏ hàng hoặc sử dụng mô hình dự đoán để xử lý chúng nhằm tránh ảnh hưởng đến mô hình.
-    """)
-
-    # Chuyển đổi kiểu dữ liệu
-    st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
-    st.write("""
-    Một số cột trong dữ liệu có thể chứa giá trị dạng chữ (danh mục). Để mô hình có thể xử lý, ta cần chuyển đổi chúng thành dạng số bằng các phương pháp như one-hot encoding hoặc label encoding.
-    """)
-
-    # Chuẩn hóa dữ liệu số
-    st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
-    st.write("""
-    Các giá trị số trong tập dữ liệu có thể có phạm vi rất khác nhau, điều này có thể ảnh hưởng đến độ hội tụ của mô hình. Ta cần chuẩn hóa dữ liệu để đảm bảo tất cả các đặc trưng có cùng trọng số khi huấn luyện mô hình.
-    """)
-
-    # Chia dữ liệu thành tập Train, Validation, và Test
-    st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
-    st.write("""
-    Để đảm bảo mô hình hoạt động tốt trên dữ liệu thực tế, ta chia tập dữ liệu thành ba phần:
-    - **Train**: Dùng để huấn luyện mô hình.
-    - **Validation**: Dùng để điều chỉnh tham số mô hình nhằm tối ưu hóa hiệu suất.
-    - **Test**: Dùng để đánh giá hiệu suất cuối cùng của mô hình trên dữ liệu chưa từng thấy.
-    """)
+    # Tách features và target
+    X = df.drop(columns=['Survived'])
+    y = df['Survived']
     
+    # Chia tập dữ liệu
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.15, stratify=y, random_state=42
+    )
     
+    return X_train, X_test, y_train, y_test, df
+
+def initialize_weights(n_features):
+    return np.random.randn(n_features, 1)
+
+def gradient_descent(X, y, w, learning_rate, n_iterations):
+    m = len(y)
+    for _ in range(n_iterations):
+        y_pred = X.dot(w)
+        error = y_pred - y
+        gradients = (2/m) * X.T.dot(error)
+        w -= learning_rate * gradients
+    return w
+
+def train_linear_regression(X_train, y_train, learning_rate=0.001, n_iter=200):
+    # Thêm cột bias
+    X_b = np.c_[np.ones((len(X_train), 1)), X_train]
     
-    st.title("Lựa chọn thuật toán học máy: Multiple vs. Polynomial Regression")
-
-    # Giới thiệu
-    st.write("## 1. Multiple Linear Regression")
-    st.write("""
-    Hồi quy tuyến tính bội là một thuật toán học máy có giám sát, mô tả mối quan hệ giữa một biến phụ thuộc (output) và nhiều biến độc lập (input) thông qua một hàm tuyến tính.
-    Ví dụ dự đoán giá nhà dựa trên diện tích, số phòng, vị trí, ... 
+    # Khởi tạo trọng số
+    w = initialize_weights(X_b.shape[1])
     
-    Công thức tổng quát của mô hình hồi quy tuyến tính bội:
-    """)
-    st.image("buoi3/img1.png", caption="Multiple Linear Regression đơn", use_container_width =True)
-    st.latex(r"""
-    y = w_0 + w_1x_1 + w_2x_2 + \dots + w_nx_n
-    """)
+    # Huấn luyện
+    y_train = y_train.values.reshape(-1, 1)
+    return gradient_descent(X_b, y_train, w, learning_rate, n_iter)
 
+def train_poly_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iter=200):
+    # Tạo đặc trưng đa thức
+    poly = PolynomialFeatures(degree=degree, include_bias=True)
+    X_poly = poly.fit_transform(X_train)
     
-   
-   
-
-    # Giới thiệu Polynomial Regression
-    st.write("## 2. Polynomial Regression")
-
-    st.write("Polynomial Regression mở rộng mô hình tuyến tính bằng cách thêm các bậc cao hơn của biến đầu vào.")
+    # Khởi tạo trọng số
+    w = initialize_weights(X_poly.shape[1])
     
-    st.image("buoi3/img3.png", caption="Polynomial Regression ", use_container_width =True)
-    st.write("""
-     Công thức tổng quát của mô hình hồi quy tuyến tính bội:
-    """)
-    st.latex(r"""
-    y = w_0 + w_1x + w_2x^2 + w_3x^3 + \dots + w_nx^n
-    """)
+    # Huấn luyện
+    y_train = y_train.values.reshape(-1, 1)
+    return gradient_descent(X_poly, y_train, w, learning_rate, n_iter), poly
 
+def evaluate_model(model_type, X_train, y_train, X_test, y_test, learning_rate):
+    kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    fold_scores = []
     
-    st.write("""
-    ### Hàm mất mát (Loss Function) của Linear Regression
-    Hàm mất mát phổ biến nhất là **Mean Squared Error (MSE)**:
-    """)
-    st.latex(r"""
-    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-    """)
-
-    st.markdown(r"""
-    Trong đó:
-    - $n$: Số lượng điểm dữ liệu.
-    - $y_i$: Giá trị thực tế của biến phụ thuộc.
-    - $\hat{y}_i$: Giá trị dự đoán từ mô hình.
-    """)
-
-    st.markdown(r"""
-    Mục tiêu của hồi quy tuyến tính bội là tìm các hệ số trọng số $w_0, w_1, w_2, ..., w_n$ sao cho giá trị MSE nhỏ nhất.
-
-    ### Thuật toán Gradient Descent
-    1. Khởi tạo các trọng số $w_0, w_1, w_2, ..., w_n$ với giá trị bất kỳ.
-    2. Tính gradient của MSE đối với từng trọng số.
-    3. Cập nhật trọng số theo quy tắc của thuật toán Gradient Descent.
-
-    ### Đánh giá mô hình hồi quy tuyến tính bội
-    - **Hệ số tương quan (R)**: Đánh giá mức độ tương quan giữa giá trị thực tế và giá trị dự đoán.
-    - **Hệ số xác định (R²)**: Đo lường phần trăm biến động của biến phụ thuộc có thể giải thích bởi các biến độc lập:
-    """)
-    st.latex(r"""
-    R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}
-    """)
-
-    st.write("""
-    - **Adjusted R²**: Điều chỉnh cho số lượng biến độc lập, giúp tránh overfitting:
-    """)
-    st.latex(r"""
-    R^2_{adj} = 1 - \left( \frac{(1 - R^2)(n - 1)}{n - k - 1} \right)
-    """)
-
-    st.markdown(r"""
-    Trong đó:
-    - $n$: Số lượng quan sát.
-    - $k$: Số lượng biến độc lập.
-    - $\bar{y}$: Giá trị trung bình của biến phụ thuộc.
-    """)
-
-    st.write("""
-    
-    - **Sai số chuẩn (SE)**: Đánh giá mức độ phân tán của sai số dự đoán quanh giá trị thực tế:
-    """)
-    st.latex(r"""
-    SE = \sqrt{\frac{\sum (y_i - \hat{y}_i)^2}{n - k - 1}}
-    """)
-
-    st.write("""
-    Các chỉ số này giúp đánh giá độ chính xác và khả năng khái quát hóa của mô hình hồi quy tuyến tính bội.
-    """)
-    # Vẽ biểu đồ so sánh
-    st.write("## 3. Minh họa trực quan")
-
-    # Tạo dữ liệu mẫu
-    np.random.seed(0)
-    x = np.sort(5 * np.random.rand(20, 1), axis=0)
-    y = 2 * x**2 - 3 * x + np.random.randn(20, 1) * 2
-
-    # Hồi quy tuyến tính
-    lin_reg = LinearRegression()
-    lin_reg.fit(x, y)
-    y_pred_linear = lin_reg.predict(x)
-
-    # Hồi quy bậc hai
-    poly_features = PolynomialFeatures(degree=2)
-    x_poly = poly_features.fit_transform(x)
-    poly_reg = LinearRegression()
-    poly_reg.fit(x_poly, y)
-    y_pred_poly = poly_reg.predict(x_poly)
-
-    # Vẽ biểu đồ
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.scatter(x, y, color='blue', label='Dữ liệu thực tế')
-    ax.plot(x, y_pred_linear, color='red', label='Multiple Linear Regression')
-    ax.plot(x, y_pred_poly, color='green', label='Polynomial Regression (bậc 2)')
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.legend()
-    st.pyplot(fig)
-    
-    X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
-    st.write(df.head(10))
-   
-
-    # Chọn mô hình    
-    model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
-
-    # Chọn tốc độ học (learning rate)
-    learning_rate = st.slider(
-    "Chọn tốc độ học:", 
-    min_value=0.001, 
-    max_value=0.01, 
-    value=0.001, 
-    step=0.0001, 
-    format="%.4f"  # Hiển thị 4 chữ số thập phân
-)
-
-
-    # Khi nhấn nút sẽ huấn luyện mô hình
-    if st.button("Huấn luyện mô hình"):
-        model, avg_mse, poly = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", learning_rate=learning_rate)
-
+    for fold, (train_idx, val_idx) in enumerate(kf.split(X_train, y_train)):
+        # Chuẩn bị dữ liệu
+        X_tr = X_train.iloc[train_idx]
+        y_tr = y_train.iloc[train_idx]
+        X_val = X_train.iloc[val_idx]
+        y_val = y_train.iloc[val_idx]
         
+        # Huấn luyện mô hình
+        if model_type == "Linear":
+            w = train_linear_regression(X_tr, y_tr, learning_rate)
+            X_val_b = np.c_[np.ones((len(X_val), 1)), X_val]
+            y_pred = X_val_b.dot(w)
+        else:
+            w, poly = train_poly_regression(X_tr, y_tr, learning_rate=learning_rate)
+            X_val_poly = poly.transform(X_val)
+            y_pred = X_val_poly.dot(w)
+        
+        # Tính MSE
+        fold_scores.append(mean_squared_error(y_val, y_pred))
     
+    # Đánh giá trên tập test
+    if model_type == "Linear":
+        w_final = train_linear_regression(X_train, y_train, learning_rate)
+        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+        y_test_pred = X_test_b.dot(w_final)
+    else:
+        w_final, poly = train_poly_regression(X_train, y_train, learning_rate=learning_rate)
+        X_test_poly = poly.transform(X_test)
+        y_test_pred = X_test_poly.dot(w_final)
     
+    test_mse = mean_squared_error(y_test, y_test_pred)
+    return np.mean(fold_scores), test_mse
+
+def bt_buoi3():
+    st.title("🏆 So sánh Multiple và Polynomial Regression")
+    
+    # Tiền xử lý dữ liệu
+    X_train, X_test, y_train, y_test, df = tien_xu_ly_du_lieu()
+    
+    # Hiển thị dữ liệu
+    st.subheader("📊 Dữ liệu đã xử lý")
+    st.dataframe(df.head())
+    
+    # Giao diện người dùng
+    model_type = st.radio("Chọn loại mô hình:", ["Linear", "Polynomial"])
+    learning_rate = st.slider("Tốc độ học", 0.0001, 0.01, 0.001, step=0.0001)
+    
+    if st.button("🏃♂️ Huấn luyện"):
+        with st.spinner("Đang huấn luyện..."):
+            avg_val_mse, test_mse = evaluate_model(
+                model_type, 
+                X_train, 
+                y_train,
+                X_test,
+                y_test,
+                learning_rate
+            )
+            
+        st.success(f"📊 MSE Validation trung bình: {avg_val_mse:.4f}")
+        st.success(f"🧪 MSE Test: {test_mse:.4f}")
+        
+        # Visualization
+        fig, ax = plt.subplots()
+        ax.bar(["Validation", "Test"], [avg_val_mse, test_mse], color=['blue', 'orange'])
+        ax.set_ylabel("MSE")
+        ax.set_title("So sánh hiệu suất mô hình")
+        st.pyplot(fig)
+
 if __name__ == "__main__":
     bt_buoi3()
