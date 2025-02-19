@@ -57,7 +57,7 @@ def tien_xu_ly_du_lieu():
 def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
     """Huấn luyện Hồi quy tuyến tính bội bằng Gradient Descent."""
     # Loại bỏ cột đầu tiên (giả sử đó là cột không cần thiết)
-    X_train = X_train.iloc[:, 1:] if isinstance(X_train, pd.DataFrame) else X_train[:, 1:]
+    X_train = X_train.iloc[:, 1:] if isinstance(X_train, pd.DataFrame) else X_train[:, 0:]
     st.write("X_train (sau khi loại bỏ cột đầu tiên):", X_train)
     m, n = X_train.shape
     X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
