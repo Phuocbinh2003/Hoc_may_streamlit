@@ -9,8 +9,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import mean_squared_error
 
-def tien_xu_ly_du_lieu():
-    df = pd.read_csv("buoi2/data.txt")
+def tien_xu_ly_du_lieu(df):
+    
 
     columns_to_drop = ["Cabin", "Ticket", "Name"]
     df.drop(columns=columns_to_drop, inplace=True)
@@ -314,8 +314,8 @@ def bt_buoi3():
     ax.set_ylabel("Y")
     ax.legend()
     st.pyplot(fig)
-    
-    df= tien_xu_ly_du_lieu()
+    df = pd.read_csv("buoi2/data.txt")
+    df= tien_xu_ly_du_lieu(df)
     st.write(df.head(10))
    
 
