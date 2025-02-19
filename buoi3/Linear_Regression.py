@@ -5,7 +5,92 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from scipy.stats import zscore
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 # Tiêu đề
+
+
+def tien_xu_ly_du_lieu():
+    df = pd.read_csv("data_buoi2.txt")
+
+    # Loại bỏ các cột không cần thiết
+    columns_to_drop = ["Cabin", "Ticket", "Name"]  # Cột không cần thiết
+    df.drop(columns=columns_to_drop, inplace=True)  # Loại bỏ cột
+    # Xử lý giá trị thiếu
+    df['Age'].fillna(df['Age'].mean(), inplace=True)
+    df['Fare'].fillna(df['Fare'].median(), inplace=True)
+    df.dropna(subset=['Embarked'], inplace=True)  # Xóa dòng nếu 'Embarked' bị thiếu
+
+    # Mã hóa giới tính: Male -> 1, Female -> 0
+    df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
+
+    # Mã hóa 'Embarked' bằng One-Hot Encoding
+    df['Embarked'] = df['Embarked'].map({'Q': 0, 'S': 1, 'C': 2})
+    
+
+    # Chuẩn hóa các giá trị số
+    scaler = StandardScaler()
+    df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
+
+    # Chia dữ liệu thành đầu vào (X) và nhãn (y)
+    X = df.drop(columns=['Survived'])
+    y = df['Survived']
+
+    # Chia tập train (70%), validation (15%), test (15%)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=42)
+
+    # 2️⃣ Dùng StratifiedKFold với mỗi fold chọn 15% làm validation
+    kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
+    return X_train, X_test, y_train, y_test, kf
+
+def train_multiple_linear_regression(X_train, y_train, X_valid, y_valid):
+    """ Huấn luyện mô hình hồi quy tuyến tính bội """
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    
+    # Dự đoán và đánh giá trên tập validation
+    y_pred = model.predict(X_valid)
+    mse = mean_squared_error(y_valid, y_pred)
+    
+    return model, mse
+
+def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
+    """ Huấn luyện mô hình hồi quy đa thức """
+    poly = PolynomialFeatures(degree=degree)
+    X_train_poly = poly.fit_transform(X_train)
+    X_valid_poly = poly.transform(X_valid)
+
+    model = LinearRegression()
+    model.fit(X_train_poly, y_train)
+
+    # Dự đoán và đánh giá trên tập validation
+    y_pred = model.predict(X_valid_poly)
+    mse = mean_squared_error(y_valid, y_pred)
+    
+    return model, mse
+def chon_mo_hinh(model_type="linear", degree=2):
+    """ Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức """
+    X_train_full, X_test, y_train_full, y_test, kf = tien_xu_ly_du_lieu()
+    
+    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
+        X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
+        y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
+        
+        print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
+        
+        if model_type == "linear":
+            model, mse = train_multiple_linear_regression(X_train, y_train, X_valid, y_valid)
+        elif model_type == "polynomial":
+            model, mse = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
+        else:
+            raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
+        
+        print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+
+    return model
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
     try:
@@ -202,5 +287,9 @@ def bt_buoi3():
     ax.set_ylabel("Y")
     ax.legend()
     st.pyplot(fig)
+    
+    chon_mo_hinh()
+    
+    
 if __name__ == "__main__":
     bt_buoi3()
