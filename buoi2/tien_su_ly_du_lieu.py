@@ -189,6 +189,7 @@ def hien_thi_ly_thuyet(df):
         ```
         """)
     df=drop(df)
+    st.dataframe(df.head())
     st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
         Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý để tránh ảnh hưởng đến mô hình.
