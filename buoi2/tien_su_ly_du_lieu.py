@@ -101,12 +101,8 @@ def tien_xu_ly_du_lieu():
             # Kiểm tra dữ liệu trùng lặp
             duplicate_count = df.duplicated().sum()
 
-            # Kiểm tra giá trị âm (chỉ hiển thị nếu > 0)
-            invalid_values = {
-                col: (df[col] < 0).sum() for col in df.select_dtypes(include=['number']).columns
-            }
-            invalid_values = {k: v for k, v in invalid_values.items() if v > 0}  # Bỏ giá trị âm = 0
-
+            
+            
             # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
             outlier_count = {
                 col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
@@ -117,7 +113,6 @@ def tien_xu_ly_du_lieu():
             error_report = pd.DataFrame({
                 'Cột': df.columns,
                 'Giá trị thiếu': missing_values,
-
                 'Outlier': [outlier_count.get(col, 0) for col in df.columns]
             })
 
