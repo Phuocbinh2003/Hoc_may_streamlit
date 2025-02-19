@@ -56,8 +56,8 @@ def phan_gioi_thieu():
     st.subheader("1️⃣ Loại bỏ các cột không cần thiết")
     st.write("""
         Một số cột trong dữ liệu có thể không ảnh hưởng đến kết quả dự đoán hoặc chứa quá nhiều giá trị thiếu. Chúng ta sẽ loại bỏ các cột như:
-        - **Cabin**: Cột này có quá nhiều giá trị bị thiếu.
-        - **Ticket**: Mã vé không mang nhiều thông tin hữu ích.
+        - **Cabin**: Cột này có quá nhiều giá trị bị thiếu 687/891 .
+        - **Ticket**: Mã vé không mang nhiều thông tin hữu ích và có 681/891 vé khác nhau.
         - **Name**:  Không cần thiết cho bài toán dự đoán sống sót.
         ```python
             columns_to_drop = ["Cabin", "Ticket", "Name"]  
@@ -72,10 +72,10 @@ def phan_gioi_thieu():
 
     st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
-        Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý để tránh ảnh hưởng đến mô hình.
-        - **Cột "Age"**: Điền giá trị trung bình vì đây là dữ liệu số.
-        - **Cột "Fare"**: Điền giá trị trung vị để giảm ảnh hưởng của ngoại lai.
-        - **Cột "Embarked"**:   Xóa các dòng bị thiếu vì số lượng ít.
+        Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý như điền vào nan bằng trung bình hoặc trung vị có thể xóa nếu số dòng dữ liệu thiếu ít ,để tránh ảnh hưởng đến mô hình.
+        - **Cột "Age"**: Có thể điền trung bình hoặc trung vị .
+        - **Cột "Fare"**: Có thể điền giá trị trung bình hoặc trung vị .
+        - **Cột "Embarked"**:   Xóa các dòng bị thiếu vì số lượng ít 2/891.
         ```python
             df["Age"].fillna(df["Age"].mean(), inplace=True)  # Điền giá trị trung bình cho "Age"
             df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị cho "Fare"
@@ -90,11 +90,11 @@ def phan_gioi_thieu():
     st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
     st.write("""
         Trong dữ liệu, có một số cột chứa giá trị dạng chữ (category). Ta cần chuyển đổi thành dạng số để mô hình có thể xử lý.
-        - **Cột "Sex"**: Chuyển thành 1 (Nam), 0 (Nữ).
-        - **Cột "Embarked"**:   Dùng One-Hot Encoding để tạo các cột mới cho từng giá trị ("S", "C", "Q").
+        - **Cột "Sex"**: Chuyển thành 1 (male), 0 (female).
+        - **Cột "Embarked"**:   Chuyển thành 1 (Q), 2 (S), 3 (C).
         ```python
             df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
-            df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  # One-Hot Encoding
+            df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  
 
 
         ```
@@ -106,6 +106,7 @@ def phan_gioi_thieu():
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
         Các giá trị số có thể có khoảng giá trị khác nhau, làm ảnh hưởng đến mô hình. Ta sẽ chuẩn hóa "Age" và "Fare" về cùng một thang đo bằng StandardScaler.
+        
         ```python
             scaler = StandardScaler()
             df[["Age", "Fare"]] = scaler.fit_transform(df[["Age", "Fare"]])
@@ -120,25 +121,39 @@ def phan_gioi_thieu():
 
     st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
     st.write("""
-        Dữ liệu được chia thành ba phần để đảm bảo mô hình tổng quát tốt:
-        - **70%**: để train mô hình.
-        - **15%**: để validation, dùng để điều chỉnh tham số.
-        - **15%"**:   để test, đánh giá hiệu suất thực tế.
-        ```python
-            # Chia dữ liệu theo tỷ lệ 70% và 30% (train - temp)
-            X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+    ### 📌 Chia tập dữ liệu
+    Dữ liệu được chia thành ba phần để đảm bảo mô hình tổng quát tốt:
+    - **70%**: để train mô hình.
+    - **15%**: để validation, dùng để điều chỉnh tham số.
+    - **15%**: để test, đánh giá hiệu suất thực tế.
 
-            # Chia tiếp 30% thành 15% validation và 15% test
-            X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    ```python
+    from sklearn.model_selection import train_test_split
 
-        ```
-        """)
+    # Chia dữ liệu theo tỷ lệ 85% (Train) - 15% (Test)
+    X_train_full, X_test, y_train_full, y_test = train_test_split(
+        X, y, test_size=0.15, stratify=y, random_state=42
+    )
+
+    # Chia tiếp 15% của Train để làm Validation (~12.75% của toàn bộ dữ liệu)
+    val_size = 0.15 / 0.85  
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train_full, y_train_full, test_size=val_size, stratify=y_train_full, random_state=42
+    )
+    ```
+    """)
+
     X = df.drop(columns=["Survived"])  # Biến đầu vào
     y = df["Survived"]  # Nhãn
-    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train_full, X_test, y_train_full, y_test = train_test_split(
+        X, y, test_size=0.15, stratify=y, random_state=42
+    )
 
     # Chia tiếp 30% thành 15% validation và 15% test
-    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    val_size = 0.15 / 0.85  
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train_full, y_train_full, test_size=val_size, stratify=y_train_full, random_state=42
+    )
 
     st.write("📌 Số lượng mẫu trong từng tập dữ liệu:")
     st.write(f"👉 Train: {X_train.shape[0]} mẫu")
