@@ -47,50 +47,41 @@ def tien_xu_ly_du_lieu():
     return X_train, X_test, y_train, y_test, kf
 
 def train_multiple_linear_regression(X_train, y_train, X_valid, y_valid):
-    """ Huấn luyện mô hình hồi quy tuyến tính bội """
     model = LinearRegression()
     model.fit(X_train, y_train)
-    
-    # Dự đoán và đánh giá trên tập validation
     y_pred = model.predict(X_valid)
     mse = mean_squared_error(y_valid, y_pred)
-    
     return model, mse
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
-    """ Huấn luyện mô hình hồi quy đa thức """
     poly = PolynomialFeatures(degree=degree)
     X_train_poly = poly.fit_transform(X_train)
     X_valid_poly = poly.transform(X_valid)
 
     model = LinearRegression()
     model.fit(X_train_poly, y_train)
-
-    # Dự đoán và đánh giá trên tập validation
     y_pred = model.predict(X_valid_poly)
     mse = mean_squared_error(y_valid, y_pred)
-    
     return model, mse
 def chon_mo_hinh(model_type="linear", degree=2):
-    """ Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức """
     X_train_full, X_test, y_train_full, y_test, kf = tien_xu_ly_du_lieu()
-    
+    mse_list = []
+
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
         X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
         y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
-        
-        print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
-        
+
         if model_type == "linear":
             model, mse = train_multiple_linear_regression(X_train, y_train, X_valid, y_valid)
         elif model_type == "polynomial":
             model, mse = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
-        
-        print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
-    return model
+        mse_list.append(mse)
+
+    avg_mse = np.mean(mse_list)
+    return model, avg_mse
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
     try:
