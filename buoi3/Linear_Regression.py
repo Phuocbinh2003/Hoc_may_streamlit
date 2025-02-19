@@ -312,7 +312,7 @@ def bt_buoi3():
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
         model, avg_mse = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", degree=degree)
-        st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+        
     
     
 if __name__ == "__main__":
