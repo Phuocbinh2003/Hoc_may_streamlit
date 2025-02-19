@@ -65,7 +65,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     return model, mse
 def chon_mo_hinh(model_type="linear", degree=2):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    X_train_full, X_test, y_train_full, y_test, kf,df = tien_xu_ly_du_lieu()
+    X_train_full, X_test, y_train_full, y_test, kf = tien_xu_ly_du_lieu()
     
     fold_mse = []  # Lưu MSE của từng fold để kiểm tra độ ổn định
 
@@ -95,10 +95,13 @@ def chon_mo_hinh(model_type="linear", degree=2):
     y_test_pred = final_model.predict(X_test)
     test_mse = mean_squared_error(y_test, y_test_pred)
 
-    print(f"\n✅ MSE trung bình trên tập validation: {np.mean(fold_mse):.4f}")
+    avg_mse = np.mean(fold_mse)  # Lấy trung bình MSE qua các folds
+
+    print(f"\n✅ MSE trung bình trên tập validation: {avg_mse:.4f}")
     print(f"🏆 MSE trên tập test: {test_mse:.4f}")
 
-    return final_model  # Trả về mô hình đã huấn luyện xong
+    return final_model, avg_mse  # Trả về mô hình và MSE trung bình
+
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
     try:
