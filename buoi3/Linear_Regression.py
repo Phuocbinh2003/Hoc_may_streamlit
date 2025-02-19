@@ -288,7 +288,7 @@ def bt_buoi3():
     ax.legend()
     st.pyplot(fig)
     
-    chon_mo_hinh()
+    chon_mo_hinh(model_type="linear", degree=2)
     
     
 if __name__ == "__main__":
