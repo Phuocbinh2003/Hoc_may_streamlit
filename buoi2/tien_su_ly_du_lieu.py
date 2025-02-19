@@ -5,77 +5,109 @@ from sklearn.model_selection import train_test_split
 from scipy.stats import zscore
 from PIL import Image
 def hien_thi_ly_thuyet():
-    st.title("📊 Xử lý Dữ liệu ")
-
-    st.subheader("1️⃣ Giới thiệu về Tiền xử lý Dữ liệu")
-    st.write("""
-    Tiền xử lý dữ liệu là một bước quan trọng trong phân tích dữ liệu và học máy. Nó giúp dữ liệu trở nên sạch và phù hợp hơn để sử dụng. 
-    Một số vấn đề phổ biến trong dữ liệu:
-    - **Giá trị rỗng** (NaN, None)
-    - **Định dạng không đồng nhất** (chuỗi, số, ngày tháng)
-    - **Dữ liệu lỗi** (giá trị âm, không hợp lệ)
-    - **Dữ liệu trùng lặp**
-    """)
-
-    st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
-    st.image("buoi2/img1.png", caption="Làm sạch dữ liệu", use_container_width =True)
-
-
-    st.subheader("1️⃣ Xử lý giá trị rỗng")
-    st.write("""
-    Dữ liệu thường có những ô bị thiếu thông tin (NaN), có thể xử lý theo nhiều cách:
-    - **Xóa dòng/cột chứa giá trị rỗng**: Dùng `dropna()`
-    - **Điền giá trị mặc định**: Dùng `fillna()`
-    - **Dùng trung bình, trung vị, hoặc giá trị phổ biến nhất**:  
-      ```python
-      df['column'].fillna(df['column'].mean())
-      ```
-    """)
-
-    st.subheader("2️⃣ Chuyển đổi kiểu dữ liệu")
-    st.write("""
-    Một số cột có thể cần chuyển đổi kiểu dữ liệu:
-    - **Chuyển cột số thành dạng phân loại**:  
-      ```python
-      df['Pclass'] = df['Pclass'].astype('category')
-      ```
-    - **Mã hóa biến phân loại (ví dụ: giới tính)**:  
-      ```python
-      df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
-      ```
-    """)
-
-    st.subheader("3️⃣ Chuẩn hóa dữ liệu")
-    st.write("""
-    Để đảm bảo dữ liệu có cùng khoảng giá trị, ta chuẩn hóa bằng StandardScaler:
-    ```python
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    df[['Fare']] = scaler.fit_transform(df[['Fare']])
-    ```
-    """)
+    uploaded_file = "buoi2/data.txt"
+    try:
+        df = pd.read_csv(uploaded_file, delimiter=",")
+    except FileNotFoundError:
+        st.error("❌ Không tìm thấy tệp dữ liệu. Vui lòng kiểm tra lại đường dẫn.")
+        st.stop()
     
+    st.title("🔍 Tiền xử lý dữ liệu")
 
-    st.subheader("4️⃣ Xử lý dữ liệu trùng lặp")
+    # Hiển thị dữ liệu gốc
+    st.subheader("📌 10 dòng đầu của dữ liệu gốc")
+    st.write(df.head(10))
+    st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
+    st.subheader("1️⃣ Loại bỏ các cột không cần thiết")
     st.write("""
-    Dữ liệu có thể bị trùng, gây ảnh hưởng đến kết quả phân tích:
-    - **Kiểm tra dữ liệu trùng lặp**:  
-      ```python
-      df.duplicated().sum()
-      ```
-    - **Xóa dữ liệu trùng lặp**:  
-      ```python
-      df = df.drop_duplicates()
-      ```
-    """)
+        Một số cột trong dữ liệu có thể không ảnh hưởng đến kết quả dự đoán hoặc chứa quá nhiều giá trị thiếu. Chúng ta sẽ loại bỏ các cột như:
+        - **Cabin**: Cột này có quá nhiều giá trị bị thiếu.
+        - **Ticket**: Mã vé không mang nhiều thông tin hữu ích.
+        - **Name**:  Không cần thiết cho bài toán dự đoán sống sót.
+        ```python
+            columns_to_drop = ["Cabin", "Ticket", "Name"]  
+            df.drop(columns=columns_to_drop, inplace=True)
+        ```
+        """)
+    columns_to_drop = ["Cabin", "Ticket", "Name"]  # Cột không cần thiết
+    df.drop(columns=columns_to_drop, inplace=True)  # Loại bỏ cột
 
-    st.subheader("5️⃣ Chia dữ liệu thành Train - Validation - Test")
+    st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
-    Dữ liệu được chia thành:
-    - **Tập Train (70%)**: Dùng để huấn luyện mô hình.
-    - **Tập Validation (15%)**: Dùng để điều chỉnh mô hình.
-    - **Tập Test (15%)**: Kiểm tra mô hình với dữ liệu mới.
-    """)
+        Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý để tránh ảnh hưởng đến mô hình.
+        - **Cột "Age"**: Điền giá trị trung bình vì đây là dữ liệu số.
+        - **Cột "Fare"**: Điền giá trị trung vị để giảm ảnh hưởng của ngoại lai.
+        - **Cột "Embarked"**:   Xóa các dòng bị thiếu vì số lượng ít.
+        ```python
+            df["Age"].fillna(df["Age"].mean(), inplace=True)  # Điền giá trị trung bình cho "Age"
+            df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị cho "Fare"
+            df.dropna(subset=["Embarked"], inplace=True)  # Xóa dòng thiếu "Embarked"
+
+        ```
+        """)
+    df["Age"].fillna(df["Age"].mean(), inplace=True)  # Điền giá trị trung bình
+    df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị
+    df.dropna(subset=["Embarked"], inplace=True)  # Xóa dòng thiếu Embarked
+
+    st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
+    st.write("""
+        Trong dữ liệu, có một số cột chứa giá trị dạng chữ (category). Ta cần chuyển đổi thành dạng số để mô hình có thể xử lý.
+        - **Cột "Sex"**: Chuyển thành 1 (Nam), 0 (Nữ).
+        - **Cột "Embarked"**:   Dùng One-Hot Encoding để tạo các cột mới cho từng giá trị ("S", "C", "Q").
+        ```python
+            df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
+            df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  # One-Hot Encoding
+
+
+        ```
+        """)
+    df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
+    df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  # One-Hot Encoding
+
+
+    st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
+    st.write("""
+        Các giá trị số có thể có khoảng giá trị khác nhau, làm ảnh hưởng đến mô hình. Ta sẽ chuẩn hóa "Age" và "Fare" về cùng một thang đo bằng StandardScaler.
+        ```python
+            scaler = StandardScaler()
+            df[["Age", "Fare"]] = scaler.fit_transform(df[["Age", "Fare"]])
+
+        ```
+        """)
+    scaler = StandardScaler()
+    df[["Age", "Fare"]] = scaler.fit_transform(df[["Age", "Fare"]])
+
+    st.write("Dữ liệu sau khi xử lý:")
+    st.write(df.head(10))
+
+    st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
+    st.write("""
+        Dữ liệu được chia thành ba phần để đảm bảo mô hình tổng quát tốt:
+        - **70%**: để train mô hình.
+        - **15%**: để validation, dùng để điều chỉnh tham số.
+        - **15%"**:   để test, đánh giá hiệu suất thực tế.
+        ```python
+            # Chia dữ liệu theo tỷ lệ 70% và 30% (train - temp)
+            X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+
+            # Chia tiếp 30% thành 15% validation và 15% test
+            X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+
+        ```
+        """)
+    X = df.drop(columns=["Survived"])  # Biến đầu vào
+    y = df["Survived"]  # Nhãn
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    # Chia tiếp 30% thành 15% validation và 15% test
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+
+    st.write("📌 Số lượng mẫu trong từng tập dữ liệu:")
+    st.write(f"👉 Train: {X_train.shape[0]} mẫu")
+    st.write(f"👉 Validation: {X_val.shape[0]} mẫu")
+    st.write(f"👉 Test: {X_test.shape[0]} mẫu")
+    
+    
 
 def tien_xu_ly_du_lieu():
     # Upload file
