@@ -30,7 +30,7 @@ def tien_xu_ly_du_lieu():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=42)
     
-    # Sửa lỗi ở đây: Thêm shuffle=True cho StratifiedKFold
+    # Sửa lỗi ở đây: Thêm shuffle=True cho StratifiedKFol
     kf = StratifiedKFold(n_splits=int(1/0.15), shuffle=True, random_state=42)
     
     return X_train, X_test, y_train, y_test, kf, df
