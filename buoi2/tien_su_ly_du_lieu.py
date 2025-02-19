@@ -188,7 +188,7 @@ def hien_thi_ly_thuyet(df):
             df.drop(columns=columns_to_drop, inplace=True)
         ```
         """)
-    drop(df)
+    df=drop(df)
     st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
         Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý để tránh ảnh hưởng đến mô hình.
@@ -202,7 +202,7 @@ def hien_thi_ly_thuyet(df):
 
         ```
         """)
-    xu_ly_gia_tri_thieu(df)
+    df=xu_ly_gia_tri_thieu(df)
 
     st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
     st.write("""
@@ -217,7 +217,7 @@ def hien_thi_ly_thuyet(df):
         ```
         """)
 
-    chuyen_doi_kieu_du_lieu(df)
+    df=chuyen_doi_kieu_du_lieu(df)
 
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
@@ -230,7 +230,7 @@ def hien_thi_ly_thuyet(df):
         """)
 
     
-    chuan_hoa_du_lieu(df)
+    df=chuan_hoa_du_lieu(df)
     
     st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
     st.write("""
@@ -248,7 +248,7 @@ def hien_thi_ly_thuyet(df):
         ```
         """)
        
-    train_test_size(df)
+    df=train_test_size(df)
     
 
 def tien_xu_ly_du_lieu():
