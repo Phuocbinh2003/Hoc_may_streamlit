@@ -59,7 +59,8 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
 
     # Kiểm tra và chuyển đổi y_train thành NumPy array
     if isinstance(y_train, pd.Series):  
-        y_train = y_train.to_numpy().reshape(-1, 1)  
+        y_train = y_train.reshape(-1, 1)
+
     else:  
         y_train = y_train.reshape(-1, 1)
 
