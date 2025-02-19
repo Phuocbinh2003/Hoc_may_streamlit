@@ -122,7 +122,8 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
 
     # Thêm cột bias vào ma trận đặc trưng của tập kiểm tra
     X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly]
-    
+    st.write(X_valid_b.shape)
+    st.write(X_valid_b)
     # Dự đoán kết quả cho tập kiểm tra
     y_pred = X_valid_b.dot(w)
 
