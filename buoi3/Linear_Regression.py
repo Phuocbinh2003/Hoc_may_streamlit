@@ -57,14 +57,18 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
     X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
     w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
 
-    # Chuyển y_train thành mảng NumPy và reshape
-    y_train = y_train.to_numpy().reshape(-1, 1)
+    # Kiểm tra và chuyển đổi y_train thành NumPy array
+    if isinstance(y_train, pd.Series):  
+        y_train = y_train.to_numpy().reshape(-1, 1)  
+    else:  
+        y_train = y_train.reshape(-1, 1)
 
     for iteration in range(n_iterations):
         gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  # Tính gradient
         w -= learning_rate * gradients  # Cập nhật trọng số
 
     return w  # Trả về trọng số sau khi huấn luyện
+
 
 
 
