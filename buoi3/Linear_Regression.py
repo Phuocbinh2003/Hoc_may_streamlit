@@ -91,7 +91,7 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
 
     m, n = X_train_poly.shape
     st.write("X_train_poly shape:", X_train_poly.shape)
-    
+    st.write("X_train_poly:", X_train_poly)
     # Thêm bias vào X_train_poly
     X_b = np.c_[np.ones((m, 1)), X_train_poly]
     
