@@ -110,25 +110,32 @@ def chuyen_doi_kieu_du_lieu(df):
 
     return df
 def chuan_hoa_du_lieu(df):
-    st.subheader("Chuẩn hóa dữ liệu với StandardScaler")
+    st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
 
     # Lọc các cột số để chuẩn hóa
     numerical_cols = df.select_dtypes(include=['number']).columns.tolist()
-    
+
     if not numerical_cols:
-        st.success("Không có thuộc tính dạng số cần chuẩn hóa!")
+        st.success("✅ Không có thuộc tính dạng số cần chuẩn hóa!")
         return df
 
     # Chọn cột số để chuẩn hóa
-    selected_cols = st.multiselect("Chọn các cột số để chuẩn hóa", numerical_cols)
+    selected_cols = st.multiselect("📌 Chọn các cột số để chuẩn hóa:", numerical_cols)
 
-    if selected_cols:
-        scaler = StandardScaler()
-        df[selected_cols] = scaler.fit_transform(df[selected_cols])
-        st.success(f"Đã chuẩn hóa các cột: {selected_cols}")
+    # Nút nhấn để kích hoạt chuẩn hóa
+    if st.button("🚀 Thực hiện chuẩn hóa"):
+        if selected_cols:
+            scaler = StandardScaler()
+            df[selected_cols] = scaler.fit_transform(df[selected_cols])
+            st.success(f"✅ Đã chuẩn hóa các cột: {selected_cols}")
+
+            # Hiển thị dữ liệu sau khi chuẩn hóa
+            st.write("### 🔍 Dữ liệu sau khi chuẩn hóa:")
+            st.dataframe(df.head())
+        else:
+            st.warning("⚠️ Vui lòng chọn ít nhất một cột để chuẩn hóa!")
 
     return df
-
 
 def hien_thi_ly_thuyet(df):
     st.subheader("📌 10 dòng đầu của dữ liệu gốc")
