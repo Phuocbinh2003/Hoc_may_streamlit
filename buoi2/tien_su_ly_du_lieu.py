@@ -71,33 +71,42 @@ def xu_ly_gia_tri_thieu(df):
 
 
 def chuyen_doi_kieu_du_lieu(df):
-    st.subheader("Chuyển đổi kiểu dữ liệu")
+    st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
-    # Chỉ lấy các cột kiểu object (chuỗi) để xử lý
+    # Chỉ lấy các cột kiểu object (chuỗi)
     categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
 
     if not categorical_cols:
-        st.success("Không có thuộc tính dạng chuỗi cần chuyển đổi!")
+        st.success("✅ Không có thuộc tính dạng chuỗi cần chuyển đổi!")
         return df
 
-    for col in categorical_cols:
-        unique_values = df[col].unique()
-        num_unique = len(unique_values)
+    # Chọn một cột để xử lý
+    selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
 
-        st.write(f"**Cột `{col}` có {num_unique} giá trị duy nhất:** {unique_values}")
+    # Lấy giá trị duy nhất trong cột đã chọn
+    unique_values = df[selected_col].unique()
+    num_unique = len(unique_values)
 
-        if num_unique > 10:
-            st.warning(f"Cột `{col}` có hơn 10 giá trị duy nhất, có thể không phù hợp để chuyển đổi trực tiếp.")
-        else:
-            mapping_dict = {}
-            for val in unique_values:
-                new_val = st.text_input(f"Nhập giá trị thay thế cho `{val}` trong cột `{col}`", key=f"{col}_{val}")
-                mapping_dict[val] = new_val
+    st.write(f"**Cột `{selected_col}` có {num_unique} giá trị duy nhất:** {unique_values}")
 
-            # Chuyển đổi cột theo giá trị nhập vào
-            df[col] = df[col].map(lambda x: mapping_dict.get(x, x))
+    if num_unique > 10:
+        st.warning(f"⚠️ Cột `{selected_col}` có hơn 10 giá trị duy nhất, có thể không phù hợp để chuyển đổi trực tiếp.")
+        return df
 
-            st.success(f"Đã chuyển đổi cột `{col}` với các giá trị: {mapping_dict}")
+    # Nhập giá trị thay thế
+    mapping_dict = {}
+    for val in unique_values:
+        new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
+        mapping_dict[val] = new_val
+
+    # Thực hiện chuyển đổi khi nhấn nút
+    if st.button("🚀 Chuyển đổi dữ liệu"):
+        df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
+        st.success(f"✅ Đã chuyển đổi cột `{selected_col}` với các giá trị: {mapping_dict}")
+
+        # Hiển thị dữ liệu sau khi chuyển đổi
+        st.write("### 🔍 Dữ liệu sau khi chuyển đổi:")
+        st.dataframe(df.head())
 
     return df
 def chuan_hoa_du_lieu(df):
