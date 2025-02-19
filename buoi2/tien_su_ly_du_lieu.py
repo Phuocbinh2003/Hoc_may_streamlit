@@ -6,66 +6,78 @@ from scipy.stats import zscore
 from PIL import Image
 
 def drop(df):
-    columns_to_drop = st.multiselect("Chọn cột muốn xóa", df.columns.tolist())
+    st.subheader("🗑️ Xóa cột dữ liệu")
+    
+    if "df" not in st.session_state:
+        st.session_state.df = df  # Lưu vào session_state nếu chưa có
 
-    if st.button("🗑️ Xóa cột đã chọn"):
+    df = st.session_state.df
+    columns_to_drop = st.multiselect("📌 Chọn cột muốn xóa:", df.columns.tolist())
+
+    if st.button("🚀 Xóa cột đã chọn"):
         if columns_to_drop:
-            df.drop(columns=columns_to_drop, inplace=True)
-            st.success("✅ Đã xóa cột thành công!")
-            st.write("### Dữ liệu sau khi xóa cột:")
+            df = df.drop(columns=columns_to_drop)  # Tạo bản sao thay vì inplace=True
+            st.session_state.df = df  # Cập nhật session_state
+            st.success(f"✅ Đã xóa cột: {', '.join(columns_to_drop)}")
             st.dataframe(df.head())
         else:
-            st.warning("⚠️ Vui lòng chọn ít nhất một cột để xóa.")
+            st.warning("⚠️ Vui lòng chọn ít nhất một cột để xóa!")
 
     return df
 def train_test_size(df):
+    st.subheader("📊 Chia dữ liệu Train - Validation - Test")
+
     train_size = st.slider("Chọn % dữ liệu Train", 50, 90, 70)
     val_size = st.slider("Chọn % dữ liệu Validation", 0, 40, 15)
     test_size = 100 - train_size - val_size
-    st.write(f"Tỷ lệ phân chia: Train={train_size}%, Validation={val_size}%, Test={test_size}%")
-    # Chia dữ liệu: 70% train, 15% validation, 15% test
-    train_data, temp_data = train_test_split(df, test_size=(100 - train_size)/100, random_state=42)
-    val_data, test_data = train_test_split(temp_data, test_size=test_size/(test_size + val_size), random_state=42)
-    st.subheader("📊 Số lượng mẫu trong từng tập dữ liệu")
+
+    st.write(f"📌 **Tỷ lệ phân chia:** Train={train_size}%, Validation={val_size}%, Test={test_size}%")
+
+    # Chia dữ liệu
+    train_df, temp_df = train_test_split(df, test_size=(100 - train_size) / 100, random_state=42)
+    val_df, test_df = train_test_split(temp_df, test_size=test_size / (test_size + val_size), random_state=42)
+
+    st.session_state.train_df = train_df
+    st.session_state.val_df = val_df
+    st.session_state.test_df = test_df
+
+    # Hiển thị thông tin số lượng mẫu
     summary_df = pd.DataFrame({
         "Tập dữ liệu": ["Train", "Validation", "Test"],
         "Số lượng mẫu": [train_df.shape[0], val_df.shape[0], test_df.shape[0]]
     })
     st.table(summary_df)
+
+    
 def xu_ly_gia_tri_thieu(df):
-    st.dataframe(df.head())
     st.subheader("⚡ Xử lý giá trị thiếu")
 
-    # Lấy danh sách các cột có giá trị thiếu
-    missing_cols = df.columns[df.isnull().any()].tolist()
+    if "df" not in st.session_state:
+        st.session_state.df = df.copy()
 
+    df = st.session_state.df
+
+    # Tìm cột có giá trị thiếu
+    missing_cols = df.columns[df.isnull().any()].tolist()
     if not missing_cols:
         st.success("✅ Dữ liệu không có giá trị thiếu!")
         return df
 
-    # Chọn cột chứa giá trị thiếu
     selected_col = st.selectbox("📌 Chọn cột chứa giá trị thiếu:", missing_cols)
+    method = st.radio("🔧 Chọn phương pháp xử lý:", ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
 
-    # Chọn phương pháp xử lý
-    method = st.radio("🔧 Chọn phương pháp xử lý:", 
-                      ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
-
-    # Nút xử lý
     if st.button("🚀 Xử lý giá trị thiếu"):
         if method == "Thay thế bằng Mean":
-            df[selected_col].fillna(df[selected_col].mean(), inplace=True)
-            st.success(f"✅ Đã thay thế giá trị thiếu ở cột **{selected_col}** bằng Mean")
+            df[selected_col] = df[selected_col].fillna(df[selected_col].mean())
         elif method == "Thay thế bằng Median":
-            df[selected_col].fillna(df[selected_col].median(), inplace=True)
-            st.success(f"✅ Đã thay thế giá trị thiếu ở cột **{selected_col}** bằng Median")
+            df[selected_col] = df[selected_col].fillna(df[selected_col].median())
         elif method == "Xóa giá trị thiếu":
-            df.dropna(subset=[selected_col], inplace=True)
-            st.success(f"✅ Đã xóa các dòng có giá trị thiếu trong cột **{selected_col}**")
+            df = df.dropna(subset=[selected_col])
 
-        # Hiển thị dữ liệu sau xử lý
-        st.write("### 🔍 Dữ liệu sau xử lý:")
-        st.dataframe(df.head())
+        st.session_state.df = df
+        st.success(f"✅ Đã xử lý giá trị thiếu trong cột `{selected_col}`")
 
+    st.dataframe(df.head())
     return df
 
 
@@ -74,68 +86,44 @@ def xu_ly_gia_tri_thieu(df):
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
-    # Chỉ lấy các cột kiểu object (chuỗi)
     categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
-
     if not categorical_cols:
-        st.success("✅ Không có thuộc tính dạng chuỗi cần chuyển đổi!")
+        st.success("✅ Không có cột dạng chuỗi cần chuyển đổi!")
         return df
 
-    # Chọn một cột để xử lý
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
-
-    # Lấy giá trị duy nhất trong cột đã chọn
     unique_values = df[selected_col].unique()
-    num_unique = len(unique_values)
 
-    st.write(f"**Cột `{selected_col}` có {num_unique} giá trị duy nhất")
-
-    if num_unique > 10:
-        st.warning(f"⚠️ Cột `{selected_col}` có hơn 10 giá trị duy nhất, có thể không phù hợp để chuyển đổi trực tiếp.")
-        return df
-
-    # Nhập giá trị thay thế
     mapping_dict = {}
     for val in unique_values:
         new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
         mapping_dict[val] = new_val
 
-    # Thực hiện chuyển đổi khi nhấn nút
     if st.button("🚀 Chuyển đổi dữ liệu"):
         df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
-        st.success(f"✅ Đã chuyển đổi cột `{selected_col}` với các giá trị: {mapping_dict}")
+        st.session_state.df = df
+        st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
 
-        # Hiển thị dữ liệu sau khi chuyển đổi
-        st.write("### 🔍 Dữ liệu sau khi chuyển đổi:")
-        st.dataframe(df.head())
-
+    st.dataframe(df.head())
     return df
 def chuan_hoa_du_lieu(df):
     st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
 
-    # Lọc các cột số để chuẩn hóa
     numerical_cols = df.select_dtypes(include=['number']).columns.tolist()
-
     if not numerical_cols:
         st.success("✅ Không có thuộc tính dạng số cần chuẩn hóa!")
         return df
 
-    # Chọn cột số để chuẩn hóa
     selected_cols = st.multiselect("📌 Chọn các cột số để chuẩn hóa:", numerical_cols)
 
-    # Nút nhấn để kích hoạt chuẩn hóa
     if st.button("🚀 Thực hiện chuẩn hóa"):
         if selected_cols:
             scaler = StandardScaler()
             df[selected_cols] = scaler.fit_transform(df[selected_cols])
-            st.success(f"✅ Đã chuẩn hóa các cột: {selected_cols}")
+            st.session_state.df = df
+            st.success(f"✅ Đã chuẩn hóa các cột: {', '.join(selected_cols)}")
 
-            # Hiển thị dữ liệu sau khi chuẩn hóa
-            st.write("### 🔍 Dữ liệu sau khi chuẩn hóa:")
-            st.dataframe(df.head())
-        else:
-            st.warning("⚠️ Vui lòng chọn ít nhất một cột để chuẩn hóa!")
-
+    st.dataframe(df.head())
     return df
 
 def hien_thi_ly_thuyet(df):
