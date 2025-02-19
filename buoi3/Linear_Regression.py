@@ -83,7 +83,11 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     poly = PolynomialFeatures(degree=degree)
 
     if isinstance(X_train, pd.DataFrame):
-        X_train = X_train.to_numpy()
+        X_train = X_train.loc[:, X_train.columns.notna()].dropna(axis=1).to_numpy()  # Loại bỏ các cột có tên trống
+
+    # Xử lý NaN bằng cách điền giá trị trung bình
+    X_train = np.nan_to_num(X_train, nan=np.nanmean(X_train))
+    y_train = np.nan_to_num(y_train, nan=np.nanmean(y_train))
 
     m = X_train.shape[0]
     X_train_poly = poly.fit_transform(X_train)
@@ -103,6 +107,17 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     degree = 2  
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
+    
+    # Loại bỏ các cột có tên trống
+    X_train_full = X_train_full.loc[:, X_train_full.columns.notna()].dropna(axis=1)
+    X_test = X_test.loc[:, X_test.columns.notna()].dropna(axis=1)
+    
+    # Xử lý NaN trên toàn bộ dữ liệu
+    X_train_full = X_train_full.fillna(X_train_full.mean())
+    X_test = X_test.fillna(X_test.mean())
+    y_train_full = y_train_full.fillna(y_train_full.mean())
+    y_test = y_test.fillna(y_test.mean())
+    
     fold_mse = []
     poly = None  
 
@@ -149,6 +164,7 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
 
     return w_final, avg_mse, poly
+
 
 
 
