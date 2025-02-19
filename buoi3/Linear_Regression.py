@@ -84,12 +84,12 @@ def chon_mo_hinh(model_type="linear", degree=2, learning_rate=0.01, n_iterations
         if model_type == "linear":
             w = train_multiple_linear_regression(X_train, y_train, learning_rate, n_iterations)
             X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
-            y_valid_pred = X_valid_b.dot(w)
+            y_valid_pred = X_valid_b.dot(w).flatten()
         elif model_type == "polynomial":
             w, poly = train_polynomial_regression(X_train, y_train, degree, learning_rate, n_iterations)
             X_valid_poly = poly.transform(X_valid)
             X_valid_poly_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
-            y_valid_pred = X_valid_poly_b.dot(w)
+            y_valid_pred = X_valid_poly_b.dot(w).flatten()
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
         
@@ -101,12 +101,12 @@ def chon_mo_hinh(model_type="linear", degree=2, learning_rate=0.01, n_iterations
     if model_type == "linear":
         final_w = train_multiple_linear_regression(X_train_full, y_train_full, learning_rate, n_iterations)
         X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
-        y_test_pred = X_test_b.dot(final_w)
+        y_test_pred = X_test_b.dot(final_w).flatten()
     else:
         final_w, poly = train_polynomial_regression(X_train_full, y_train_full, degree, learning_rate, n_iterations)
         X_test_poly = poly.transform(X_test)
         X_test_poly_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
-        y_test_pred = X_test_poly_b.dot(final_w)
+        y_test_pred = X_test_poly_b.dot(final_w).flatten()
     
     test_mse = mean_squared_error(y_test, y_test_pred)
     avg_mse = np.mean(fold_mse)
