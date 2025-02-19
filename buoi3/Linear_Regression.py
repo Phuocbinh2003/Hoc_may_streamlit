@@ -320,9 +320,11 @@ def bt_buoi3():
     
     X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
     st.write(df.head(10))
-    st.write(X_train_full.head(10))
-    st.write(X_test.head(10))
-    
+   
+
+    st.write("Shape của X_train_full:", X_train_full.shape)
+    st.write("Kiểu dữ liệu:", type(X_train_full))
+        
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
     degree = 2
