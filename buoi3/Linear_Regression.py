@@ -61,7 +61,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
-def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
+def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=1000):
     """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
     
     m, n = X_train.shape
