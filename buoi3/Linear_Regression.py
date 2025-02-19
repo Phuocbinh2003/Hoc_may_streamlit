@@ -121,7 +121,8 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
             y_valid_pred = X_valid_b.dot(w)
         elif model_type == "polynomial":
             w, poly = train_polynomial_regression(X_train, y_train, degree=degree, learning_rate=learning_rate)
-            X_valid_poly = np.c_[np.ones((X_valid.shape[0], 1)), poly.transform(X_valid)]
+            X_valid_poly = poly.transform(X_valid)  # Không cần thêm cột 1s, vì fit_transform đã lo phần này
+
             y_valid_pred = X_valid_poly.dot(w)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
@@ -139,7 +140,8 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
         y_test_pred = X_test_b.dot(w_final)
     else:
         w_final, poly = train_polynomial_regression(X_train_full, y_train_full, degree=degree, learning_rate=learning_rate)
-        X_test_poly = np.c_[np.ones((X_test.shape[0], 1)), poly.transform(X_test)]
+        X_test_poly = poly.transform(X_test)
+
         y_test_pred = X_test_poly.dot(w_final)
 
     test_mse = mean_squared_error(y_test, y_test_pred)
