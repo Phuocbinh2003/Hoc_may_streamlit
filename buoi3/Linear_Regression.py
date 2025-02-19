@@ -44,15 +44,7 @@ def tien_xu_ly_du_lieu():
 
     # 2️⃣ Dùng StratifiedKFold với mỗi fold chọn 15% làm validation
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
-    X_train = X_train.loc[:, ~X_train.columns.str.contains('^Unnamed')].reset_index(drop=True)
-
-
-
-    st.write(X_train.columns)
-    st.write(X_train.head(10))
-
-    # st.write(y_train.isnull().sum())
-    # st.write(df.isnull().sum())
+    
     return X_train, X_test, y_train, y_test, kf ,df
 
 # def train_multiple_linear_regression(X_train, y_train):
@@ -63,6 +55,7 @@ def tien_xu_ly_du_lieu():
 def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
     """Huấn luyện Hồi quy tuyến tính bội bằng Gradient Descent."""
     m, n = X_train.shape
+    st.write(m,n)
     X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
     w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
 
