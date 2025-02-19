@@ -85,10 +85,11 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
-    
+    X_train2 = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
+    st.write("X_train2 shape:", X_train2)
     # Chuyển đổi tập huấn luyện thành dạng đa thức
-    X_train_poly = poly.fit_transform(X_train)
-    st.write("X_train_poly shape:", X_train)
+    X_train_poly = poly.fit_transform(X_train2)
+    
     m, n = X_train_poly.shape
     
     # Thêm bias (nếu chưa có)
