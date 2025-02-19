@@ -49,7 +49,8 @@ def phan_gioi_thieu():
     st.table(error_report)
 
                 # Hiển thị số lượng dữ liệu trùng lặp
-    st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")           
+    st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")      
+    st.write(df.columns())     
     
     st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
     st.subheader("1️⃣ Loại bỏ các cột không cần thiết")
