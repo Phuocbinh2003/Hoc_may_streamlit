@@ -46,7 +46,7 @@ def tien_xu_ly_du_lieu():
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
     st.write(X_train.columns)
     st.write(X_test.columns)
-    st.write(y_train.columns)
+    st.write(y_train.head(10))
     st.write(df.columns)
 
     # st.write(y_train.isnull().sum())
