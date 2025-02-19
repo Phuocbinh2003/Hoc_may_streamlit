@@ -314,8 +314,8 @@ def bt_buoi3():
     ax.set_ylabel("Y")
     ax.legend()
     st.pyplot(fig)
-    df = pd.read_csv("buoi2/data.txt")
-    df= tien_xu_ly_du_lieu(df)
+    df1 = pd.read_csv("buoi2/data.txt")
+    df= tien_xu_ly_du_lieu(df1)
     st.write(df.head(10))
    
 
