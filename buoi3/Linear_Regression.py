@@ -146,10 +146,10 @@ def bt_buoi3():
 
                 # Tạo báo cáo lỗi
     error_report = pd.DataFrame({
-    'Cột': df.select_dtypes(include=['number']).columns,
-    'Giá trị thiếu': missing_values,
-    'Outlier': [outlier_count.get(col, 0) for col in df.select_dtypes(include=['number']).columns]
-    })
+   'Cột': df.select_dtypes(include=['number']).columns,
+   'Giá trị thiếu': missing_values,
+   'Outlier': [outlier_count.get(col, 0) for col in df.select_dtypes(include=['number']).columns]
+})
 
                 # Hiển thị báo cáo lỗ
     st.table(error_report)
