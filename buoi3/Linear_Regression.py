@@ -25,9 +25,14 @@ def tien_xu_ly_du_lieu():
     scaler = StandardScaler()
     df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
 
+    return df
+
+def test_train_size():
+    df=tien_xu_ly_du_lieu()
     X = df.drop(columns=['Survived'])
     y = df['Survived']
 
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=42)
     
     # Sửa lỗi ở đây: Thêm shuffle=True cho StratifiedKFol
@@ -302,18 +307,24 @@ def bt_buoi3():
     st.write(df.head(10))
    
 
+    
+    train_ratio = st.slider("Chọn tỷ lệ Train (%)", min_value=50, max_value=90, value=70, step=1)
+    test_ratio = 100 - train_ratio  # Test tự động tính toán
+
+    # Thanh kéo chọn tỷ lệ Validation trên Train
+    val_ratio_within_train = st.slider("Chọn tỷ lệ Validation trong Train (%)", min_value=0, max_value=50, value=30, step=1)
+
+    # Tính toán lại tỷ lệ Validation trên toàn bộ dataset
+    val_ratio = (val_ratio_within_train / 100) * train_ratio
+    actual_train_ratio = train_ratio - val_ratio
+
+    # Hiển thị kết quả
+    st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
+
     # Chọn mô hình    
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
-    # Chọn tốc độ học (learning rate)
-#     learning_rate = st.slider(
-#     "Chọn tốc độ học:", 
-#     min_value=0.001, 
-#     max_value=0.01, 
-#     value=0.001, 
-#     step=0.0001, 
-#     format="%.4f"  # Hiển thị 4 chữ số thập phân
-# )
+
 
 
     # Khi nhấn nút sẽ huấn luyện mô hình
