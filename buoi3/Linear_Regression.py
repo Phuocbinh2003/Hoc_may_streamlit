@@ -90,14 +90,15 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     X_train_poly = poly.fit_transform(X_train)
 
     m, n = X_train_poly.shape
-    st.write("X_train_poly shape:", X_train_poly.shape)
-    st.write("X_train_poly:", X_train_poly)
-    # Thêm bias vào X_train_poly
-    X_b = np.c_[np.ones((m, 1)), X_train_poly]
     
+    # Thêm bias vào X_train_poly
+    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
+    st.write("X_b shape:", X_b.shape)
+    st.write("X_b:", X_b)
     # Khởi tạo trọng số ngẫu nhiên
     w = np.random.randn(X_b.shape[1], 1)  
-
+    st.write("w shape:", w.shape)
+    st.write("w:", w)
     # Chuyển đổi y_train về dạng (m,1)
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
 
