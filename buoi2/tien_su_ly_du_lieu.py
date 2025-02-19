@@ -107,6 +107,39 @@ def chuan_hoa_du_lieu(df):
 
 
 def hien_thi_ly_thuyet(df):
+    st.subheader("📌 10 dòng đầu của dữ liệu gốc")
+    st.write(df.head(10))
+
+                # Kiểm tra lỗi dữ liệu
+    st.subheader("🚨 Kiểm tra lỗi dữ liệu")
+
+                # Kiểm tra giá trị thiếu
+    missing_values = df.isnull().sum()
+
+                # Kiểm tra dữ liệu trùng lặp
+    duplicate_count = df.duplicated().sum()
+
+                
+                
+                # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
+    outlier_count = {
+        col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
+        for col in df.select_dtypes(include=['number']).columns
+    }
+
+                # Tạo báo cáo lỗi
+    error_report = pd.DataFrame({
+        'Cột': df.columns,
+        'Giá trị thiếu': missing_values,
+        'Outlier': [outlier_count.get(col, 0) for col in df.columns]
+    })
+
+                # Hiển thị báo cáo lỗi
+    st.table(error_report)
+
+                # Hiển thị số lượng dữ liệu trùng lặp
+    st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")            
+   
     
     st.title("🔍 Tiền xử lý dữ liệu")
 
@@ -202,39 +235,7 @@ def tien_xu_ly_du_lieu():
                 
 
                 # Hiển thị dữ liệu ban đầu
-                st.subheader("📌 10 dòng đầu của dữ liệu gốc")
-                st.write(df.head(10))
-
-                # Kiểm tra lỗi dữ liệu
-                st.subheader("🚨 Kiểm tra lỗi dữ liệu")
-
-                # Kiểm tra giá trị thiếu
-                missing_values = df.isnull().sum()
-
-                # Kiểm tra dữ liệu trùng lặp
-                duplicate_count = df.duplicated().sum()
-
-                
-                
-                # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
-                outlier_count = {
-                    col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
-                    for col in df.select_dtypes(include=['number']).columns
-                }
-
-                # Tạo báo cáo lỗi
-                error_report = pd.DataFrame({
-                    'Cột': df.columns,
-                    'Giá trị thiếu': missing_values,
-                    'Outlier': [outlier_count.get(col, 0) for col in df.columns]
-                })
-
-                # Hiển thị báo cáo lỗi
-                st.table(error_report)
-
-                # Hiển thị số lượng dữ liệu trùng lặp
-                st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")
-
+               
                 
                 
                 # Xử lý lỗi dữ liệu
@@ -272,7 +273,7 @@ def tien_xu_ly_du_lieu():
 
             
         except Exception as e:
-            st.error(f"Đã có lỗi xảy ra: {e}")
+            st.error(f"Đã có lỗi xảy ra: {e}")    
 
 if __name__ == "__main__":
     tien_xu_ly_du_lieu(df)
