@@ -86,7 +86,7 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
     return w  # Trả về trọng số sau khi huấn luyện
 
 
-def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
+def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=1):
     """Huấn luyện hồi quy đa thức."""
     
     poly = PolynomialFeatures(degree=degree)
