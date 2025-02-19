@@ -44,7 +44,7 @@ def tien_xu_ly_du_lieu():
 
     # 2️⃣ Dùng StratifiedKFold với mỗi fold chọn 15% làm validation
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
-    return X_train, X_test, y_train, y_test, kf
+    return X_train, X_test, y_train, y_test, kf ,df
 
 def train_multiple_linear_regression(X_train, y_train, X_valid, y_valid):
     model = LinearRegression()
@@ -64,7 +64,8 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     mse = mean_squared_error(y_valid, y_pred)
     return model, mse
 def chon_mo_hinh(model_type="linear", degree=2):
-    X_train_full, X_test, y_train_full, y_test, kf = tien_xu_ly_du_lieu()
+    X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
+    st.write(df.head(10))
     mse_list = []
 
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
