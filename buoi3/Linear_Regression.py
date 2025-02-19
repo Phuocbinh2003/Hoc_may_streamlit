@@ -55,7 +55,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     
     return model, mse, poly  # Trả về cả model và poly để sử dụng sau
 
-def chon_mo_hinh(model_type="linear", degree=2):
+def chon_mo_hinh(model_type="linear", learning_rate=0.001):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
     fold_mse = []  # Danh sách MSE của từng fold
