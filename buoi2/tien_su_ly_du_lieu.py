@@ -144,8 +144,7 @@ def hien_thi_ly_thuyet(df):
     st.title("🔍 Tiền xử lý dữ liệu")
 
     # Hiển thị dữ liệu gốc
-    st.subheader("📌 10 dòng đầu của dữ liệu gốc")
-    st.write(df.head(10))
+    
     st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
     st.subheader("1️⃣ Loại bỏ các cột không cần thiết")
     st.write("""
