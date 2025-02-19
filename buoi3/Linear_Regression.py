@@ -97,8 +97,9 @@ def chon_mo_hinh(model_type="linear", degree=2):
 
     avg_mse = np.mean(fold_mse)  # Lấy trung bình MSE qua các folds
 
-    print(f"\n✅ MSE trung bình trên tập validation: {avg_mse:.4f}")
-    print(f"🏆 MSE trên tập test: {test_mse:.4f}")
+    st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+    st.success(f"MSE trên tập test: {test_mse:.4f}")
+    
 
     return final_model, avg_mse  # Trả về mô hình và MSE trung bình
 
