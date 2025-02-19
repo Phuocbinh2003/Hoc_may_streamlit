@@ -95,7 +95,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
     st.write("X_train_poly shape:", X_train_poly.shape)
     
     # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng (nhưng không xóa khỏi X_train gốc)
-    X_b = np.c_[np.ones((m, 1)), X_train_poly[:, 1:]]  # Bỏ cột đầu tiên và thêm bias
+    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]] # Bỏ cột đầu tiên và thêm bias
     
     # Khởi tạo trọng số ngẫu nhiên cho mô hình, trọng số phải có kích thước (n, 1)
     w = np.random.randn(X_b.shape[1], 1)  
@@ -110,14 +110,14 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
         w -= learning_rate * gradients  # Cập nhật trọng số
 
     # Bỏ qua cột đầu tiên và thêm bias vào ma trận đặc trưng của tập kiểm tra
-    X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly[:, 1:]]
+    
     
     # Debug kích thước ma trận
-    st.write("X_valid_b shape:", X_valid_b.shape)
-    st.write(X_valid_b)
+    st.write("X_valid_b shape:", X_b.shape)
+    st.write(X_b)
 
     # Dự đoán kết quả cho tập kiểm tra
-    y_pred = X_valid_b.dot(w)
+    y_pred = X_b.dot(w)
 
     # Tính toán lỗi MSE
     mse = mean_squared_error(y_valid, y_pred)
