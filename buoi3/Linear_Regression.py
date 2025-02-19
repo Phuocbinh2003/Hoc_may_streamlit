@@ -54,12 +54,6 @@ def tien_xu_ly_du_lieu():
 #     return model
 
 
-import numpy as np
-import pandas as pd
-import streamlit as st
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
 
 def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
     """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
@@ -368,7 +362,7 @@ def bt_buoi3():
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
     # Chọn tốc độ học (learning rate)
-    learning_rate = st.slider("Chọn tốc độ học:", min_value=0.0001, max_value=0.1, value=0.01, step=0.001)
+    learning_rate = st.slider("Chọn tốc độ học:", min_value=0.001, max_value=0.1, value=0.01, step=0.001)
 
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
