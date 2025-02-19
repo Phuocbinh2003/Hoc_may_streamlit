@@ -58,7 +58,7 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
     """Huấn luyện Hồi quy tuyến tính bội bằng Gradient Descent."""
     
     m, n = X_train.shape
-    
+    st.write("X_b (sau khi bỏ cột đầu tiên & thêm bias):", X_train)
     # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng X_b (nhưng không xóa khỏi X_train gốc)
     X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
     
