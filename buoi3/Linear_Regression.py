@@ -89,27 +89,33 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
 def chon_mo_hinh(model_type="linear", degree=2):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
-    fold_mse = []  # Danh sách MSE của từng fold
-    poly = None  # Biến để lưu PolynomialFeatures nếu dùng hồi quy đa thức
+    fold_mse = []
+    poly = None  
 
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
         X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
         y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
 
-        # Chuyển y_train và y_valid thành NumPy array
-        y_train = y_train.to_numpy().reshape(-1, 1)
-        y_valid = y_valid.to_numpy().reshape(-1, 1)
+        # 🔥 Kiểm tra và chuyển đổi y_train, y_valid thành NumPy array
+        if isinstance(y_train, pd.Series):
+            y_train = y_train.to_numpy().reshape(-1, 1)
+        else:
+            y_train = y_train.reshape(-1, 1)
+
+        if isinstance(y_valid, pd.Series):
+            y_valid = y_valid.to_numpy().reshape(-1, 1)
+        else:
+            y_valid = y_valid.reshape(-1, 1)
 
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
             model = train_multiple_linear_regression(X_train, y_train)
-            # Dự đoán với hồi quy tuyến tính bội (sử dụng w thay vì model.predict())
             X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm cột bias
-            y_valid_pred = X_valid_b.dot(model)  # Dự đoán bằng trọng số w
+            y_valid_pred = X_valid_b.dot(model)
         elif model_type == "polynomial":
             model, mse, poly = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
-            y_valid_pred = model.predict(poly.transform(X_valid))  # Dự đoán với model sklearn
+            y_valid_pred = model.predict(poly.transform(X_valid))
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
@@ -118,8 +124,12 @@ def chon_mo_hinh(model_type="linear", degree=2):
 
         print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
-    # 🔥 Huấn luyện lại trên toàn bộ tập train_full
-    y_train_full = y_train_full.to_numpy().reshape(-1, 1)  # Chuyển thành NumPy array
+    # 🔥 Chuyển đổi y_train_full và y_test thành NumPy array
+    if isinstance(y_train_full, pd.Series):
+        y_train_full = y_train_full.to_numpy().reshape(-1, 1)
+    else:
+        y_train_full = y_train_full.reshape(-1, 1)
+
     if model_type == "linear":
         final_model = train_multiple_linear_regression(X_train_full, y_train_full)
     else:
@@ -127,21 +137,25 @@ def chon_mo_hinh(model_type="linear", degree=2):
         final_model = LinearRegression()
         final_model.fit(X_train_full_poly, y_train_full)
 
-    # 📌 Đánh giá trên tập test
-    y_test = y_test.to_numpy().reshape(-1, 1)  # Chuyển y_test thành NumPy array
+    if isinstance(y_test, pd.Series):
+        y_test = y_test.to_numpy().reshape(-1, 1)
+    else:
+        y_test = y_test.reshape(-1, 1)
+
     if model_type == "linear":
-        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]  # Thêm cột bias
+        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
         y_test_pred = X_test_b.dot(final_model)
     else:
         y_test_pred = final_model.predict(poly.transform(X_test))
 
     test_mse = mean_squared_error(y_test, y_test_pred)
-    avg_mse = np.mean(fold_mse)  # Lấy trung bình MSE qua các folds
+    avg_mse = np.mean(fold_mse)
 
     st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
     st.success(f"MSE trên tập test: {test_mse:.4f}")
 
-    return final_model, avg_mse, poly  # Trả về cả poly để dùng sau nếu cần
+    return final_model, avg_mse, poly
+
 
 
 
