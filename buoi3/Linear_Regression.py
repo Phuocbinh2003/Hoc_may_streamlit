@@ -132,11 +132,11 @@ def bt_buoi3():
     - $\hat{y}_i$: Giá trị dự đoán từ mô hình.
     """)
 
-    st.write("""
-    Mục tiêu của hồi quy tuyến tính bội là tìm các hệ số trọng số \( w_0, w_1, w_2, ..., w_n \) sao cho giá trị MSE nhỏ nhất.
+    st.markdown(r"""
+    Mục tiêu của hồi quy tuyến tính bội là tìm các hệ số trọng số $w_0, w_1, w_2, ..., w_n$ sao cho giá trị MSE nhỏ nhất.
 
     ### Thuật toán Gradient Descent
-    1. Khởi tạo các trọng số \( w_0, w_1, w_2, ..., w_n \) với giá trị bất kỳ.
+    1. Khởi tạo các trọng số $w_0, w_1, w_2, ..., w_n$ với giá trị bất kỳ.
     2. Tính gradient của MSE đối với từng trọng số.
     3. Cập nhật trọng số theo quy tắc của thuật toán Gradient Descent.
 
