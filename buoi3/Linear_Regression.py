@@ -100,14 +100,14 @@ def bt_buoi3():
     st.write("""
     ### So sánh giữa hồi quy tuyến tính đơn biến và đa biến:
     - **Hồi quy tuyến tính đơn biến**: Sử dụng một biến đầu vào để dự đoán biến đầu ra.
-    
-    ![Hồi quy tuyến tính đơn biến](img/single_linear_regression.png)
+    """)
+    st.image("buoi3/img1.png", caption="Multiple Linear Regression đơn", use_container_width =True)
+    st.write("""
     
     - **Hồi quy tuyến tính đa biến**: Sử dụng nhiều biến đầu vào để dự đoán biến đầu ra.
     
-    ![Hồi quy tuyến tính đa biến](img/multiple_linear_regression.png)
     """)
-
+    st.image("buoi3/img2.png", caption="Multiple Linear Regression đơn", use_container_width =True)
    
     st.write("""
     ### Hàm mất mát (Loss Function) của Linear Regression
