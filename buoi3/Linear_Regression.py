@@ -14,7 +14,7 @@ from sklearn.metrics import mean_squared_error
 
 
 def tien_xu_ly_du_lieu():
-    df = pd.read_csv("data_buoi2.txt")
+    df = pd.read_csv("buoi2/data.txt")
 
     # Loại bỏ các cột không cần thiết
     columns_to_drop = ["Cabin", "Ticket", "Name"]  # Cột không cần thiết
