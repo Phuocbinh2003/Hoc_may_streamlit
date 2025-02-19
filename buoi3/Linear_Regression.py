@@ -44,9 +44,9 @@ def tien_xu_ly_du_lieu():
 
     # 2️⃣ Dùng StratifiedKFold với mỗi fold chọn 15% làm validation
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
-    st.write(X_train.isnull().sum())
-    st.write(y_train.isnull().sum())
-    st.write(df.isnull().sum())
+    st.write(X_train.head(10))
+    # st.write(y_train.isnull().sum())
+    # st.write(df.isnull().sum())
     return X_train, X_test, y_train, y_test, kf ,df
 
 # def train_multiple_linear_regression(X_train, y_train):
