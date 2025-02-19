@@ -88,11 +88,12 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     # Chuyển đổi tập huấn luyện thành dạng đa thức
     X_train_poly = poly.fit_transform(X_train)
-
+    st.write("X_train_poly shape:", X_train)
     m, n = X_train_poly.shape
     
     # Thêm bias (nếu chưa có)
     X_b = X_train_poly  # PolynomialFeatures đã thêm bias term
+    
     st.write("X_b shape:", X_b.shape)
     
     # Khởi tạo trọng số ngẫu nhiên
