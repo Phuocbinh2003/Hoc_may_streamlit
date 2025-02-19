@@ -27,18 +27,28 @@ def tien_xu_ly_du_lieu():
 
     return df
 
-def test_train_size():
-    df=tien_xu_ly_du_lieu()
+def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio):
+    df = tien_xu_ly_du_lieu()
     X = df.drop(columns=['Survived'])
     y = df['Survived']
+    st.write(actual_train_ratio)
+    st.write(val_ratio_within_train)
+    st.write(test_ratio)
+    # Chuyển đổi tỷ lệ phần trăm thành giá trị thực
+    actual_train_size = actual_train_ratio #/ 100
+    test_size = test_ratio #/ 100
+    val_size = val_ratio_within_train #/ 100) * actual_train_size  # Validation từ tập Train
+    
+    # Chia tập Train-Test trước
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify=y, random_state=42)
 
+    # Tiếp tục chia tập Train thành Train-Validation
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / actual_train_size, stratify=y_train, random_state=42)
+
+    # Sử dụng StratifiedKFold với số lần chia phù hợp
+    kf = StratifiedKFold(n_splits=int(1 / test_size), shuffle=True, random_state=42)
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=42)
-    
-    # Sửa lỗi ở đây: Thêm shuffle=True cho StratifiedKFol
-    kf = StratifiedKFold(n_splits=int(1/0.15), shuffle=True, random_state=42)
-    
-    return X_train, X_test, y_train, y_test, kf, df
+    return X_train, X_val, X_test, y_train, y_val, y_test, kf, df
 
 
 def train_multiple_linear_regression(X_train, y_train):
@@ -321,6 +331,7 @@ def bt_buoi3():
     # Hiển thị kết quả
     st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
 
+    test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
 
 
     # Chọn mô hình    
