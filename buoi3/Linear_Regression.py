@@ -56,17 +56,19 @@ def tien_xu_ly_du_lieu():
 
 def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
     """Huấn luyện Hồi quy tuyến tính bội bằng Gradient Descent."""
-    # Loại bỏ cột đầu tiên (giả sử đó là cột không cần thiết)
-    X_train = X_train.iloc[:, 1:] if isinstance(X_train, pd.DataFrame) else X_train[:, 0:]
-    st.write("X_train (sau khi loại bỏ cột đầu tiên):", X_train)
+    
     m, n = X_train.shape
-    X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
-    #st.write("X_b (sau khi thêm bias):", X_b)
+    
+    # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng X_b (nhưng không xóa khỏi X_train gốc)
+    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
+    
+    st.write("X_b (sau khi bỏ cột đầu tiên & thêm bias):", X_b)
+    
+    # Khởi tạo trọng số phù hợp với số lượng cột của X_b
+    w = np.random.randn(X_b.shape[1], 1)  
+    st.write("Trọng số ban đầu:", w)
 
-    w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
-    #st.write("Trọng số ban đầu:", w)
-
-    # Chuyển đổi y_train thành NumPy array có dạng cột (n,1)
+    # Chuyển đổi y_train thành NumPy array có dạng (m,1)
     if isinstance(y_train, pd.Series):  
         y_train = y_train.values.reshape(-1, 1)  
     elif isinstance(y_train, np.ndarray) and y_train.ndim == 1:  
@@ -79,6 +81,7 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
         w -= learning_rate * gradients  # Cập nhật trọng số
 
     return w  # Trả về trọng số sau khi huấn luyện
+
 
 
 
