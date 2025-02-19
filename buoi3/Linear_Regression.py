@@ -10,6 +10,11 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import mean_squared_error
 
 def tien_xu_ly_du_lieu(updates_file=None):
+    if updates_file is not None:
+        df = pd.read_csv(updates_file)
+    else:
+        df = pd.read_csv("buoi2/data.txt")
+    
     df = pd.read_csv("buoi2/data.txt")
 
     columns_to_drop = ["Cabin", "Ticket", "Name"]
@@ -315,7 +320,10 @@ def bt_buoi3():
     ax.legend()
     st.pyplot(fig)
     
-    df= tien_xu_ly_du_lieu()
+    uploaded_file = st.file_uploader("Upload file dữ liệu CSV", type=["csv"])
+
+# Nếu có file upload, sử dụng nó, nếu không dùng file mặc định
+    df = tien_xu_ly_du_lieu(uploaded_file)
     st.write(df.head(10))
    
 
