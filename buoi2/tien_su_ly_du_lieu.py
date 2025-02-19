@@ -193,7 +193,7 @@ def tien_xu_ly_du_lieu():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
 
     if uploaded_file is None:
-        hien_thi_ly_thuyet()  # Chỉ hiển thị lý thuyết nếu chưa có file tải lên
+        hien_thi_ly_thuyet(df)  # Chỉ hiển thị lý thuyết nếu chưa có file tải lên
     
     else:
         try:
