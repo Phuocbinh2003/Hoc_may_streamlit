@@ -287,8 +287,16 @@ def bt_buoi3():
     ax.set_ylabel("Y")
     ax.legend()
     st.pyplot(fig)
-    
-    chon_mo_hinh(model_type="linear", degree=2)
+    model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
+
+    degree = 2
+    if model_type == "Polynomial Regression":
+        degree = st.slider("Chọn bậc của hồi quy đa thức:", min_value=2, max_value=5, value=2)
+
+    # Khi nhấn nút sẽ huấn luyện mô hình
+    if st.button("Huấn luyện mô hình"):
+        model, avg_mse = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", degree=degree)
+        st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
     
     
 if __name__ == "__main__":
