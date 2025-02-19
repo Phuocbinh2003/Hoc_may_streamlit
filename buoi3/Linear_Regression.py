@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-
+from scipy.stats import zscore
 # Tiêu đề
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
@@ -41,7 +41,7 @@ def bt_buoi3():
         'Outlier': [outlier_count.get(col, 0) for col in df.columns]
     })
 
-                # Hiển thị báo cáo lỗi
+                # Hiển thị báo cáo lỗ
     st.table(error_report)
 
                 # Hiển thị số lượng dữ liệu trùng lặp
