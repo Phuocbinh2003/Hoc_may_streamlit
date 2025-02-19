@@ -101,6 +101,22 @@ def bt_buoi3():
 
     
    
+   
+
+    # Giới thiệu Polynomial Regression
+    st.write("## 2. Polynomial Regression")
+
+    st.write("Polynomial Regression mở rộng mô hình tuyến tính bằng cách thêm các bậc cao hơn của biến đầu vào.")
+    
+    st.image("buoi3/img3.png", caption="Polynomial Regression ", use_container_width =True)
+    st.write("""
+     Công thức tổng quát của mô hình hồi quy tuyến tính bội:
+    """)
+    st.latex(r"""
+    y = w_0 + w_1x + w_2x^2 + w_3x^3 + \dots + w_nx^n
+    """)
+
+    
     st.write("""
     ### Hàm mất mát (Loss Function) của Linear Regression
     Hàm mất mát phổ biến nhất là **Mean Squared Error (MSE)**:
@@ -152,20 +168,6 @@ def bt_buoi3():
     st.write("""
     Các chỉ số này giúp đánh giá độ chính xác và khả năng khái quát hóa của mô hình hồi quy tuyến tính bội.
     """)
-
-    # Giới thiệu Polynomial Regression
-    st.write("## 2. Polynomial Regression")
-
-    st.write("Polynomial Regression mở rộng mô hình tuyến tính bằng cách thêm các bậc cao hơn của biến đầu vào.")
-    
-    st.image("buoi3/img3.png", caption="Polynomial Regression ", use_container_width =True)
-    st.write("""
-     Công thức tổng quát của mô hình hồi quy tuyến tính bội:
-    """)
-    st.latex(r"""
-    y = w_0 + w_1x + w_2x^2 + w_3x^3 + \dots + w_nx^n
-    """)
-
     # Vẽ biểu đồ so sánh
     st.write("## 3. Minh họa trực quan")
 
