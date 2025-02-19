@@ -44,7 +44,8 @@ def tien_xu_ly_du_lieu():
 
     # 2️⃣ Dùng StratifiedKFold với mỗi fold chọn 15% làm validation
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
-    X_train = X_train.drop(columns=["Unnamed: 0"])
+    X_train = X_train.loc[:, ~X_train.columns.str.contains('^Unnamed')]
+
 
     st.write(X_train.columns)
     st.write(X_test.columns)
