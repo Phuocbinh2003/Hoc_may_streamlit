@@ -36,7 +36,7 @@ def tien_xu_ly_du_lieu():
     return X_train, X_test, y_train, y_test, kf, df
 
 
-def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001):
+def train_multiple_linear_regression(X_train, y_train):
     """Huấn luyện mô hình hồi quy tuyến tính bội."""
     model = LinearRegression()
     model.fit(X_train, y_train)
@@ -70,7 +70,7 @@ def chon_mo_hinh(model_type="linear"):
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
-            model = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
+            model = train_multiple_linear_regression(X_train, y_train)
         elif model_type == "polynomial":
             model, mse, poly = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
         else:
