@@ -67,7 +67,7 @@ def phan_gioi_thieu():
         """)
     df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
     df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  # One-Hot Encoding
-
+    #df['Embarked'] = df['Embarked'].map({'Q': 0, 'S': 1, 'C': 2})
 
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
