@@ -29,8 +29,8 @@ def tien_xu_ly_du_lieu(df):
 
 
 
-def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio):
-    df = tien_xu_ly_du_lieu()
+def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio,df1 ):
+    df = tien_xu_ly_du_lieu(df1 )
     X = df.drop(columns=['Survived'])
     y = df['Survived']
     
@@ -333,7 +333,7 @@ def bt_buoi3():
     # Hiển thị kết quả
     st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
 
-    X_train, X_val, X_test, y_train, y_val, y_test, kf, df =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
+    X_train, X_val, X_test, y_train, y_val, y_test, kf, df =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio,df1 )
 
 
     # Chọn mô hình    
