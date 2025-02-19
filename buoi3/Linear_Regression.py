@@ -362,7 +362,15 @@ def bt_buoi3():
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
     # Chọn tốc độ học (learning rate)
-    learning_rate = st.slider("Chọn tốc độ học:", min_value=0.001, max_value=0.01, value=0.001, step=0.0001)
+    learning_rate = st.slider(
+    "Chọn tốc độ học:", 
+    min_value=0.001, 
+    max_value=0.01, 
+    value=0.001, 
+    step=0.0001, 
+    format="%.4f"  # Hiển thị 4 chữ số thập phân
+)
+
 
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
