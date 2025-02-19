@@ -83,7 +83,9 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     poly = PolynomialFeatures(degree=degree)
 
     if isinstance(X_train, pd.DataFrame):
-        X_train = X_train.loc[:, X_train.columns.notna()].dropna(axis=1).to_numpy()  # Loại bỏ các cột có tên trống
+        print("🔍 Các cột có tên trống:", X_train.columns[X_train.columns.isna()])
+        print("🔍 Các cột có chứa NaN:", X_train.columns[X_train.isna().any()])
+        X_train = X_train.loc[:, X_train.columns.notna()].dropna(axis=1)  # Loại bỏ các cột có tên trống
 
     # Xử lý NaN bằng cách điền giá trị trung bình
     X_train = np.nan_to_num(X_train, nan=np.nanmean(X_train))
@@ -109,6 +111,8 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
     
     # Loại bỏ các cột có tên trống
+    print("🔍 Các cột có tên trống trong tập train:", X_train_full.columns[X_train_full.columns.isna()])
+    print("🔍 Các cột có chứa NaN trong tập train:", X_train_full.columns[X_train_full.isna().any()])
     X_train_full = X_train_full.loc[:, X_train_full.columns.notna()].dropna(axis=1)
     X_test = X_test.loc[:, X_test.columns.notna()].dropna(axis=1)
     
@@ -164,6 +168,7 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
 
     return w_final, avg_mse, poly
+
 
 
 
