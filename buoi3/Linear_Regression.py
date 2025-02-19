@@ -99,8 +99,10 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
     X_train_poly = poly.fit_transform(X_train)
     X_valid_poly = poly.transform(X_valid)
 
-    m, n = X_train_poly.shape
-    X_b = np.c_[np.ones((m, 1)), X_train_poly]  # Thêm bias term
+    m, n = X_train.shape
+    
+    # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng (nhưng không xóa khỏi X_train gốc)
+    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
     
     w = np.random.randn(X_b.shape[1], 1)  # Khởi tạo trọng số ngẫu nhiên
 
