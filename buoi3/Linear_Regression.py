@@ -65,7 +65,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     return model, mse
 def chon_mo_hinh(model_type="linear", degree=2):
     X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
-    st.write(df.head(10))
+    
     mse_list = []
 
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
@@ -279,6 +279,10 @@ def bt_buoi3():
     ax.set_ylabel("Y")
     ax.legend()
     st.pyplot(fig)
+    
+    X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
+    st.write(df.head(10))
+    
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
     degree = 2
