@@ -198,97 +198,81 @@ def tien_xu_ly_du_lieu():
         st.warning("Vui lòng tải lên một file dữ liệu.")
     
     
-    try:
-            
-
-            # Hiển thị dữ liệu ban đầu
-            st.subheader("📌 10 dòng đầu của dữ liệu gốc")
-            st.write(df.head(10))
-
-            # Kiểm tra lỗi dữ liệu
-            st.subheader("🚨 Kiểm tra lỗi dữ liệu")
-
-            # Kiểm tra giá trị thiếu
-            missing_values = df.isnull().sum()
-
-            # Kiểm tra dữ liệu trùng lặp
-            duplicate_count = df.duplicated().sum()
-
-            
-            
-            # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
-            outlier_count = {
-                col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
-                for col in df.select_dtypes(include=['number']).columns
-            }
-
-            # Tạo báo cáo lỗi
-            error_report = pd.DataFrame({
-                'Cột': df.columns,
-                'Giá trị thiếu': missing_values,
-                'Outlier': [outlier_count.get(col, 0) for col in df.columns]
-            })
-
-            # Hiển thị báo cáo lỗi
-            st.table(error_report)
-
-            # Hiển thị số lượng dữ liệu trùng lặp
-            st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")
-
-            
-            
-            # Xử lý lỗi dữ liệu
-            if "Age" in df.columns:
-                df["Age"].fillna(df["Age"].mean(), inplace=True)
-                df['Age'] = df['Age'].astype(int)
-                scaler = StandardScaler()
-                df[['Age']] = scaler.fit_transform(df[['Age']])
+        try:
                 
-            if "Fare" in df.columns:
-                df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị
-                df['Fare'] = df['Fare'].astype(int)
-            if "Embarked" in df.columns:
-                df.dropna(subset=['Embarked'], inplace=True)
-                df['Embarked'] = df['Embarked'].map({'C': 1, 'S': 2,'Q': 3})
-            if "Cabin" in df.columns:
-                df['Cabin'].fillna('Unknown', inplace=True)
 
-            if "Pclass" in df.columns:
-                df['Pclass'] = df['Pclass'].astype('category')
+                # Hiển thị dữ liệu ban đầu
+                st.subheader("📌 10 dòng đầu của dữ liệu gốc")
+                st.write(df.head(10))
+
+                # Kiểm tra lỗi dữ liệu
+                st.subheader("🚨 Kiểm tra lỗi dữ liệu")
+
+                # Kiểm tra giá trị thiếu
+                missing_values = df.isnull().sum()
+
+                # Kiểm tra dữ liệu trùng lặp
+                duplicate_count = df.duplicated().sum()
+
+                
+                
+                # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
+                outlier_count = {
+                    col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
+                    for col in df.select_dtypes(include=['number']).columns
+                }
+
+                # Tạo báo cáo lỗi
+                error_report = pd.DataFrame({
+                    'Cột': df.columns,
+                    'Giá trị thiếu': missing_values,
+                    'Outlier': [outlier_count.get(col, 0) for col in df.columns]
+                })
+
+                # Hiển thị báo cáo lỗi
+                st.table(error_report)
+
+                # Hiển thị số lượng dữ liệu trùng lặp
+                st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")
+
+                
+                
+                # Xử lý lỗi dữ liệu
+                if "Age" in df.columns:
+                    df["Age"].fillna(df["Age"].mean(), inplace=True)
+                    df['Age'] = df['Age'].astype(int)
+                    scaler = StandardScaler()
+                    df[['Age']] = scaler.fit_transform(df[['Age']])
+                    
+                if "Fare" in df.columns:
+                    df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị
+                    df['Fare'] = df['Fare'].astype(int)
+                if "Embarked" in df.columns:
+                    df.dropna(subset=['Embarked'], inplace=True)
+                    df['Embarked'] = df['Embarked'].map({'C': 1, 'S': 2,'Q': 3})
+                if "Cabin" in df.columns:
+                    df['Cabin'].fillna('Unknown', inplace=True)
+
+                if "Pclass" in df.columns:
+                    df['Pclass'] = df['Pclass'].astype('category')
+
+                
+                if "Sex" in df.columns:
+                    df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
+                
+                if "Fare" in df.columns and df['Fare'].nunique() > 1:
+                    scaler = StandardScaler()
+                    df[['Fare']] = scaler.fit_transform(df[['Fare']])
+
+                # Hiển thị dữ liệu sau khi xử lý
+                st.subheader("✅ Dữ liệu sau xử lý")
+                st.write(df.head(10))
+
+
 
             
-            if "Sex" in df.columns:
-                df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
-            
-            if "Fare" in df.columns and df['Fare'].nunique() > 1:
-                scaler = StandardScaler()
-                df[['Fare']] = scaler.fit_transform(df[['Fare']])
-
-            # Hiển thị dữ liệu sau khi xử lý
-            st.subheader("✅ Dữ liệu sau xử lý")
-            st.write(df.head(10))
-
-
-
-            # Chọn % tập Train, Validation, Test
-            # train_size = st.slider("Chọn % dữ liệu Train", 50, 90, 70)
-            # val_size = st.slider("Chọn % dữ liệu Validation", 0, 40, 15)
-            # test_size = 100 - train_size - val_size
-            # st.write(f"Tỷ lệ phân chia: Train={train_size}%, Validation={val_size}%, Test={test_size}%")
-            # # Chia dữ liệu: 70% train, 15% validation, 15% test
-            # train_data, temp_data = train_test_split(df, test_size=(100 - train_size)/100, random_state=42)
-            # val_data, test_data = train_test_split(temp_data, test_size=test_size/(test_size + val_size), random_state=42)
-
-            # # Hiển thị số lượng mẫu
-            # st.subheader("📊 Số lượng mẫu trong từng tập dữ liệu")
-            # summary_df = pd.DataFrame({
-            #     "Tập dữ liệu": ["Train", "Validation", "Test"],
-            #     "Số lượng mẫu": [train_df.shape[0], val_df.shape[0], test_df.shape[0]]
-            # })
-            # st.table(summary_df)
-
         except Exception as e:
-            st.error(f"⚠️ Lỗi khi xử lý dữ liệu: {e}")
+            st.error(f"Đã có lỗi xảy ra: {e}")
 
 if __name__ == "__main__":
     tien_xu_ly_du_lieu(df)
