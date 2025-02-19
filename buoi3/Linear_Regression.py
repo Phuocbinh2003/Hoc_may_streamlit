@@ -35,7 +35,8 @@ def tien_xu_ly_du_lieu():
     
     return X_train, X_test, y_train, y_test, kf, df
 
-def train_multiple_linear_regression(X_train, y_train):
+
+def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001):
     """Huấn luyện mô hình hồi quy tuyến tính bội."""
     model = LinearRegression()
     model.fit(X_train, y_train)
@@ -55,7 +56,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     
     return model, mse, poly  # Trả về cả model và poly để sử dụng sau
 
-def chon_mo_hinh(model_type="linear", learning_rate=0.001):
+def chon_mo_hinh(model_type="linear"):
     degree=2
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
@@ -69,7 +70,7 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.001):
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
-            model = train_multiple_linear_regression(X_train, y_train)
+            model = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
         elif model_type == "polynomial":
             model, mse, poly = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
         else:
@@ -305,19 +306,19 @@ def bt_buoi3():
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
     # Chọn tốc độ học (learning rate)
-    learning_rate = st.slider(
-    "Chọn tốc độ học:", 
-    min_value=0.001, 
-    max_value=0.01, 
-    value=0.001, 
-    step=0.0001, 
-    format="%.4f"  # Hiển thị 4 chữ số thập phân
-)
+#     learning_rate = st.slider(
+#     "Chọn tốc độ học:", 
+#     min_value=0.001, 
+#     max_value=0.01, 
+#     value=0.001, 
+#     step=0.0001, 
+#     format="%.4f"  # Hiển thị 4 chữ số thập phân
+# )
 
 
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
-        model, avg_mse, poly = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", learning_rate=learning_rate)
+        model, avg_mse, poly = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial")
 
     
 if __name__ == "__main__":
