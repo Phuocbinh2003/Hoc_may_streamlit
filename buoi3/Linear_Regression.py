@@ -93,7 +93,7 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     st.write("X_train2 shape:", X_train)
     st.write("X_test shape:", X_test)
     # Chuyển đổi tập huấn luyện thành dạng đa thức
-    X_train_poly = poly.fit_transform(X_train2)
+    X_train_poly = poly.fit_transform(X_train)
     
     m, n = X_train_poly.shape
     
