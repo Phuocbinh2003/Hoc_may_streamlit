@@ -58,7 +58,7 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_ite
     
     X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm cột bias (1)
     st.write(X_b)
-    w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
+    w = np.random.randn(n , 1)  # Khởi tạo trọng số ngẫu nhiên
     st.write(w)
     # Kiểm tra và chuyển đổi y_train thành NumPy array
     if isinstance(y_train, pd.Series):  
