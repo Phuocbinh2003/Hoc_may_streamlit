@@ -61,7 +61,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
-def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=1000):
+def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
     """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
     
     m, n = X_train.shape
@@ -121,7 +121,7 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
-            model = train_multiple_linear_regression(X_train, y_train)
+            model = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
             X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid.iloc[:, 1:]]
             y_valid_pred = X_valid_b.dot(model)
         elif model_type == "polynomial":
