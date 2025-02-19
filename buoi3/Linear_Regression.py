@@ -46,12 +46,12 @@ def tien_xu_ly_du_lieu():
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
     return X_train, X_test, y_train, y_test, kf ,df
 
-def train_multiple_linear_regression(X_train, y_train, X_valid, y_valid):
+def train_multiple_linear_regression(X_train, y_train):
+    """Huấn luyện mô hình trên toàn bộ tập training."""
     model = LinearRegression()
     model.fit(X_train, y_train)
-    y_pred = model.predict(X_valid)
-    mse = mean_squared_error(y_valid, y_pred)
-    return model, mse
+    return model  # Không đánh giá trên validation ở đây
+
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     poly = PolynomialFeatures(degree=degree)
@@ -64,25 +64,41 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     mse = mean_squared_error(y_valid, y_pred)
     return model, mse
 def chon_mo_hinh(model_type="linear", degree=2):
-    X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
+    """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
+    X_train_full, X_test, y_train_full, y_test, kf = tien_xu_ly_du_lieu()
     
-    mse_list = []
+    fold_mse = []  # Lưu MSE của từng fold để kiểm tra độ ổn định
 
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
         X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
         y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
 
+        print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
+
         if model_type == "linear":
-            model, mse = train_multiple_linear_regression(X_train, y_train, X_valid, y_valid)
+            model = train_multiple_linear_regression(X_train, y_train)
         elif model_type == "polynomial":
-            model, mse = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
+            model = train_polynomial_regression(X_train, y_train, degree)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
-        mse_list.append(mse)
+        y_valid_pred = model.predict(X_valid)
+        mse = mean_squared_error(y_valid, y_valid_pred)
+        fold_mse.append(mse)
 
-    avg_mse = np.mean(mse_list)
-    return model, avg_mse
+        print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+
+    # 🔥 Huấn luyện lại trên toàn bộ tập train_full
+    final_model = train_multiple_linear_regression(X_train_full, y_train_full)
+
+    # 📌 Đánh giá trên tập test
+    y_test_pred = final_model.predict(X_test)
+    test_mse = mean_squared_error(y_test, y_test_pred)
+
+    print(f"\n✅ MSE trung bình trên tập validation: {np.mean(fold_mse):.4f}")
+    print(f"🏆 MSE trên tập test: {test_mse:.4f}")
+
+    return final_model  # Trả về mô hình đã huấn luyện xong
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
     try:
