@@ -46,31 +46,34 @@ def tien_xu_ly_du_lieu():
     kf = StratifiedKFold(n_splits=int(1 / 0.15), shuffle=True, random_state=42)
     return X_train, X_test, y_train, y_test, kf ,df
 
-def train_multiple_linear_regression(X_train, y_train):
-    """Huấn luyện mô hình hồi quy tuyến tính bội."""
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-    return model
 
-def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
-    """Huấn luyện mô hình hồi quy đa thức."""
+def gradient_descent(X, y, learning_rate=0.01, n_iterations=1000):
+    m, n = X.shape
+    X_b = np.c_[np.ones((m, 1)), X]  # Thêm cột bias
+    w = np.random.randn(n + 1, 1)  # Khởi tạo trọng số ngẫu nhiên
+
+    for iteration in range(n_iterations):
+        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y)
+        w -= learning_rate * gradients
+    
+    return w
+
+def train_multiple_linear_regression(X_train, y_train, learning_rate=0.01, n_iterations=1000):
+    """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
+    return gradient_descent(X_train, y_train, learning_rate, n_iterations)
+
+def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.01, n_iterations=1000):
+    """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
     poly = PolynomialFeatures(degree=degree)
     X_train_poly = poly.fit_transform(X_train)
-    X_valid_poly = poly.transform(X_valid)
+    w = gradient_descent(X_train_poly, y_train, learning_rate, n_iterations)
+    return w, poly  # Trả về cả trọng số và đối tượng poly để transform tập test
 
-    model = LinearRegression()
-    model.fit(X_train_poly, y_train)
-    
-    y_pred = model.predict(X_valid_poly)
-    mse = mean_squared_error(y_valid, y_pred)
-    
-    return model, mse, poly  # Trả về cả model và poly để sử dụng sau
-
-def chon_mo_hinh(model_type="linear", degree=2):
+def chon_mo_hinh(model_type="linear", degree=2, learning_rate=0.01, n_iterations=1000):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
-    fold_mse = []  # Danh sách MSE của từng fold
-    poly = None  # Biến để lưu PolynomialFeatures nếu dùng hồi quy đa thức
+    fold_mse = []
+    poly = None
 
     for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
         X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
@@ -79,36 +82,39 @@ def chon_mo_hinh(model_type="linear", degree=2):
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
-            model = train_multiple_linear_regression(X_train, y_train)
+            w = train_multiple_linear_regression(X_train, y_train, learning_rate, n_iterations)
+            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
+            y_valid_pred = X_valid_b.dot(w)
         elif model_type == "polynomial":
-            model, mse, poly = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
+            w, poly = train_polynomial_regression(X_train, y_train, degree, learning_rate, n_iterations)
+            X_valid_poly = poly.transform(X_valid)
+            X_valid_poly_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+            y_valid_pred = X_valid_poly_b.dot(w)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
-
-        y_valid_pred = model.predict(X_valid if model_type == "linear" else poly.transform(X_valid))
+        
         mse = mean_squared_error(y_valid, y_valid_pred)
         fold_mse.append(mse)
-
         print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
-
+    
     # 🔥 Huấn luyện lại trên toàn bộ tập train_full
     if model_type == "linear":
-        final_model = train_multiple_linear_regression(X_train_full, y_train_full)
+        final_w = train_multiple_linear_regression(X_train_full, y_train_full, learning_rate, n_iterations)
+        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+        y_test_pred = X_test_b.dot(final_w)
     else:
-        X_train_full_poly = poly.fit_transform(X_train_full)
-        final_model = LinearRegression()
-        final_model.fit(X_train_full_poly, y_train_full)
-
-    # 📌 Đánh giá trên tập test
-    y_test_pred = final_model.predict(X_test if model_type == "linear" else poly.transform(X_test))
+        final_w, poly = train_polynomial_regression(X_train_full, y_train_full, degree, learning_rate, n_iterations)
+        X_test_poly = poly.transform(X_test)
+        X_test_poly_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+        y_test_pred = X_test_poly_b.dot(final_w)
+    
     test_mse = mean_squared_error(y_test, y_test_pred)
-
-    avg_mse = np.mean(fold_mse)  # Lấy trung bình MSE qua các folds
-
+    avg_mse = np.mean(fold_mse)
+    
     st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
     st.success(f"MSE trên tập test: {test_mse:.4f}")
-
-    return final_model, avg_mse, poly  # Trả về cả poly để dùng sau nếu cần
+    
+    return final_w, avg_mse, poly
 
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
@@ -307,19 +313,30 @@ def bt_buoi3():
     ax.legend()
     st.pyplot(fig)
     
-    X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
+    X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
     st.write(df.head(10))
-    
+
+    # Chọn loại mô hình
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
+    # Nếu chọn Polynomial Regression, cho phép chọn bậc đa thức
     degree = 2
     if model_type == "Polynomial Regression":
         degree = st.slider("Chọn bậc của hồi quy đa thức:", min_value=2, max_value=5, value=2)
 
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
-        model, avg_mse = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial", degree=degree)
-        
+        model, avg_mse, poly = chon_mo_hinh(
+            model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial",
+            degree=degree
+        )
+
+        # Hiển thị kết quả huấn luyện
+        st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+
+        # Nếu là Polynomial Regression, hiển thị thêm bậc của mô hình
+        if model_type == "Polynomial Regression":
+            st.write(f"✅ Mô hình hồi quy bậc {degree} đã được huấn luyện thành công!")
     
     
 if __name__ == "__main__":
