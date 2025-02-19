@@ -93,7 +93,7 @@ def chuyen_doi_kieu_du_lieu(df):
 
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
-
+    st.write(len(unique_values)) 
     mapping_dict = {}
     for val in unique_values:
         new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
@@ -103,7 +103,7 @@ def chuyen_doi_kieu_du_lieu(df):
         df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
         st.session_state.df = df
         st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
-
+    
     st.dataframe(df.head())
     return df
 def chuan_hoa_du_lieu(df):
