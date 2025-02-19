@@ -90,24 +90,16 @@ def bt_buoi3():
     st.write("## 1. Multiple Linear Regression")
     st.write("""
     Hồi quy tuyến tính bội là một thuật toán học máy có giám sát, mô tả mối quan hệ giữa một biến phụ thuộc (output) và nhiều biến độc lập (input) thông qua một hàm tuyến tính.
-
+    Ví dụ dự đoán giá nhà dựa trên diện tích, số phòng, vị trí, ... 
+    
     Công thức tổng quát của mô hình hồi quy tuyến tính bội:
     """)
+    st.image("buoi3/img1.png", caption="Multiple Linear Regression đơn", use_container_width =True)
     st.latex(r"""
     y = w_0 + w_1x_1 + w_2x_2 + \dots + w_nx_n
     """)
 
-    st.write("""
-    ### So sánh giữa hồi quy tuyến tính đơn biến và đa biến:
-    - **Hồi quy tuyến tính đơn biến**: Sử dụng một biến đầu vào để dự đoán biến đầu ra.
-    """)
-    st.image("buoi3/img1.png", caption="Multiple Linear Regression đơn", use_container_width =True)
-    st.write("""
     
-    - **Hồi quy tuyến tính đa biến**: Sử dụng nhiều biến đầu vào để dự đoán biến đầu ra.
-    
-    """)
-    st.image("buoi3/img2.png", caption="Multiple Linear Regression đơn", use_container_width =True)
    
     st.write("""
     ### Hàm mất mát (Loss Function) của Linear Regression
