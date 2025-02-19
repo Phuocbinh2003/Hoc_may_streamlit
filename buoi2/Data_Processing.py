@@ -131,15 +131,11 @@ def phan_gioi_thieu():
     from sklearn.model_selection import train_test_split
 
     # Chia dữ liệu theo tỷ lệ 85% (Train) - 15% (Test)
-    X_train_full, X_test, y_train_full, y_test = train_test_split(
-        X, y, test_size=0.15, stratify=y, random_state=42
-    )
+    X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=0.15, stratify=y, random_state=42)
 
     # Chia tiếp 15% của Train để làm Validation (~12.75% của toàn bộ dữ liệu)
     val_size = 0.15 / 0.85  
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_train_full, y_train_full, test_size=val_size, stratify=y_train_full, random_state=42
-    )
+    X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=val_size, stratify=y_train_full, random_state=42)
     ```
     """)
 
@@ -177,14 +173,17 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
         """)
     st.image("buoi2/img2.png", caption="mô hình Random Forest", use_container_width =True)
     st.write("📌 **Các bước để huấn luyện mô hình Random Forest:**")
+    st.write("""Dữ liệu gồm 3 cột Giờ học, Số bài tập, Thời gian ngủ và mục tiêu là dự đoán Điểm cao (Yes/No).
+             và 6 hàng 
+    """)
 
     st.markdown("""
     ### 🌱 Bước 1: Chọn các tập con bằng Bootstrap
     Tạo 3 tập con từ tập dữ liệu gốc bằng cách chọn ngẫu nhiên có lặp lại:  
     Ví dụ:  
-    - **Tập con 1:** (ID 3, 5, 1, 7, 2, 6, 8, 4, 9, 10)  
-    - **Tập con 2:** (ID 6, 3, 5, 8, 2, 4, 9, 7, 1, 1)  
-    - **Tập con 3:** (ID 5, 6, 3, 9, 8, 2, 10, 4, 7, 1)  
+    - **Tập con 1:** (ID 3, 2, 5, 1, 4, 6)  
+    - **Tập con 2:** (ID 2, 6, 3, 5, 1, 4)  
+    - **Tập con 3:** (ID 5, 3, 2, 4, 6, 1)  
 
     ---
 
@@ -197,7 +196,7 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
 
     💡 **Mỗi cây học một quy tắc khác nhau**, ví dụ:  
     - **Cây 1:** "Nếu Giờ học > 5 và Số bài tập > 2 → Điểm cao = Yes".  
-    - **Cây 2:** "nếu  giờ Nếu Thời gian ngủ < 6 → Điểm cao = Yes".  
+    - **Cây 2:** "Nếu Thời gian ngủ < 6 và Số bài tập <2 → Điểm cao = No".  
     - **Cây 3:** "Nếu Giờ học > 4 và Thời gian ngủ < 8 → Điểm cao = Yes".  
 
     ---
@@ -208,7 +207,9 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
 
                 
     st.write("""
-        Đến bước quan trọng nhất: huấn luyện mô hình. Chúng ta sẽ sử dụng mô hình Random Forest để dự đoán khả năng sống sót trên tàu Titanic.
+        Đến bước quan trọng nhất: huấn luyện mô hình. 
+        
+        Chúng ta sẽ sử dụng mô hình Random Forest để dự đoán khả năng sống sót trên tàu Titanic.
         ```python
             from sklearn.ensemble import RandomForestClassifier
 
@@ -231,14 +232,18 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
     st.write("🎯 Đánh giá mô hình bằng Cross-Validation")
     st.markdown("""
     ### 🔍 Cross-Validation là gì?
+    """)
+    st.image("buoi2/th.jpg", caption="Mô hình Cross-Validation", use_container_width =True)
+    st.markdown("""
     Cross-Validation (**CV**) là một kỹ thuật đánh giá mô hình giúp kiểm tra hiệu suất một cách khách quan.  
     Thay vì chia dữ liệu thành một tập huấn luyện và một tập kiểm tra duy nhất, CV chia dữ liệu thành nhiều phần nhỏ (**folds**) và tiến hành huấn luyện, kiểm tra mô hình nhiều lần trên các phần này.
 
     ---
 
     ### 📌 Ví dụ minh họa:  
-    Hãy tưởng tượng bạn đang luyện tập cho một kỳ thi. Nếu bạn chỉ ôn luyện theo một bộ đề duy nhất, bạn có thể không đánh giá được toàn diện khả năng của mình.  
-    Thay vào đó, bạn chia tài liệu thành nhiều phần, ôn tập từng phần một cách luân phiên và tự kiểm tra kiến thức sau mỗi lần học.  
+    Hãy tưởng tượng bạn đang cố gắng cải thiện điểm số của mình. Để làm được điều đó, bạn cần cân bằng giữa giờ học, số bài tập, thời gian ngủ và xem xét tác động của chúng đến khả năng đạt điểm cao (Yes/No).
+
+    Thay vì chỉ dựa vào một tuần học duy nhất để đánh giá kết quả, bạn sẽ thử nghiệm với nhiều tuần khác nhau, thay đổi cách học, số lượng bài tập hoặc thời gian ngủ. Mỗi tuần sẽ đóng vai trò như một fold trong Cross-Validation, giúp bạn kiểm tra xem chiến lược học tập nào thực sự hiệu quả.
     **Cross-Validation hoạt động theo nguyên tắc tương tự!**  
 
     ---
