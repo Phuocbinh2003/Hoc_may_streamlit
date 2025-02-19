@@ -81,20 +81,43 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
 
 
 def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
-    """Huấn luyện hồi quy đa thức."""
+    # """Huấn luyện hồi quy đa thức."""
     
+    # poly = PolynomialFeatures(degree=degree)
+    # X_train_poly = poly.fit_transform(X_train)
+    # X_valid_poly = poly.transform(X_valid)
+
+    # model = LinearRegression()
+    # model.fit(X_train_poly, y_train)
+
+    # y_pred = model.predict(X_valid_poly)
+
+    # mse = mean_squared_error(y_valid.to_numpy().reshape(-1, 1), y_pred) if isinstance(y_valid, pd.Series) else mean_squared_error(y_valid.reshape(-1, 1), y_pred)
+
+    # return model, mse, poly  # Trả về model, MSE và poly để dùng tiếp
     poly = PolynomialFeatures(degree=degree)
     X_train_poly = poly.fit_transform(X_train)
     X_valid_poly = poly.transform(X_valid)
 
-    model = LinearRegression()
-    model.fit(X_train_poly, y_train)
+    m, n = X_train_poly.shape
+    X_b = np.c_[np.ones((m, 1)), X_train_poly]  # Thêm bias term
+    
+    w = np.random.randn(X_b.shape[1], 1)  # Khởi tạo trọng số ngẫu nhiên
 
-    y_pred = model.predict(X_valid_poly)
+    y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
+    y_valid = y_valid.to_numpy().reshape(-1, 1) if isinstance(y_valid, pd.Series) else y_valid.reshape(-1, 1)
 
-    mse = mean_squared_error(y_valid.to_numpy().reshape(-1, 1), y_pred) if isinstance(y_valid, pd.Series) else mean_squared_error(y_valid.reshape(-1, 1), y_pred)
+    for iteration in range(n_iterations):
+        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  
+        w -= learning_rate * gradients  
 
-    return model, mse, poly  # Trả về model, MSE và poly để dùng tiếp
+    X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+    y_pred = X_valid_b.dot(w)
+
+    mse = mean_squared_error(y_valid, y_pred)
+
+    return w, mse, poly  # Trả về trọng số, MSE và poly để dùng tiếp
+
 
 
 def chon_mo_hinh(model_type="linear", learning_rate=0.01):
