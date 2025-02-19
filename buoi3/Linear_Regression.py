@@ -84,12 +84,12 @@ def chon_mo_hinh(model_type="linear", degree=2, learning_rate=0.01, n_iterations
         if model_type == "linear":
             w = train_multiple_linear_regression(X_train, y_train, learning_rate, n_iterations)
             X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
-            y_valid_pred = X_valid_b.dot(w).flatten()
+            y_valid_pred = X_valid_b.dot(w)
         elif model_type == "polynomial":
             w, poly = train_polynomial_regression(X_train, y_train, degree, learning_rate, n_iterations)
             X_valid_poly = poly.transform(X_valid)
             X_valid_poly_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
-            y_valid_pred = X_valid_poly_b.dot(w).flatten()
+            y_valid_pred = X_valid_poly_b.dot(w)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
         
@@ -101,12 +101,12 @@ def chon_mo_hinh(model_type="linear", degree=2, learning_rate=0.01, n_iterations
     if model_type == "linear":
         final_w = train_multiple_linear_regression(X_train_full, y_train_full, learning_rate, n_iterations)
         X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
-        y_test_pred = X_test_b.dot(final_w).flatten()
+        y_test_pred = X_test_b.dot(final_w)
     else:
         final_w, poly = train_polynomial_regression(X_train_full, y_train_full, degree, learning_rate, n_iterations)
         X_test_poly = poly.transform(X_test)
         X_test_poly_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
-        y_test_pred = X_test_poly_b.dot(final_w).flatten()
+        y_test_pred = X_test_poly_b.dot(final_w)
     
     test_mse = mean_squared_error(y_test, y_test_pred)
     avg_mse = np.mean(fold_mse)
@@ -146,10 +146,10 @@ def bt_buoi3():
 
                 # Tạo báo cáo lỗi
     error_report = pd.DataFrame({
-   'Cột': df.select_dtypes(include=['number']).columns,
-   'Giá trị thiếu': missing_values,
-   'Outlier': [outlier_count.get(col, 0) for col in df.select_dtypes(include=['number']).columns]
-})
+        'Cột': df.columns,
+        'Giá trị thiếu': missing_values,
+        'Outlier': [outlier_count.get(col, 0) for col in df.columns]
+    })
 
                 # Hiển thị báo cáo lỗ
     st.table(error_report)
@@ -314,29 +314,29 @@ def bt_buoi3():
     st.pyplot(fig)
     
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
-    st.write(df.head(10))
+st.write(df.head(10))
 
-    # Chọn loại mô hình
-    model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
+# Chọn loại mô hình
+model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
-    # Nếu chọn Polynomial Regression, cho phép chọn bậc đa thức
-    degree = 2
+# Nếu chọn Polynomial Regression, cho phép chọn bậc đa thức
+degree = 2
+if model_type == "Polynomial Regression":
+    degree = st.slider("Chọn bậc của hồi quy đa thức:", min_value=2, max_value=5, value=2)
+
+# Khi nhấn nút sẽ huấn luyện mô hình
+if st.button("Huấn luyện mô hình"):
+    model, avg_mse, poly = chon_mo_hinh(
+        model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial",
+        degree=degree
+    )
+
+    # Hiển thị kết quả huấn luyện
+    st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+
+    # Nếu là Polynomial Regression, hiển thị thêm bậc của mô hình
     if model_type == "Polynomial Regression":
-        degree = st.slider("Chọn bậc của hồi quy đa thức:", min_value=2, max_value=5, value=2)
-
-    # Khi nhấn nút sẽ huấn luyện mô hình
-    if st.button("Huấn luyện mô hình"):
-        model, avg_mse, poly = chon_mo_hinh(
-            model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial",
-            degree=degree
-        )
-
-        # Hiển thị kết quả huấn luyện
-        st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
-
-        # Nếu là Polynomial Regression, hiển thị thêm bậc của mô hình
-        if model_type == "Polynomial Regression":
-            st.write(f"✅ Mô hình hồi quy bậc {degree} đã được huấn luyện thành công!")
+        st.write(f"✅ Mô hình hồi quy bậc {degree} đã được huấn luyện thành công!")
     
     
 if __name__ == "__main__":
