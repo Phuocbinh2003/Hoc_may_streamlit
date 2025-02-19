@@ -55,7 +55,7 @@ def tien_xu_ly_du_lieu():
 
 
 
-def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=1000):
+def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
     """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
     
     m, n = X_train.shape
@@ -80,7 +80,7 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
     return w  # Trả về trọng số sau khi huấn luyện
 
 
-def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, learning_rate=0.001, n_iterations=1000):
+def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, learning_rate=0.001, n_iterations=200):
     # """Huấn luyện hồi quy đa thức."""
     
     # poly = PolynomialFeatures(degree=degree)
@@ -95,30 +95,41 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, le
     # mse = mean_squared_error(y_valid.to_numpy().reshape(-1, 1), y_pred) if isinstance(y_valid, pd.Series) else mean_squared_error(y_valid.reshape(-1, 1), y_pred)
 
     # return model, mse, poly  # Trả về model, MSE và poly để dùng tiếp
+
+    # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
+    
+    # Chuyển đổi tập huấn luyện và tập kiểm tra thành dạng đa thức
     X_train_poly = poly.fit_transform(X_train)
     X_valid_poly = poly.transform(X_valid)
 
-    m, n = X_train.shape
+    m, n = X_train_poly.shape
     
-    # Bỏ qua cột đầu tiên khi tạo ma trận đặc trưng (nhưng không xóa khỏi X_train gốc)
-    X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
+    # Thêm cột bias (1) vào ma trận đặc trưng X_train_poly
+    X_b = np.c_[np.ones((m, 1)), X_train_poly]  # Thêm cột bias vào đầu X_train_poly
     
-    w = np.random.randn(X_b.shape[1], 1)  # Khởi tạo trọng số ngẫu nhiên
+    # Khởi tạo trọng số ngẫu nhiên cho mô hình, trọng số phải có kích thước (n+1, 1)
+    w = np.random.randn(X_b.shape[1], 1)  # X_b.shape[1] là số lượng đặc trưng + bias (n+1)
 
+    # Đảm bảo y_train và y_valid có hình dạng phù hợp
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
     y_valid = y_valid.to_numpy().reshape(-1, 1) if isinstance(y_valid, pd.Series) else y_valid.reshape(-1, 1)
 
+    # Huấn luyện mô hình bằng gradient descent
     for iteration in range(n_iterations):
-        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  
-        w -= learning_rate * gradients  
+        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  # Tính gradient
+        w -= learning_rate * gradients  # Cập nhật trọng số
 
-    X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+    # Thêm cột bias vào ma trận đặc trưng của tập kiểm tra
+    X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly]
+    
+    # Dự đoán kết quả cho tập kiểm tra
     y_pred = X_valid_b.dot(w)
 
+    # Tính toán lỗi MSE
     mse = mean_squared_error(y_valid, y_pred)
 
-    return w, mse, poly  # Trả về trọng số, MSE và poly để dùng tiếp
+    return w, mse, poly  # Trả về trọng số, MSE và đối tượng PolynomialFeatures
 
 
 
