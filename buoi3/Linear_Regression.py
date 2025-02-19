@@ -75,22 +75,21 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     return model, mse, poly  # Trả về cả model và poly để sử dụng sau
 
 def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf, df):
-    degree=2
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
+    degree = 2
     fold_mse = []  # Danh sách MSE của từng fold
     poly = None  # Biến để lưu PolynomialFeatures nếu dùng hồi quy đa thức
 
-    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
-        X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
-        y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
+    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
+        X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
+        y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
 
-        print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
+        print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
-            model = train_multiple_linear_regression(X_train, y_train)
+            model = train_multiple_linear_regression(X_train_fold, y_train_fold)
         elif model_type == "polynomial":
-            model, mse, poly = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
+            model, _, poly = train_polynomial_regression(X_train_fold, y_train_fold, X_valid, y_valid, degree)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
@@ -100,13 +99,13 @@ def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf,
 
         print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
-    # 🔥 Huấn luyện lại trên toàn bộ tập train_full
+    # 🔥 Huấn luyện lại trên toàn bộ tập train
     if model_type == "linear":
-        final_model = train_multiple_linear_regression(X_train_full, y_train_full)
+        final_model = train_multiple_linear_regression(X_train, y_train)
     else:
-        X_train_full_poly = poly.fit_transform(X_train_full)
+        X_train_poly = poly.fit_transform(X_train)
         final_model = LinearRegression()
-        final_model.fit(X_train_full_poly, y_train_full)
+        final_model.fit(X_train_poly, y_train)
 
     # 📌 Đánh giá trên tập test
     y_test_pred = final_model.predict(X_test if model_type == "linear" else poly.transform(X_test))
@@ -117,7 +116,7 @@ def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf,
     st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
     st.success(f"MSE trên tập test: {test_mse:.4f}")
 
-    return final_model, avg_mse, poly  # Trả về cả poly để dùng sau nếu cần
+    return final_model, avg_mse, poly
 
 def bt_buoi3():
     uploaded_file = "buoi2/data.txt"
