@@ -4,13 +4,109 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from scipy.stats import zscore
 from PIL import Image
-def hien_thi_ly_thuyet():
-    uploaded_file = "buoi2/data.txt"
-    try:
-        df = pd.read_csv(uploaded_file, delimiter=",")
-    except FileNotFoundError:
-        st.error("❌ Không tìm thấy tệp dữ liệu. Vui lòng kiểm tra lại đường dẫn.")
-        st.stop()
+
+def drop(df):
+    columns_to_drop = st.multiselect("Chọn cột muốn xóa", df.columns.tolist())
+    if columns_to_drop:
+        df.drop(columns=columns_to_drop, inplace=True)
+        st.write("### Dữ liệu sau khi xóa cột:")
+        st.dataframe(df.head())
+    return df
+def train_test_size(df):
+    train_size = st.slider("Chọn % dữ liệu Train", 50, 90, 70)
+    val_size = st.slider("Chọn % dữ liệu Validation", 0, 40, 15)
+    test_size = 100 - train_size - val_size
+    st.write(f"Tỷ lệ phân chia: Train={train_size}%, Validation={val_size}%, Test={test_size}%")
+    # Chia dữ liệu: 70% train, 15% validation, 15% test
+    train_data, temp_data = train_test_split(df, test_size=(100 - train_size)/100, random_state=42)
+    val_data, test_data = train_test_split(temp_data, test_size=test_size/(test_size + val_size), random_state=42)
+    st.subheader("📊 Số lượng mẫu trong từng tập dữ liệu")
+    summary_df = pd.DataFrame({
+        "Tập dữ liệu": ["Train", "Validation", "Test"],
+        "Số lượng mẫu": [train_df.shape[0], val_df.shape[0], test_df.shape[0]]
+    })
+    st.table(summary_df)
+def xu_ly_gia_tri_thieu(df):
+    st.subheader("Xử lý giá trị thiếu")
+    
+    if df.isnull().sum().sum() == 0:
+        st.success("Không có giá trị thiếu trong dữ liệu!")
+        return df
+
+    # Chọn cột cần xử lý (chỉ hiển thị các cột có giá trị thiếu)
+    missing_cols = df.columns[df.isnull().any()].tolist()
+    selected_col = st.selectbox("Chọn cột chứa giá trị thiếu:", missing_cols)
+
+    # Chọn phương pháp xử lý
+    method = st.radio("Chọn phương pháp xử lý:", ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
+
+    # Xử lý dữ liệu
+    if method == "Thay thế bằng Mean":
+        df[selected_col].fillna(df[selected_col].mean(), inplace=True)
+        st.success(f"Đã thay thế giá trị thiếu ở cột '{selected_col}' bằng Mean")
+    elif method == "Thay thế bằng Median":
+        df[selected_col].fillna(df[selected_col].median(), inplace=True)
+        st.success(f"Đã thay thế giá trị thiếu ở cột '{selected_col}' bằng Median")
+    elif method == "Xóa giá trị thiếu":
+        df.dropna(subset=[selected_col], inplace=True)
+        st.success(f"Đã xóa các dòng có giá trị thiếu trong cột '{selected_col}'")
+
+    return df
+
+
+
+def chuyen_doi_kieu_du_lieu(df):
+    st.subheader("Chuyển đổi kiểu dữ liệu")
+
+    # Chỉ lấy các cột kiểu object (chuỗi) để xử lý
+    categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
+
+    if not categorical_cols:
+        st.success("Không có thuộc tính dạng chuỗi cần chuyển đổi!")
+        return df
+
+    for col in categorical_cols:
+        unique_values = df[col].unique()
+        num_unique = len(unique_values)
+
+        st.write(f"**Cột `{col}` có {num_unique} giá trị duy nhất:** {unique_values}")
+
+        if num_unique > 10:
+            st.warning(f"Cột `{col}` có hơn 10 giá trị duy nhất, có thể không phù hợp để chuyển đổi trực tiếp.")
+        else:
+            mapping_dict = {}
+            for val in unique_values:
+                new_val = st.text_input(f"Nhập giá trị thay thế cho `{val}` trong cột `{col}`", key=f"{col}_{val}")
+                mapping_dict[val] = new_val
+
+            # Chuyển đổi cột theo giá trị nhập vào
+            df[col] = df[col].map(lambda x: mapping_dict.get(x, x))
+
+            st.success(f"Đã chuyển đổi cột `{col}` với các giá trị: {mapping_dict}")
+
+    return df
+def chuan_hoa_du_lieu(df):
+    st.subheader("Chuẩn hóa dữ liệu với StandardScaler")
+
+    # Lọc các cột số để chuẩn hóa
+    numerical_cols = df.select_dtypes(include=['number']).columns.tolist()
+    
+    if not numerical_cols:
+        st.success("Không có thuộc tính dạng số cần chuẩn hóa!")
+        return df
+
+    # Chọn cột số để chuẩn hóa
+    selected_cols = st.multiselect("Chọn các cột số để chuẩn hóa", numerical_cols)
+
+    if selected_cols:
+        scaler = StandardScaler()
+        df[selected_cols] = scaler.fit_transform(df[selected_cols])
+        st.success(f"Đã chuẩn hóa các cột: {selected_cols}")
+
+    return df
+
+
+def hien_thi_ly_thuyet(df):
     
     st.title("🔍 Tiền xử lý dữ liệu")
 
@@ -29,9 +125,7 @@ def hien_thi_ly_thuyet():
             df.drop(columns=columns_to_drop, inplace=True)
         ```
         """)
-    columns_to_drop = ["Cabin", "Ticket", "Name"]  # Cột không cần thiết
-    df.drop(columns=columns_to_drop, inplace=True)  # Loại bỏ cột
-
+    drop(df)
     st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
         Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý để tránh ảnh hưởng đến mô hình.
@@ -45,9 +139,7 @@ def hien_thi_ly_thuyet():
 
         ```
         """)
-    df["Age"].fillna(df["Age"].mean(), inplace=True)  # Điền giá trị trung bình
-    df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị
-    df.dropna(subset=["Embarked"], inplace=True)  # Xóa dòng thiếu Embarked
+    xu_ly_gia_tri_thieu(df)
 
     st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
     st.write("""
@@ -61,9 +153,8 @@ def hien_thi_ly_thuyet():
 
         ```
         """)
-    df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
-    df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  # One-Hot Encoding
 
+    chuyen_doi_kieu_du_lieu(df)
 
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
@@ -74,12 +165,10 @@ def hien_thi_ly_thuyet():
 
         ```
         """)
-    scaler = StandardScaler()
-    df[["Age", "Fare"]] = scaler.fit_transform(df[["Age", "Fare"]])
 
-    st.write("Dữ liệu sau khi xử lý:")
-    st.write(df.head(10))
-
+    
+    chuan_hoa_du_lieu(df)
+    
     st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
     st.write("""
         Dữ liệu được chia thành ba phần để đảm bảo mô hình tổng quát tốt:
@@ -95,18 +184,8 @@ def hien_thi_ly_thuyet():
 
         ```
         """)
-    X = df.drop(columns=["Survived"])  # Biến đầu vào
-    y = df["Survived"]  # Nhãn
-    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
-
-    # Chia tiếp 30% thành 15% validation và 15% test
-    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
-
-    st.write("📌 Số lượng mẫu trong từng tập dữ liệu:")
-    st.write(f"👉 Train: {X_train.shape[0]} mẫu")
-    st.write(f"👉 Validation: {X_val.shape[0]} mẫu")
-    st.write(f"👉 Test: {X_test.shape[0]} mẫu")
-    
+       
+    train_test_size(df)
     
 
 def tien_xu_ly_du_lieu():
@@ -154,23 +233,31 @@ def tien_xu_ly_du_lieu():
             # Hiển thị số lượng dữ liệu trùng lặp
             st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")
 
+            
+            
             # Xử lý lỗi dữ liệu
+            if "Age" in df.columns:
+                df["Age"].fillna(df["Age"].mean(), inplace=True)
+                df['Age'] = df['Age'].astype(int)
+                scaler = StandardScaler()
+                df[['Age']] = scaler.fit_transform(df[['Age']])
+                
+            if "Fare" in df.columns:
+                df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị
+                df['Fare'] = df['Fare'].astype(int)
             if "Embarked" in df.columns:
                 df.dropna(subset=['Embarked'], inplace=True)
-
-            if "Age" in df.columns:
-                df['Age'].fillna(df['Age'].mean(), inplace=True)
-                df['Age'] = df['Age'].astype(int)
-
+                df['Embarked'] = df['Embarked'].map({'C': 1, 'S': 2,'Q': 3})
             if "Cabin" in df.columns:
                 df['Cabin'].fillna('Unknown', inplace=True)
 
             if "Pclass" in df.columns:
                 df['Pclass'] = df['Pclass'].astype('category')
 
+            
             if "Sex" in df.columns:
                 df['Sex'] = df['Sex'].map({'male': 1, 'female': 0})
-
+            
             if "Fare" in df.columns and df['Fare'].nunique() > 1:
                 scaler = StandardScaler()
                 df[['Fare']] = scaler.fit_transform(df[['Fare']])
@@ -179,20 +266,27 @@ def tien_xu_ly_du_lieu():
             st.subheader("✅ Dữ liệu sau xử lý")
             st.write(df.head(10))
 
-            # Chia dữ liệu: 70% train, 15% validation, 15% test
-            train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42)
-            val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42)
 
-            # Hiển thị số lượng mẫu
-            st.subheader("📊 Số lượng mẫu trong từng tập dữ liệu")
-            summary_df = pd.DataFrame({
-                "Tập dữ liệu": ["Train", "Validation", "Test"],
-                "Số lượng mẫu": [train_df.shape[0], val_df.shape[0], test_df.shape[0]]
-            })
-            st.table(summary_df)
+
+            # Chọn % tập Train, Validation, Test
+            # train_size = st.slider("Chọn % dữ liệu Train", 50, 90, 70)
+            # val_size = st.slider("Chọn % dữ liệu Validation", 0, 40, 15)
+            # test_size = 100 - train_size - val_size
+            # st.write(f"Tỷ lệ phân chia: Train={train_size}%, Validation={val_size}%, Test={test_size}%")
+            # # Chia dữ liệu: 70% train, 15% validation, 15% test
+            # train_data, temp_data = train_test_split(df, test_size=(100 - train_size)/100, random_state=42)
+            # val_data, test_data = train_test_split(temp_data, test_size=test_size/(test_size + val_size), random_state=42)
+
+            # # Hiển thị số lượng mẫu
+            # st.subheader("📊 Số lượng mẫu trong từng tập dữ liệu")
+            # summary_df = pd.DataFrame({
+            #     "Tập dữ liệu": ["Train", "Validation", "Test"],
+            #     "Số lượng mẫu": [train_df.shape[0], val_df.shape[0], test_df.shape[0]]
+            # })
+            # st.table(summary_df)
 
         except Exception as e:
             st.error(f"⚠️ Lỗi khi xử lý dữ liệu: {e}")
 
 if __name__ == "__main__":
-    tien_xu_ly_du_lieu()
+    tien_xu_ly_du_lieu(df)
