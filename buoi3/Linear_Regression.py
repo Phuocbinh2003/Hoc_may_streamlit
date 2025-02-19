@@ -80,54 +80,40 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
     return w  # Trả về trọng số sau khi huấn luyện
 
 
-def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2, learning_rate=0.001, n_iterations=200):
-    """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
-
+def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=200):
+    """Huấn luyện hồi quy đa thức bằng Gradient Descent và trả về trọng số w."""
+    
     # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
     
-    # Chuyển đổi tập huấn luyện và tập kiểm tra thành dạng đa thức
+    # Chuyển đổi tập huấn luyện thành dạng đa thức
     X_train_poly = poly.fit_transform(X_train)
-    X_valid_poly = poly.transform(X_valid)
 
     m, n = X_train_poly.shape
     st.write("X_train_poly shape:", X_train_poly.shape)
     
-    # Thêm bias vào tập huấn luyện (Không bỏ cột đầu tiên vì PolynomialFeatures đã thêm cột 1s)
-    X_b = np.c_[np.ones((m, 1)), X_train_poly] 
+    # Thêm bias vào X_train_poly
+    X_b = np.c_[np.ones((m, 1)), X_train_poly]
     
     # Khởi tạo trọng số ngẫu nhiên
     w = np.random.randn(X_b.shape[1], 1)  
 
-    # Chuyển đổi y_train, y_valid về dạng (m,1)
+    # Chuyển đổi y_train về dạng (m,1)
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
-    y_valid = y_valid.to_numpy().reshape(-1, 1) if isinstance(y_valid, pd.Series) else y_valid.reshape(-1, 1)
 
     # Huấn luyện bằng gradient descent
     for iteration in range(n_iterations):
         gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  
         w -= learning_rate * gradients  
 
-    # Thêm bias vào tập kiểm tra
-    X_valid_b = np.c_[np.ones((X_valid_poly.shape[0], 1)), X_valid_poly]
-
-    # Debug kích thước ma trận
-    st.write("X_valid_b shape:", X_valid_b.shape)
-
-    # Dự đoán kết quả trên tập kiểm tra
-    y_pred = X_valid_b.dot(w)
-
-    # Tính toán lỗi MSE
-    mse = mean_squared_error(y_valid, y_pred)
-
-    return w, mse, poly  # Trả về trọng số, MSE và đối tượng PolynomialFeatures
+    return w  # Trả về trọng số sau khi huấn luyện
 
 
 
 
 def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    degree=2
+    degree = 2  # Bậc của hồi quy đa thức
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
     fold_mse = []
     poly = None  
@@ -136,43 +122,45 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
         X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
         y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
 
-        # Chuyển đổi y_train và y_valid thành NumPy array
-        y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
-        y_valid = y_valid.to_numpy().reshape(-1, 1) if isinstance(y_valid, pd.Series) else y_valid.reshape(-1, 1)
+        y_train = y_train.to_numpy().reshape(-1, 1)
+        y_valid = y_valid.to_numpy().reshape(-1, 1)
 
         print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
 
         if model_type == "linear":
-            model = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
-            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid.iloc[:, 1:]]
-            y_valid_pred = X_valid_b.dot(model)
+            w = train_multiple_linear_regression(X_train, y_train, learning_rate=learning_rate)
+            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
+            y_valid_pred = X_valid_b.dot(w)
         elif model_type == "polynomial":
-            model, mse, poly = train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree)
-            y_valid_pred = model.predict(poly.transform(X_valid))
+            poly = PolynomialFeatures(degree=degree)
+            X_train_poly = poly.fit_transform(X_train)
+            X_valid_poly = poly.transform(X_valid)
+            
+            w = train_polynomial_regression(X_train_poly, y_train, degree=degree, learning_rate=learning_rate)
+            X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+            y_valid_pred = X_valid_b.dot(w)
         else:
             raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
         mse = mean_squared_error(y_valid, y_valid_pred)
         fold_mse.append(mse)
-
         print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
-    # Chuyển đổi y_train_full và y_test thành NumPy array
-    y_train_full = y_train_full.to_numpy().reshape(-1, 1) if isinstance(y_train_full, pd.Series) else y_train_full.reshape(-1, 1)
-    y_test = y_test.to_numpy().reshape(-1, 1) if isinstance(y_test, pd.Series) else y_test.reshape(-1, 1)
+    # Huấn luyện mô hình cuối cùng trên toàn bộ tập train
+    y_train_full = y_train_full.to_numpy().reshape(-1, 1)
+    y_test = y_test.to_numpy().reshape(-1, 1)
 
     if model_type == "linear":
-        final_model = train_multiple_linear_regression(X_train_full, y_train_full)
+        w_final = train_multiple_linear_regression(X_train_full, y_train_full)
+        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+        y_test_pred = X_test_b.dot(w_final)
     else:
         X_train_full_poly = poly.fit_transform(X_train_full)
-        final_model = LinearRegression()
-        final_model.fit(X_train_full_poly, y_train_full)
-
-    if model_type == "linear":
-        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test.iloc[:, 1:]]
-        y_test_pred = X_test_b.dot(final_model)
-    else:
-        y_test_pred = final_model.predict(poly.transform(X_test))
+        w_final = train_polynomial_regression(X_train_full_poly, y_train_full, degree=degree, learning_rate=learning_rate)
+        
+        X_test_poly = poly.transform(X_test)
+        X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+        y_test_pred = X_test_b.dot(w_final)
 
     test_mse = mean_squared_error(y_test, y_test_pred)
     avg_mse = np.mean(fold_mse)
@@ -180,7 +168,8 @@ def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     st.success(f"📌 MSE trung bình qua các folds: {avg_mse:.4f}")
     st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
 
-    return final_model, avg_mse, poly
+    return w_final, avg_mse, poly
+
 
 
 
