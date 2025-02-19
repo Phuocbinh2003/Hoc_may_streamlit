@@ -74,7 +74,7 @@ def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
     
     return model, mse, poly  # Trả về cả model và poly để sử dụng sau
 
-def chon_mo_hinh(model_type="linear"):
+def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf, df):
     degree=2
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
@@ -334,7 +334,7 @@ def bt_buoi3():
     # Hiển thị kết quả
     st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
 
-    test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
+    X_train, X_val, X_test, y_train, y_val, y_test, kf, df =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
 
 
     # Chọn mô hình    
@@ -345,7 +345,12 @@ def bt_buoi3():
 
     # Khi nhấn nút sẽ huấn luyện mô hình
     if st.button("Huấn luyện mô hình"):
-        model, avg_mse, poly = chon_mo_hinh(model_type="linear" if model_type == "Multiple Linear Regression" else "polynomial")
+       # Xác định model_type phù hợp
+        model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
+
+        # Gọi hàm với đúng thứ tự tham số
+        model, avg_mse, poly = chon_mo_hinh(model_type_value, X_train, X_val, X_test, y_train, y_val, y_test, kf, df)
+
 
     
 if __name__ == "__main__":
