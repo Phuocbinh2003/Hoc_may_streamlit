@@ -223,7 +223,7 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
         """)
     
 
-    # Khởi tạo mô hìn
+    # Khởi tạo mô hình
     model = RandomForestClassifier(random_state=42)
 
     # Huấn luyện mô hình
