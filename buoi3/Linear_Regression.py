@@ -48,9 +48,7 @@ def tien_xu_ly_du_lieu():
 
 
     st.write(X_train.columns)
-    st.write(X_test.columns)
-    st.write(y_train.head(10))
-    st.write(df.columns)
+    st.write(X_train.head(10))
 
     # st.write(y_train.isnull().sum())
     # st.write(df.isnull().sum())
