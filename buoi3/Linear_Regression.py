@@ -9,8 +9,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import mean_squared_error
 
-def tien_xu_ly_du_lieu(df):
-    
+def tien_xu_ly_du_lieu(updates_file=None):
+    df = pd.read_csv("buoi2/data.txt")
 
     columns_to_drop = ["Cabin", "Ticket", "Name"]
     df.drop(columns=columns_to_drop, inplace=True)
@@ -29,8 +29,8 @@ def tien_xu_ly_du_lieu(df):
 
 
 
-def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio,df1 ):
-    df = tien_xu_ly_du_lieu(df1 )
+def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio):
+    df = tien_xu_ly_du_lieu()
     X = df.drop(columns=['Survived'])
     y = df['Survived']
     
@@ -314,8 +314,8 @@ def bt_buoi3():
     ax.set_ylabel("Y")
     ax.legend()
     st.pyplot(fig)
-    df1 = pd.read_csv("buoi2/data.txt")
-    df= tien_xu_ly_du_lieu(df1)
+    
+    df= tien_xu_ly_du_lieu()
     st.write(df.head(10))
    
 
@@ -333,7 +333,7 @@ def bt_buoi3():
     # Hiển thị kết quả
     st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
 
-    X_train, X_val, X_test, y_train, y_val, y_test, kf, df =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio,df1 )
+    X_train, X_val, X_test, y_train, y_val, y_test, kf, df =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
 
 
     # Chọn mô hình    
