@@ -129,7 +129,7 @@ def bt_buoi3():
     Trong đó:
     - \( n \): Số lượng điểm dữ liệu.
     - \( y_i \): Giá trị thực tế của biến phụ thuộc.
-    - \( \hat{y}_i \): Giá trị dự đoán từ mô hình.
+    - st.latex(r"\hat{y}_i"): Giá trị dự đoán từ mô hình.
 
     Mục tiêu của hồi quy tuyến tính bội là tìm các hệ số trọng số \( w_0, w_1, w_2, ..., w_n \) sao cho giá trị MSE nhỏ nhất.
 
