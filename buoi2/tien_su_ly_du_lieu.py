@@ -87,7 +87,7 @@ def chuyen_doi_kieu_du_lieu(df):
     unique_values = df[selected_col].unique()
     num_unique = len(unique_values)
 
-    st.write(f"**Cột `{selected_col}` có {num_unique} giá trị duy nhất:** {unique_values}")
+    st.write(f"**Cột `{selected_col}` có {num_unique} giá trị duy nhất")
 
     if num_unique > 10:
         st.warning(f"⚠️ Cột `{selected_col}` có hơn 10 giá trị duy nhất, có thể không phù hợp để chuyển đổi trực tiếp.")
