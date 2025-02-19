@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
-
+from scipy.stats import zscore
 # Tải dữ liệu
 
 
@@ -21,6 +21,36 @@ def phan_gioi_thieu():
     # Hiển thị dữ liệu gốc
     st.subheader("📌 10 dòng đầu của dữ liệu gốc")
     st.write(df.head(10))
+    
+    st.subheader("🚨 Kiểm tra lỗi dữ liệu")
+
+                # Kiểm tra giá trị thiếu
+    missing_values = df.isnull().sum()
+
+                # Kiểm tra dữ liệu trùng lặp
+    duplicate_count = df.duplicated().sum()
+
+                
+                
+                # Kiểm tra giá trị quá lớn (outlier) bằng Z-score
+    outlier_count = {
+        col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
+        for col in df.select_dtypes(include=['number']).columns
+    }
+
+                # Tạo báo cáo lỗi
+    error_report = pd.DataFrame({
+        'Cột': df.columns,
+        'Giá trị thiếu': missing_values,
+        'Outlier': [outlier_count.get(col, 0) for col in df.columns]
+    })
+
+                # Hiển thị báo cáo lỗi
+    st.table(error_report)
+
+                # Hiển thị số lượng dữ liệu trùng lặp
+    st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")           
+    
     st.header("⚙️ Các bước chính trong tiền xử lý dữ liệu")
     st.subheader("1️⃣ Loại bỏ các cột không cần thiết")
     st.write("""
@@ -33,6 +63,9 @@ def phan_gioi_thieu():
             df.drop(columns=columns_to_drop, inplace=True)
         ```
         """)
+    
+    
+    
     columns_to_drop = ["Cabin", "Ticket", "Name"]  # Cột không cần thiết
     df.drop(columns=columns_to_drop, inplace=True)  # Loại bỏ cột
 
