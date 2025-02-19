@@ -188,7 +188,7 @@ def hien_thi_ly_thuyet(df):
             df.drop(columns=columns_to_drop, inplace=True)
         ```
         """)
-    df=drop(df)
+    df1=drop(df)
     st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
         Dữ liệu thực tế thường có giá trị bị thiếu. Ta cần xử lý để tránh ảnh hưởng đến mô hình.
@@ -202,7 +202,7 @@ def hien_thi_ly_thuyet(df):
 
         ```
         """)
-    df=xu_ly_gia_tri_thieu(df)
+    df2=xu_ly_gia_tri_thieu(df1)
 
     st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
     st.write("""
