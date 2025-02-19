@@ -303,7 +303,7 @@ def bt_buoi3():
     ax.legend()
     st.pyplot(fig)
     
-    X_train_full, X_test, y_train_full, y_test, kf ,df= tien_xu_ly_du_lieu()
+    df= tien_xu_ly_du_lieu()
     st.write(df.head(10))
    
 
@@ -320,7 +320,7 @@ def bt_buoi3():
 
     # Hiển thị kết quả
     st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
-    
+
 
 
     # Chọn mô hình    
