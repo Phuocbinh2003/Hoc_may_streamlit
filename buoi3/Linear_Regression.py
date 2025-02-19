@@ -82,36 +82,38 @@ def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_it
 
 def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=200):
     """Huấn luyện hồi quy đa thức bằng Gradient Descent và trả về trọng số w."""
-    
+
     # Khởi tạo đối tượng PolynomialFeatures
     poly = PolynomialFeatures(degree=degree)
-    
-    
-    X_train = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
-    st.write("X_train2 shape:", X_train)
+
+    # Đảm bảo X_train là numpy array
+    if isinstance(X_train, pd.DataFrame):
+        X_train = X_train.to_numpy()
+
+    # Xác định số lượng mẫu
+    m = X_train.shape[0]  
+
+    # Thêm cột bias (1s) vào X_train
+    X_train = np.c_[np.ones((m, 1)), X_train[:, 1:]]  # Bỏ cột đầu tiên
+
     # Chuyển đổi tập huấn luyện thành dạng đa thức
     X_train_poly = poly.fit_transform(X_train)
-    
+
+    # Xác định số đặc trưng
     m, n = X_train_poly.shape
-    
-    # Thêm bias (nếu chưa có)
-    X_b = X_train_poly  # PolynomialFeatures đã thêm bias term
-    
-    st.write("X_b shape:", X_b.shape)
-    
+
     # Khởi tạo trọng số ngẫu nhiên
-    w = np.random.randn(n, 1)  
-    st.write("w shape:", w.shape)
-    
-    # Chuyển đổi y_train về dạng (m,1)
+    w = np.random.randn(n, 1)
+
+    # Định dạng lại y_train
     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
 
-    # Huấn luyện bằng gradient descent
+    # Huấn luyện bằng Gradient Descent
     for iteration in range(n_iterations):
-        gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)  
+        gradients = 2/m * X_train_poly.T.dot(X_train_poly.dot(w) - y_train)
         w -= learning_rate * gradients  
 
-    return w, poly  # Trả về trọng số sau khi huấn luyện và bộ biến đổi PolynomialFeatures
+    return w, poly  # Trả về trọng số và bộ biến đổi PolynomialFeatures
 
 
 
