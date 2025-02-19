@@ -88,12 +88,78 @@ def bt_buoi3():
 
     # Giới thiệu
     st.write("## 1. Multiple Linear Regression")
+    st.write("""
+    Hồi quy tuyến tính bội là một thuật toán học máy có giám sát, mô tả mối quan hệ giữa một biến phụ thuộc (output) và nhiều biến độc lập (input) thông qua một hàm tuyến tính.
 
+    Công thức tổng quát của mô hình hồi quy tuyến tính bội:
+    """)
     st.latex(r"""
     y = w_0 + w_1x_1 + w_2x_2 + \dots + w_nx_n
     """)
 
-    st.write("Multiple Linear Regression là mô hình tuyến tính sử dụng nhiều biến độc lập để dự đoán biến phụ thuộc.")
+    st.write("""
+    ### So sánh giữa hồi quy tuyến tính đơn biến và đa biến:
+    - **Hồi quy tuyến tính đơn biến**: Sử dụng một biến đầu vào để dự đoán biến đầu ra.
+    
+    ![Hồi quy tuyến tính đơn biến](img/single_linear_regression.png)
+    
+    - **Hồi quy tuyến tính đa biến**: Sử dụng nhiều biến đầu vào để dự đoán biến đầu ra.
+    
+    ![Hồi quy tuyến tính đa biến](img/multiple_linear_regression.png)
+    """)
+
+   
+    st.write("""
+    ### Hàm mất mát (Loss Function) của Linear Regression
+    Hàm mất mát phổ biến nhất là **Mean Squared Error (MSE)**:
+    """)
+    st.latex(r"""
+    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+    """)
+
+    st.write("""
+    Trong đó:
+    - \( n \): Số lượng điểm dữ liệu.
+    - \( y_i \): Giá trị thực tế của biến phụ thuộc.
+    - \( \hat{y}_i \): Giá trị dự đoán từ mô hình.
+
+    Mục tiêu của hồi quy tuyến tính bội là tìm các hệ số trọng số \( w_0, w_1, w_2, ..., w_n \) sao cho giá trị MSE nhỏ nhất.
+
+    ### Thuật toán Gradient Descent
+    1. Khởi tạo các trọng số \( w_0, w_1, w_2, ..., w_n \) với giá trị bất kỳ.
+    2. Tính gradient của MSE đối với từng trọng số.
+    3. Cập nhật trọng số theo quy tắc của thuật toán Gradient Descent.
+
+    ### Đánh giá mô hình hồi quy tuyến tính bội
+    - **Hệ số tương quan (R)**: Đánh giá mức độ tương quan giữa giá trị thực tế và giá trị dự đoán.
+    - **Hệ số xác định (R²)**: Đo lường phần trăm biến động của biến phụ thuộc có thể giải thích bởi các biến độc lập:
+    """)
+    st.latex(r"""
+    R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}
+    """)
+
+    st.write("""
+    - **Adjusted R²**: Điều chỉnh cho số lượng biến độc lập, giúp tránh overfitting:
+    """)
+    st.latex(r"""
+    R^2_{adj} = 1 - \left( \frac{(1 - R^2)(n - 1)}{n - k - 1} \right)
+    """)
+
+    st.write("""
+    Trong đó:
+    - \( n \): Số lượng quan sát.
+    - \( k \): Số lượng biến độc lập.
+    - \( \bar{y} \): Giá trị trung bình của biến phụ thuộc.
+
+    - **Sai số chuẩn (SE)**: Đánh giá mức độ phân tán của sai số dự đoán quanh giá trị thực tế:
+    """)
+    st.latex(r"""
+    SE = \sqrt{\frac{\sum (y_i - \hat{y}_i)^2}{n - k - 1}}
+    """)
+
+    st.write("""
+    Các chỉ số này giúp đánh giá độ chính xác và khả năng khái quát hóa của mô hình hồi quy tuyến tính bội.
+    """)
 
     # Giới thiệu Polynomial Regression
     st.write("## 2. Polynomial Regression")
