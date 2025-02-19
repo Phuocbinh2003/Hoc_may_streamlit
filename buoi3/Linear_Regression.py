@@ -83,8 +83,12 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     poly = PolynomialFeatures(degree=degree)
 
     if isinstance(X_train, pd.DataFrame):
-        print("🔍 Các cột có tên trống:", X_train.columns[X_train.columns.isna()])
-        print("🔍 Các cột có chứa NaN:", X_train.columns[X_train.isna().any()])
+        empty_columns = X_train.columns[X_train.columns.isna()]
+        nan_columns = X_train.columns[X_train.isna().any()]
+        
+        st.write("🔍 Các cột có tên trống:", empty_columns.tolist())
+        st.write("🔍 Các cột có chứa NaN:", nan_columns.tolist())
+        
         X_train = X_train.loc[:, X_train.columns.notna()].dropna(axis=1)  # Loại bỏ các cột có tên trống
 
     # Xử lý NaN bằng cách điền giá trị trung bình
@@ -104,6 +108,75 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
         w -= learning_rate * gradients
 
     return w, poly
+
+def chon_mo_hinh(model_type="linear", learning_rate=0.01):
+    """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
+    degree = 2  
+    X_train_full, X_test, y_train_full, y_test, kf, df = tien_xu_ly_du_lieu()
+    
+    # Loại bỏ các cột có tên trống
+    empty_columns = X_train_full.columns[X_train_full.columns.isna()]
+    nan_columns = X_train_full.columns[X_train_full.isna().any()]
+    
+    st.write("🔍 Các cột có tên trống trong tập train:", empty_columns.tolist())
+    st.write("🔍 Các cột có chứa NaN trong tập train:", nan_columns.tolist())
+    
+    X_train_full = X_train_full.loc[:, X_train_full.columns.notna()].dropna(axis=1)
+    X_test = X_test.loc[:, X_test.columns.notna()].dropna(axis=1)
+    
+    # Xử lý NaN trên toàn bộ dữ liệu
+    X_train_full = X_train_full.fillna(X_train_full.mean())
+    X_test = X_test.fillna(X_test.mean())
+    y_train_full = y_train_full.fillna(y_train_full.mean())
+    y_test = y_test.fillna(y_test.mean())
+    
+    fold_mse = []
+    poly = None  
+
+    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train_full, y_train_full)):
+        X_train, X_valid = X_train_full.iloc[train_idx], X_train_full.iloc[valid_idx]
+        y_train, y_valid = y_train_full.iloc[train_idx], y_train_full.iloc[valid_idx]
+
+        y_train = y_train.to_numpy().reshape(-1, 1)
+        y_valid = y_valid.to_numpy().reshape(-1, 1)
+
+        st.write(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train)}, Validation size = {len(X_valid)}")
+
+        if model_type == "linear":
+            w = train_multiple_linear_regression(X_train, y_train, learning_rate=learning_rate)
+            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
+            y_valid_pred = X_valid_b.dot(w)
+        elif model_type == "polynomial":
+            w, poly = train_polynomial_regression(X_train, y_train, degree=degree, learning_rate=learning_rate)
+            X_valid_poly = poly.transform(X_valid)  # Sửa lỗi kích thước
+            y_valid_pred = X_valid_poly.dot(w)
+        else:
+            raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
+
+        mse = mean_squared_error(y_valid, y_valid_pred)
+        fold_mse.append(mse)
+        st.write(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+
+    y_train_full = y_train_full.to_numpy().reshape(-1, 1)
+    y_test = y_test.to_numpy().reshape(-1, 1)
+
+    if model_type == "linear":
+        w_final = train_multiple_linear_regression(X_train_full, y_train_full)
+        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+        y_test_pred = X_test_b.dot(w_final)
+    else:
+        w_final, poly = train_polynomial_regression(X_train_full, y_train_full, degree=degree, learning_rate=learning_rate)
+        X_test_poly = poly.transform(X_test)  # Sửa lỗi kích thước
+        y_test_pred = X_test_poly.dot(w_final)
+
+    test_mse = mean_squared_error(y_test, y_test_pred)
+    avg_mse = np.mean(fold_mse)
+
+    st.success(f"📌 MSE trung bình qua các folds: {avg_mse:.4f}")
+    st.success(f"📌 MSE trên tập test: {test_mse:.4f}")
+
+    return w_final, avg_mse, poly
+
 
 def chon_mo_hinh(model_type="linear", learning_rate=0.01):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
