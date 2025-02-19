@@ -7,10 +7,16 @@ from PIL import Image
 
 def drop(df):
     columns_to_drop = st.multiselect("Chọn cột muốn xóa", df.columns.tolist())
-    if columns_to_drop:
-        df.drop(columns=columns_to_drop, inplace=True)
-        st.write("### Dữ liệu sau khi xóa cột:")
-        st.dataframe(df.head())
+
+    if st.button("🗑️ Xóa cột đã chọn"):
+        if columns_to_drop:
+            df.drop(columns=columns_to_drop, inplace=True)
+            st.success("✅ Đã xóa cột thành công!")
+            st.write("### Dữ liệu sau khi xóa cột:")
+            st.dataframe(df.head())
+        else:
+            st.warning("⚠️ Vui lòng chọn ít nhất một cột để xóa.")
+
     return df
 def train_test_size(df):
     train_size = st.slider("Chọn % dữ liệu Train", 50, 90, 70)
@@ -27,31 +33,40 @@ def train_test_size(df):
     })
     st.table(summary_df)
 def xu_ly_gia_tri_thieu(df):
-    st.subheader("Xử lý giá trị thiếu")
-    
-    if df.isnull().sum().sum() == 0:
-        st.success("Không có giá trị thiếu trong dữ liệu!")
+    st.subheader("⚡ Xử lý giá trị thiếu")
+
+    # Lấy danh sách các cột có giá trị thiếu
+    missing_cols = df.columns[df.isnull().any()].tolist()
+
+    if not missing_cols:
+        st.success("✅ Dữ liệu không có giá trị thiếu!")
         return df
 
-    # Chọn cột cần xử lý (chỉ hiển thị các cột có giá trị thiếu)
-    missing_cols = df.columns[df.isnull().any()].tolist()
-    selected_col = st.selectbox("Chọn cột chứa giá trị thiếu:", missing_cols)
+    # Chọn cột chứa giá trị thiếu
+    selected_col = st.selectbox("📌 Chọn cột chứa giá trị thiếu:", missing_cols)
 
     # Chọn phương pháp xử lý
-    method = st.radio("Chọn phương pháp xử lý:", ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
+    method = st.radio("🔧 Chọn phương pháp xử lý:", 
+                      ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
 
-    # Xử lý dữ liệu
-    if method == "Thay thế bằng Mean":
-        df[selected_col].fillna(df[selected_col].mean(), inplace=True)
-        st.success(f"Đã thay thế giá trị thiếu ở cột '{selected_col}' bằng Mean")
-    elif method == "Thay thế bằng Median":
-        df[selected_col].fillna(df[selected_col].median(), inplace=True)
-        st.success(f"Đã thay thế giá trị thiếu ở cột '{selected_col}' bằng Median")
-    elif method == "Xóa giá trị thiếu":
-        df.dropna(subset=[selected_col], inplace=True)
-        st.success(f"Đã xóa các dòng có giá trị thiếu trong cột '{selected_col}'")
+    # Nút xử lý
+    if st.button("🚀 Xử lý giá trị thiếu"):
+        if method == "Thay thế bằng Mean":
+            df[selected_col].fillna(df[selected_col].mean(), inplace=True)
+            st.success(f"✅ Đã thay thế giá trị thiếu ở cột **{selected_col}** bằng Mean")
+        elif method == "Thay thế bằng Median":
+            df[selected_col].fillna(df[selected_col].median(), inplace=True)
+            st.success(f"✅ Đã thay thế giá trị thiếu ở cột **{selected_col}** bằng Median")
+        elif method == "Xóa giá trị thiếu":
+            df.dropna(subset=[selected_col], inplace=True)
+            st.success(f"✅ Đã xóa các dòng có giá trị thiếu trong cột **{selected_col}**")
+
+        # Hiển thị dữ liệu sau xử lý
+        st.write("### 🔍 Dữ liệu sau xử lý:")
+        st.dataframe(df.head())
 
     return df
+
 
 
 
