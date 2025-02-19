@@ -320,6 +320,8 @@ def bt_buoi3():
 
     # Hiển thị kết quả
     st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
+    
+
 
     # Chọn mô hình    
     model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
