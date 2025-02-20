@@ -64,18 +64,19 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
 
 
-    def train_multiple_linear_regression(X_train, y_train):
-        """Huấn luyện mô hình hồi quy tuyến tính bội."""
-        model = LinearRegression()
-        model.fit(X_train, y_train)
-        return model
+    # def train_multiple_linear_regression(X_train, y_train):
+    #     """Huấn luyện mô hình hồi quy tuyến tính bội."""
+    #     model = LinearRegression()
+    #     model.fit(X_train, y_train)
+    #     return model
     def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
         
         m, n = X_train.shape
         st.write(m,n)
-        X_b = np.c_[np.ones((m, 1)), X_train.iloc[:, 1:]] if isinstance(X_train, pd.DataFrame) else np.c_[np.ones((m, 1)), X_train[:, 1:]]
+        X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm x0 = 1 vào mỗi mẫu
         st.write(X_b.shape)
+        st.write(X_b)
         w = np.random.randn(X_b.shape[1], 1)  
         y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
 
