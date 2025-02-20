@@ -95,7 +95,7 @@ def chuyen_doi_kieu_du_lieu(df):
     unique_values = df[selected_col].unique()
     
     mapping_dict = {}
-    if len(unique_values) > 10:
+    if len(unique_values) <10:
         for val in unique_values:
             new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
             mapping_dict[val] = new_val
