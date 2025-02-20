@@ -78,6 +78,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         st.write(X_b.shape)
         st.write(X_b)
         w = np.random.randn(X_b.shape[1], 1)  
+        st.write(w)
         y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
 
         for iteration in range(n_iterations):
