@@ -94,8 +94,8 @@ def phan_gioi_thieu():
         - **Cột "Embarked"**:   Chuyển thành 1 (Q), 2 (S), 3 (C).
         ```python
             df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
-            df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  
-
+         
+            df['Embarked'] = df['Embarked'].map({'Q': 0, 'S': 1, 'C': 2})
 
         ```
         """)
@@ -293,12 +293,33 @@ def phan_train(X_train, y_train, X_val, y_val, X_test, y_test):
     # # Hiển thị bảng báo cáo phân loại
     # st.dataframe(report_df)
     return model, valid_acc, test_acc
+def test_model(model):
+    df = pd.read_csv("buoi2/data.txt")
+    st.write("### Kiểm tra mô hình với giá trị nhập vào")
 
+    # 1️⃣ Liệt kê các cột của DataFrame
+    feature_columns = df.columns[:-1]  # Giả sử cột cuối là y (nhãn)
+    st.write("🔹 Các cột đầu vào:", feature_columns.tolist())
+
+    # 2️⃣ Tạo input cho từng cột
+    input_data = {}
+    for col in feature_columns:
+        input_data[col] = st.number_input(f"Nhập giá trị cho {col}", value=0.0)
+
+    # 3️⃣ Chuyển thành DataFrame
+    input_df = pd.DataFrame([input_data])
+
+    # 4️⃣ Dự đoán với model
+    if st.button("Dự đoán"):
+        prediction = model.predict(input_df)
+        st.success(f"🔮 Dự đoán kết quả: {prediction[0]}")
 def report():
     
         
     X_train, X_val, X_test, y_train, y_val, y_test = phan_gioi_thieu()
-    phan_train(X_train, y_train, X_val, y_val, X_test, y_test)
+    model, valid_acc, test_acc = phan_train(X_train, y_train, X_val, y_val, X_test, y_test)
+    test_model(model)
+    
 
 if __name__ == "__main__":
     report()
