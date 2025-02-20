@@ -169,7 +169,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
                     # Hiển thị số lượng dữ liệu trùng lặp
         st.write(f"🔁 **Số lượng dòng bị trùng lặp:** {duplicate_count}")         
         
-        st.title("🔍 Tiền xử lý dữ liệu")
+        st.title("🔍 Tiền xử lý dữ liệu(Thực hành ở app tiền xử lý dữ liệu)")
 
         # Loại bỏ các cột không cần thiết
         st.subheader("1️⃣ Loại bỏ các cột không quan trọng")
