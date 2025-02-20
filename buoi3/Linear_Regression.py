@@ -59,7 +59,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         num_splits = max(2, int(1 / test_size))  # Đảm bảo n_splits >= 2
         
         kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
-        st.write(y_train.shape[0], y_test.shape[0])
+        st.write(y_train.shape, y_test.shape)
         return X_train, X_val, X_test, y_train, y_val, y_test, kf, df
 
 
@@ -69,7 +69,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
     #     model = LinearRegression()
     #     model.fit(X_train, y_train)
     #     return model
-    def train_multiple_linear_regression(X_train, y_train, y_label ,learning_rate=0.001, n_iterations=200):
+    def train_multiple_linear_regression(X_train, y_train ,learning_rate=0.001, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
         
         # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
@@ -78,7 +78,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # Thêm cột bias (x0 = 1) vào X_train
         X_b = np.c_[np.ones((m, 1)), X_train]
-        st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+        st.write(f"Kích thước ma trận X_b: {X_b}")
 
         # Khởi tạo trọng số ngẫu nhiên
         w = np.random.randn(X_b.shape[1], 1)  
@@ -114,7 +114,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         
         return model, mse, poly  # Trả về cả model và poly để sử dụng sau
 
-    def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf, df,y):
+    def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf, df):
         """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
         degree = 2
         fold_mse = []  # Danh sách MSE của từng fold
@@ -127,7 +127,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
 
             if model_type == "linear":
-                model = train_multiple_linear_regression(X_train_fold, y_train_fold,y)
+                model = train_multiple_linear_regression(X_train_fold, y_train_fold)
             elif model_type == "polynomial":
                 model, _, poly = train_polynomial_regression(X_train_fold, y_train_fold, X_valid, y_valid, degree)
             else:
@@ -377,7 +377,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         # Hiển thị kết quả
         st.write(f"Tỷ lệ dữ liệu: Train = {actual_train_ratio:.1f}%, Validation = {val_ratio:.1f}%, Test = {test_ratio:.1f}%")
 
-        X_train, X_val, X_test, y_train, y_val, y_test, kf, df,y  =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
+        X_train, X_val, X_test, y_train, y_val, y_test, kf, df  =test_train_size(actual_train_ratio, val_ratio_within_train,test_ratio)
 
 
         # Chọn mô hình    
@@ -394,7 +394,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
             # Gọi hàm với đúng thứ tự tham số
-            model, avg_mse, poly = chon_mo_hinh(model_type_value, X_train, X_val, X_test, y_train, y_val, y_test, kf, df,y)
+            model, avg_mse, poly = chon_mo_hinh(model_type_value, X_train, X_val, X_test, y_train, y_val, y_test, kf, df)
 
 
     
