@@ -72,20 +72,31 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
     def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
         
+        # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
         m, n = X_train.shape
-        st.write(m,n)
-        X_b = np.c_[np.ones((m, 1)), X_train]  # Thêm x0 = 1 vào mỗi mẫu
-        st.write(X_b.shape)
-        st.write(X_b)
-        w = np.random.randn(X_b.shape[1], 1)  
-        st.write(w)
-        y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, pd.Series) else y_train.reshape(-1, 1)
+        st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
 
+        # Thêm cột bias (x0 = 1) vào X_train
+        X_b = np.c_[np.ones((m, 1)), X_train]
+        st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+
+        # Khởi tạo trọng số ngẫu nhiên
+        w = np.random.randn(X_b.shape[1], 1)  
+        st.write(f"Trọng số ban đầu: {w.flatten()}")
+
+        # Chuyển y_train về dạng ma trận cột
+        if isinstance(y_train, pd.Series):
+            y_train = y_train.to_numpy().reshape(-1, 1)
+        else:
+            y_train = y_train.reshape(-1, 1)
+
+        # Gradient Descent
         for iteration in range(n_iterations):
-            gradients = 2/m * X_b.T.dot(X_b.dot(w) - y_train)
+            gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
             w -= learning_rate * gradients
 
-        return w 
+        st.success("✅ Huấn luyện hoàn tất!")
+        return w
 
 
 
