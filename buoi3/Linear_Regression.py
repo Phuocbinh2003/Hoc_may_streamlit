@@ -359,6 +359,8 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         # Khi nhấn nút sẽ huấn luyện mô hình
         if st.button("Huấn luyện mô hình"):
         # Xác định model_type phù hợp
+            #mlflow.log_param("model_type", model_type)
+        
             model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
             # Gọi hàm với đúng thứ tự tham số
