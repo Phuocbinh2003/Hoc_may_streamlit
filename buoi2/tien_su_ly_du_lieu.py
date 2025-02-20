@@ -27,16 +27,22 @@ def drop(df):
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")
 
-    train_size = st.slider("Chọn % dữ liệu Train", 50, 90, 70)
-    val_size = st.slider("Chọn % dữ liệu Validation", 0, 40, 15)
-    test_size = 100 - train_size - val_size
+    # Người dùng chọn % dữ liệu Test trước
+    test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
 
-    st.write(f"📌 **Tỷ lệ phân chia:** Train={train_size}%, Validation={val_size}%, Test={test_size}%")
+    # Phần còn lại là Train + Validation
+    remaining_size = 100 - test_size
+    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 40, 15)
 
-    # Chia dữ liệu
-    train_df, temp_df = train_test_split(df, test_size=(100 - train_size) / 100, random_state=42)
-    val_df, test_df = train_test_split(temp_df, test_size=test_size / (test_size + val_size), random_state=42)
+    st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
+    # Chia dữ liệu thành Test trước
+    train_val_df, test_df = train_test_split(df, test_size=test_size / 100, random_state=42)
+
+    # Chia tiếp phần còn lại thành Train và Validation
+    train_df, val_df = train_test_split(train_val_df, test_size=val_size / remaining_size, random_state=42)
+
+    # Lưu vào session_state
     st.session_state.train_df = train_df
     st.session_state.val_df = val_df
     st.session_state.test_df = test_df
@@ -48,6 +54,7 @@ def train_test_size(df):
     })
     st.table(summary_df)
 
+    return train_df, val_df, test_df
     
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
@@ -110,21 +117,23 @@ def chuyen_doi_kieu_du_lieu(df):
 def chuan_hoa_du_lieu(df):
     st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
 
+    # Lọc tất cả các cột số
     numerical_cols = df.select_dtypes(include=['number']).columns.tolist()
+
     if not numerical_cols:
         st.success("✅ Không có thuộc tính dạng số cần chuẩn hóa!")
         return df
 
-    selected_cols = st.multiselect("📌 Chọn các cột số để chuẩn hóa:", numerical_cols)
+    # Chuẩn hóa tất cả các cột số
+    scaler = StandardScaler()
+    df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
+    
+    # Lưu lại trong session_state để tránh mất dữ liệu khi tải lại trang
+    st.session_state.df = df
 
-    if st.button("🚀 Thực hiện chuẩn hóa"):
-        if selected_cols:
-            scaler = StandardScaler()
-            df[selected_cols] = scaler.fit_transform(df[selected_cols])
-            st.session_state.df = df
-            st.success(f"✅ Đã chuẩn hóa các cột: {', '.join(selected_cols)}")
-
+    st.success(f"✅ Đã chuẩn hóa tất cả các cột số: {', '.join(numerical_cols)}")
     st.dataframe(df.head())
+
     return df
 
 def hien_thi_ly_thuyet(df):
@@ -256,7 +265,7 @@ def tien_xu_ly_du_lieu():
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
   
-    
+
         
 
 
