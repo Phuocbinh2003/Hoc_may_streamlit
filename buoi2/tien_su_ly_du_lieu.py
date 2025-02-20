@@ -187,6 +187,7 @@ def hien_thi_ly_thuyet(df):
         - **Cột "Fare"**: Có thể điền giá trị trung bình hoặc trung vị .
         - **Cột "Embarked"**:   Xóa các dòng bị thiếu vì số lượng ít 2/891.
         ```python
+        
             df["Age"].fillna(df["Age"].mean(), inplace=True)  # Điền giá trị trung bình cho "Age"
             df["Fare"].fillna(df["Fare"].median(), inplace=True)  # Điền giá trị trung vị cho "Fare"
             df.dropna(subset=["Embarked"], inplace=True)  # Xóa dòng thiếu "Embarked"
@@ -202,8 +203,7 @@ def hien_thi_ly_thuyet(df):
         - **Cột "Embarked"**:   Chuyển thành 1 (Q), 2 (S), 3 (C).
         ```python
             df["Sex"] = df["Sex"].map({"male": 1, "female": 0})  # Mã hóa giới tính
-            df = pd.get_dummies(df, columns=["Embarked"], drop_first=True)  
-
+            df['Embarked'] = df['Embarked'].map({'Q': 0, 'S': 1, 'C': 2})
 
         ```
         """)
@@ -212,11 +212,11 @@ def hien_thi_ly_thuyet(df):
 
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
-        Các giá trị số có thể có khoảng giá trị khác nhau, làm ảnh hưởng đến mô hình. Ta sẽ chuẩn hóa "Age" và "Fare" về cùng một thang đo bằng StandardScaler.
+        Các giá trị số có thể có khoảng giá trị khác nhau, làm ảnh hưởng đến mô hình. Ta sẽ chuẩn hóa toàn bộ về cùng một thang đo bằng StandardScaler.
         
         ```python
             scaler = StandardScaler()
-            df[["Age", "Fare"]] = scaler.fit_transform(df[["Age", "Fare"]])
+            df[["Age", "Fare",...]] = scaler.fit_transform(df[["Age", "Fare",...]])
 
         ```
         """)
