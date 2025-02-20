@@ -32,7 +32,7 @@ def train_test_size(df):
 
     # Phần còn lại là Train + Validation
     remaining_size = 100 - test_size
-    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 40, 15)
+    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
 
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
@@ -265,7 +265,7 @@ def tien_xu_ly_du_lieu():
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
   
-        
+
         
 
 
