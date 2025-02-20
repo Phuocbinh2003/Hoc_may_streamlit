@@ -39,9 +39,8 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
     def test_train_size(actual_train_ratio, val_ratio_within_train, test_ratio):
         df = tien_xu_ly_du_lieu()
-        X = df.drop(columns=['Survived'])
-        y_label = df['Survived']
-        st.write("ylabel",y_label)
+        X = df
+        
         mlflow.log_param("actual_train_ratio", actual_train_ratio)
         mlflow.log_param("val_ratio_within_train", val_ratio_within_train)
         mlflow.log_param("test_ratio", test_ratio)
@@ -60,7 +59,9 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         num_splits = max(2, int(1 / test_size))  # Đảm bảo n_splits >= 2
         
         kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
-        
+        X = X_train.drop(columns=['Survived'])
+        y_label = X['Survived']
+        st.write(X, y_label)
         return X_train, X_val, X_test, y_train, y_val, y_test, kf, df, y_label
 
 
