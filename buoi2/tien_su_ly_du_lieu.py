@@ -275,7 +275,7 @@ def hien_thi_ly_thuyet(df):
         """)
 
     df=chuyen_doi_kieu_du_lieu(df)
-    st.write(df.dtypes)
+    
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
         Các giá trị số có thể có khoảng giá trị khác nhau, làm ảnh hưởng đến mô hình. Ta sẽ chuẩn hóa toàn bộ về cùng một thang đo bằng StandardScaler.
@@ -484,7 +484,7 @@ def main():
 
             # Hiển thị lý thuyết và xử lý dữ liệu
             hien_thi_ly_thuyet(df)
-            st.write("...")
+            
             try:
                 
                 final_w, avg_mse, scaler = chon_mo_hinh()
