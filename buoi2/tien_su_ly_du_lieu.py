@@ -473,8 +473,14 @@ def main():
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
             
-            X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
-            
+            # X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
+            try:
+                result = hien_thi_ly_thuyet(df)
+                st.write("Kết quả từ hien_thi_ly_thuyet:", result)
+                X_train, X_val, X_test, y_train, y_val, y_test = result
+            except Exception as e:
+                st.error(f"❌ Lỗi khi gọi hien_thi_ly_thuyet: {e}")
+                st.stop()
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
