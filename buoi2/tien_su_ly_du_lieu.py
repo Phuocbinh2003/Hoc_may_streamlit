@@ -473,25 +473,21 @@ def main():
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
             
-            # X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
-            try:
-                result = hien_thi_ly_thuyet(df)
-                st.write("Kết quả từ hien_thi_ly_thuyet:", result)
-                X_train, X_val, X_test, y_train, y_val, y_test = result
-            except Exception as e:
-                st.error(f"❌ Lỗi khi gọi hien_thi_ly_thuyet: {e}")
-                st.stop()
+            X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
+            
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
+            if X_train is None or X_test is None or y_train is None or y_test is None:
+                st.error("❌ Dữ liệu chưa được chia đúng cách! Hãy kiểm tra lại.")
+                st.stop()
+                # Khi nhấn nút sẽ huấn luyện mô hình
+                if st.button("Huấn luyện mô hình"):
+                    st.dataframe(X_train.head())
+                    model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
-            # Khi nhấn nút sẽ huấn luyện mô hình
-            if st.button("Huấn luyện mô hình"):
-                st.dataframe(X_train.head())
-                model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
-
-                # Gọi hàm với đúng thứ tự tham số
-                final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
-            
+                    # Gọi hàm với đúng thứ tự tham số
+                    final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
+                
             
             
             
