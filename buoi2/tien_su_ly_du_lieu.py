@@ -484,14 +484,8 @@ def main():
             # Hiển thị lý thuyết và xử lý dữ liệu
             hien_thi_ly_thuyet(df)
 
-            # Kiểm tra nếu dữ liệu đã được tách
-            if "X_train" not in st.session_state:
-                st.warning("⚠️ Dữ liệu chưa được tách! Vui lòng chia train-test trước khi huấn luyện.")
-                
-            else:
-                
-                
-                final_w, avg_mse, scaler = chon_mo_hinh()
+          
+            final_w, avg_mse, scaler = chon_mo_hinh()
 
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
