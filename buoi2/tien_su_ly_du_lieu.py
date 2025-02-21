@@ -398,7 +398,12 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
 
 def chon_mo_hinh( X_train, X_test, y_train, y_test, n_folds=5):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
+    X_train = X_train.copy()
+    X_test = X_test.copy()
+    y_train = y_train.copy()
+    y_test = y_test.copy()
     
+    st.subheader("🔍 Chọn mô hình hồi quy")
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     st.dataframe(X_train.shape)
     
