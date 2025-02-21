@@ -281,7 +281,7 @@ def hien_thi_ly_thuyet(df):
        
     X_train, X_val, X_test, y_train, y_val, y_test, kf =train_test_size(df)
     
-    return X_train, X_val, X_test, y_train, y_val, y_test, kf
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
 
 def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
