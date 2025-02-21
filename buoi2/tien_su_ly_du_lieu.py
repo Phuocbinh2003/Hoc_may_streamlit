@@ -455,7 +455,7 @@ def tien_xu_ly_du_lieu():
             model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
             # Gọi hàm với đúng thứ tự tham số
-            final_w, avg_mse, poly, scaler= chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
+            final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
 
 
         
