@@ -41,9 +41,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         df = tien_xu_ly_du_lieu()
         X = df.drop(columns=['Survived'])
         y = df['Survived']
-        mlflow.log_param("actual_train_ratio", actual_train_ratio)
-        mlflow.log_param("val_ratio_within_train", val_ratio_within_train)
-        mlflow.log_param("test_ratio", test_ratio)
+   
         # Chuyển đổi tỷ lệ phần trăm thành giá trị thực
         actual_train_size = actual_train_ratio / 100
         test_size = test_ratio / 100
