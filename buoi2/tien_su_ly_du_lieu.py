@@ -443,8 +443,9 @@ def main():
     if uploaded_file is not None:  # Kiểm tra xem file đã được tải lên chư
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
-            X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
             
+            X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
+            st.dataframe(X_train)
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
