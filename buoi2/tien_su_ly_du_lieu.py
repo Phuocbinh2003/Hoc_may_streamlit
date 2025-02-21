@@ -103,7 +103,7 @@ def train_test_size(df):
 
         st.success("✅ Dữ liệu đã được chia thành công!")
         
-    st.dataframe(X_train.head())
+    st.dataframe("11",X_train.head())
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 def xu_ly_gia_tri_thieu(df):
