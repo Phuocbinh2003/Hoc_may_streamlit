@@ -33,33 +33,44 @@ def drop(df):
             st.warning("⚠️ Vui lòng chọn ít nhất một cột để xóa!")
 
     return df
+
+def choose_label(df):
+    st.subheader("🎯 Chọn cột dự đoán (label)")
+    
+    if "target_column" not in st.session_state:
+        st.session_state.target_column = None
+    
+    selected_label = st.selectbox("📌 Chọn cột dự đoán", df.columns, 
+                                  index=df.columns.get_loc(st.session_state.target_column) if st.session_state.target_column else 0)
+
+    if st.button("✅ Xác nhận Label"):
+        st.session_state.target_column = selected_label
+        st.success(f"✅ Đã chọn cột: **{selected_label}**")
+        
+    
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")
+    
+    # Kiểm tra đã chọn label chưa
+    if "target_column" not in st.session_state or st.session_state.target_column is None:
+        st.warning("⚠ Vui lòng chọn cột dự đoán trước!")
+        choose_label(df)  # Gọi hàm chọn label trước
+        return None, None, None, None, None, None
 
-    # Chọn cột dự đoán (chỉ chọn 1 cột)
-    target_column = st.selectbox("🎯 Chọn cột dự đoán (label)", df.columns)
+    target_column = st.session_state.target_column
 
-    if st.button("✅ Xác nhận"):
+    if st.button("✅ Chia dữ liệu"):
         X = df.drop(columns=[target_column])
         y = df[target_column]
-        # Người dùng chọn tỷ lệ tập Test
+        
+        # Chọn tỷ lệ tập Test và Validation
         test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
-
-        # Phần còn lại là Train + Validation
         remaining_size = 100 - test_size
         val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
 
-        st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
-
-        # Chia dữ liệu thành Test trước
+        # Chia dữ liệu
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size/100, stratify=y, random_state=42)
-
-        # Chia tiếp phần còn lại thành Train và Validation
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / (100 - test_size), stratify=y_train, random_state=42)
-
-        # Thiết lập số fold cho KFold
-        # num_splits = max(2, int(1 / (test_size / 100)))  # Đảm bảo n_splits >= 2
-        # kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
 
         # Lưu vào session_state
         st.session_state.X_train = X_train
@@ -68,19 +79,19 @@ def train_test_size(df):
         st.session_state.y_train = y_train
         st.session_state.y_val = y_val
         st.session_state.y_test = y_test
-        # st.session_state.kf = kf
 
-        # Hiển thị thông tin số lượng mẫu
+        # Hiển thị thông tin
         summary_df = pd.DataFrame({
             "Tập dữ liệu": ["Train", "Validation", "Test"],
             "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
         })
         st.table(summary_df)
-
         st.success("✅ Dữ liệu đã được chia thành công!")
         st.dataframe(X_train.head())
 
         return X_train, X_val, X_test, y_train, y_val, y_test
+
+    return None, None, None, None, None, None
 
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
@@ -445,7 +456,7 @@ def main():
             df = pd.read_csv(uploaded_file, delimiter=",")
             
             X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
-            st.dataframe(X_train)
+            
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
 
