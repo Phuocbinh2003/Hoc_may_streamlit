@@ -67,7 +67,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
     #     model = LinearRegression()
     #     model.fit(X_train, y_train)
     #     return model
-    def train_multiple_linear_regression(X_train, y_train ,learning_rate=0.001, n_iterations=200):
+    def train_multiple_linear_regression(X_train, y_train ,learning_rate=0.01, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
         
         # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
