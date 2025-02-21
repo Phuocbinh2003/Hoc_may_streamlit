@@ -472,7 +472,7 @@ def main():
             df = pd.read_csv(uploaded_file, delimiter=",")
             st.success("📂 File tải lên thành công!")
 
-            # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng không
+            # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng khôn
             result = hien_thi_ly_thuyet(df)
             if result is None or len(result) != 6:
                 st.error("⚠️ Lỗi khi xử lý dữ liệu! Đảm bảo file đúng định dạng.")
