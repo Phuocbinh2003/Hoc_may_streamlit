@@ -402,7 +402,7 @@ def chon_mo_hinh(X_train, X_test, y_train, y_test, n_folds=5):
     X_test = X_test.copy()
     y_train = y_train.copy()
     y_test = y_test.copy()
-    
+    st.dataframe(X_train)
     st.subheader("🔍 Chọn mô hình hồi quy")
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     
