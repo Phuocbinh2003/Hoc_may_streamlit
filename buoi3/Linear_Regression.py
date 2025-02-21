@@ -170,8 +170,9 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
             if model_type == "linear":
                 w = train_multiple_linear_regression(X_train_fold, y_train_fold)
+                w = np.array(w).reshape(-1, 1)
+
                 X_valid = X_valid.to_numpy()
-                X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]
 
 
                 X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
