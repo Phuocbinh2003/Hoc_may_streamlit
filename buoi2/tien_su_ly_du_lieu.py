@@ -444,18 +444,25 @@ def tien_xu_ly_du_lieu():
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
             X_train, X_val, X_test, y_train, y_val, y_test, df=hien_thi_ly_thuyet(df)
+            
+            
+            model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
+
+            # Khi nhấn nút sẽ huấn luyện mô hình
+            if st.button("Huấn luyện mô hình"):
+            
+                model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
+
+                # Gọi hàm với đúng thứ tự tham số
+                final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
+            
+            
+            
+            
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
     
-        model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
-
-        # Khi nhấn nút sẽ huấn luyện mô hình
-        if st.button("Huấn luyện mô hình"):
         
-            model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
-
-            # Gọi hàm với đúng thứ tự tham số
-            final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
 
 
         
