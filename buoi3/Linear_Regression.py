@@ -441,7 +441,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
             # Gọi hàm với đúng thứ tự tham số
-            model, avg_mse, poly = chon_mo_hinh(model_type_value, X_train, X_val, X_test, y_train, y_val, y_test, kf, df)
+            final_w, avg_mse, poly, scaler= chon_mo_hinh(model_type_value, X_train, X_val, X_test, y_train, y_val, y_test, kf)
 
 
     
