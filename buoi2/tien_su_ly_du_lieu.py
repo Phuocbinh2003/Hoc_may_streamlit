@@ -53,9 +53,17 @@ def choose_label(df):
     return X, y
 
 def train_test_size(df):
-    st.subheader("📊 Chia dữ liệu Train - Validation - Test")     
+    st.subheader("📊 Chia dữ liệu Train - Validation - Test")    
+    st.write(df.head()) 
+    if "df" not in st.session_state:
+        st.error("❌ Dữ liệu chưa được tải lên!")
+        st.stop()
 
+    df = st.session_state.df  # Lấy dữ liệu từ session_state
+    st.write(df.head()) 
     X, y = choose_label(df)
+   
+    df = st.session_state.df
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
 
     remaining_size = 100 - test_size
