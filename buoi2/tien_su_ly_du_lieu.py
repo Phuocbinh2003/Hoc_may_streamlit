@@ -419,7 +419,8 @@ def chon_mo_hinh(n_folds=5):
     X_test = st.session_state.X_test
     y_train = st.session_state.y_train
     y_test = st.session_state.y_test
-
+    st.write(X_train.shape ,y_train.shape)
+    st.dataframe(X_train)
     if st.button("Huấn luyện mô hình"):
         st.write("⏳ Đang huấn luyện mô hình...")  # Giúp debug xem có chạy vào đây không
 
@@ -488,8 +489,8 @@ def main():
                 st.warning("⚠️ Dữ liệu chưa được tách! Vui lòng chia train-test trước khi huấn luyện.")
                 
             else:
-                X_train = st.session_state.X_train
-                st.dataframe(X_train)
+                
+                
                 final_w, avg_mse, scaler = chon_mo_hinh()
 
         except Exception as e:
