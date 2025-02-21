@@ -67,10 +67,15 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
     #     model = LinearRegression()
     #     model.fit(X_train, y_train)
     #     return model
+    
     def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
         
-        # Kiểm tra dữ liệu có NaN hoặc Inf không
+        # Chuyển đổi X_train, y_train sang NumPy array để tránh lỗi
+        X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
+        y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, (pd.Series, pd.DataFrame)) else y_train.reshape(-1, 1)
+
+        # Kiểm tra NaN hoặc Inf
         if np.isnan(X_train).any() or np.isnan(y_train).any():
             raise ValueError("Dữ liệu đầu vào chứa giá trị NaN!")
         if np.isinf(X_train).any() or np.isinf(y_train).any():
@@ -88,15 +93,9 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         X_b = np.c_[np.ones((m, 1)), X_train]
         st.write(f"Kích thước ma trận X_b: {X_b.shape}")
 
-        # Khởi tạo trọng số ngẫu nhiên nhỏ để tránh overflow
+        # Khởi tạo trọng số ngẫu nhiên nhỏ
         w = np.random.randn(X_b.shape[1], 1) * 0.01  
         st.write(f"Trọng số ban đầu: {w.flatten()}")
-
-        # Chuyển y_train về dạng ma trận cột
-        if isinstance(y_train, pd.Series):
-            y_train = y_train.to_numpy().reshape(-1, 1)
-        else:
-            y_train = y_train.reshape(-1, 1)
 
         # Gradient Descent
         for iteration in range(n_iterations):
@@ -110,7 +109,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         st.success("✅ Huấn luyện hoàn tất!")
         st.write(f"Trọng số cuối cùng: {w.flatten()}")
-        return w
+        return w, scaler
 
 
 
