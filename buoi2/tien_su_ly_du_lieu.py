@@ -309,8 +309,7 @@ def hien_thi_ly_thuyet(df):
     """)
        
     X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
-    st.write("2")
-    st.dataframe(X_train.head())
+    
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
@@ -481,7 +480,7 @@ def main():
 
             # Khi nhấn nút sẽ huấn luyện mô hình
             if st.button("Huấn luyện mô hình"):
-            
+                st.dataframe(X_train.head())
                 model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
                 # Gọi hàm với đúng thứ tự tham số
