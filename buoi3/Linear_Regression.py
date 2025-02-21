@@ -187,7 +187,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         print("✅ Huấn luyện hoàn tất!")
         print(f"Trọng số cuối cùng: {w.flatten()}")
         
-        return w, scaler
+        return w, X_poly,scaler
 
     def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf):
         """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
