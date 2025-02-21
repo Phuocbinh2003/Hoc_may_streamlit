@@ -466,22 +466,31 @@ def chon_mo_hinh(X_train, X_test, y_train, y_test, n_folds=5):
 
 def main():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
-    if uploaded_file is not None:  # Kiểm tra xem file đã được tải lên chư
+    
+    if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
-            
-            X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
-            final_w, avg_mse, scaler = chon_mo_hinh( X_train, X_test, y_train, y_test)
-            
-            
-            
-            
-            
-            
-            
-            
+            st.success("📂 File tải lên thành công!")
+
+            # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng không
+            result = hien_thi_ly_thuyet(df)
+            if result is None or len(result) != 6:
+                st.error("⚠️ Lỗi khi xử lý dữ liệu! Đảm bảo file đúng định dạng.")
+                return
+
+            X_train, X_val, X_test, y_train, y_val, y_test = result
+
+            # Kiểm tra nếu dữ liệu rỗng hoặc không đúng
+            if X_train is None or X_test is None or y_train is None or y_test is None:
+                st.error("⚠️ Dữ liệu không hợp lệ! Vui lòng kiểm tra lại file.")
+                return
+
+            # Gọi hàm chọn mô hình
+            final_w, avg_mse, scaler = chon_mo_hinh(X_train, X_test, y_train, y_test)
+        
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
+
     
         
 
