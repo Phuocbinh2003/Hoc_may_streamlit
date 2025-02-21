@@ -57,7 +57,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         num_splits = max(2, int(1 / test_size))  # Đảm bảo n_splits >= 
         
         kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
-        st.write(y_train.shape, y_test.shape)
+        
         
         return X_train, X_val, X_test, y_train, y_val, y_test, kf, df
 
