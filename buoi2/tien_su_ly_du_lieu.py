@@ -104,7 +104,7 @@ def train_test_size(df):
         st.success("✅ Dữ liệu đã được chia thành công!")
         
     st.dataframe(X_train.head())
-    return X_train, X_val, X_test, y_train, y_val, y_test
+
 
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
@@ -310,7 +310,7 @@ def hien_thi_ly_thuyet(df):
     ```
     """)
        
-    X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
+    train_test_size(df)
     
     
 
@@ -489,7 +489,7 @@ def main():
                 
             else:
                 X_train = st.session_state.X_train
-                st.dataframe(X_train.head())
+                st.dataframe(X_train)
                 final_w, avg_mse, scaler = chon_mo_hinh()
 
         except Exception as e:
