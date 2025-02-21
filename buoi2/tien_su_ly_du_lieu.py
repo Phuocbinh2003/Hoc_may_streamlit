@@ -53,14 +53,14 @@ def choose_label(df):
     return X, y
 
 def train_test_size(df):
-    st.subheader("📊 Chia dữ liệu Train - Validation - Test")    
-    st.write("1",df.head()) 
+    st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
+    st.write(df.shape)  
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
 
     df = st.session_state.df  # Lấy dữ liệu từ session_state
-    st.write(df.head()) 
+    st.write(df.shape) 
     X, y = choose_label(df)
    
     df = st.session_state.df
