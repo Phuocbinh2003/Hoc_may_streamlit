@@ -42,7 +42,6 @@ def train_test_size(df):
     if st.button("✅ Xác nhận"):
         X = df.drop(columns=[target_column])
         y = df[target_column]
-        st.dataframe(X.head())
         # Người dùng chọn tỷ lệ tập Test
         test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
 
@@ -59,8 +58,8 @@ def train_test_size(df):
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / (100 - test_size), stratify=y_train, random_state=42)
 
         # Thiết lập số fold cho KFold
-        num_splits = max(2, int(1 / (test_size / 100)))  # Đảm bảo n_splits >= 2
-        kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
+        # num_splits = max(2, int(1 / (test_size / 100)))  # Đảm bảo n_splits >= 2
+        # kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
 
         # Lưu vào session_state
         st.session_state.X_train = X_train
@@ -69,7 +68,7 @@ def train_test_size(df):
         st.session_state.y_train = y_train
         st.session_state.y_val = y_val
         st.session_state.y_test = y_test
-        st.session_state.kf = kf
+        # st.session_state.kf = kf
 
         # Hiển thị thông tin số lượng mẫu
         summary_df = pd.DataFrame({
@@ -79,8 +78,9 @@ def train_test_size(df):
         st.table(summary_df)
 
         st.success("✅ Dữ liệu đã được chia thành công!")
+        st.dataframe(X_train.head())
 
-        return X_train, X_val, X_test, y_train, y_val, y_test, kf
+        return X_train, X_val, X_test, y_train, y_val, y_test, df
 
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
@@ -443,7 +443,7 @@ def tien_xu_ly_du_lieu():
     if uploaded_file is not None:  # Kiểm tra xem file đã được tải lên chư
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
-            X_train, X_val, X_test, y_train, y_val, y_test, kf=hien_thi_ly_thuyet(df)
+            X_train, X_val, X_test, y_train, y_val, y_test, df=hien_thi_ly_thuyet(df)
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
     
