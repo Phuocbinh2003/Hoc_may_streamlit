@@ -479,9 +479,9 @@ def main():
             hien_thi_ly_thuyet(df)
             
             final_w, avg_mse, scaler = chon_mo_hinh()
-        
+            
         except Exception as e:
-            st.error(f"❌ Lỗi khi đọc file: {e}")
+            st.error(f"❌ Lỗi : {e}")
 
     
         
