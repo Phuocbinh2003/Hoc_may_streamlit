@@ -158,6 +158,7 @@ def chuyen_doi_kieu_du_lieu(df):
 
         if st.button("🚀 Chuyển đổi dữ liệu"):
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
+            df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
             st.session_state.df = df
             st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
     
@@ -274,7 +275,7 @@ def hien_thi_ly_thuyet(df):
         """)
 
     df=chuyen_doi_kieu_du_lieu(df)
-    st.write(df.dtypes)
+    st.write(X_train.dtypes)
     st.subheader("4️⃣ Chuẩn hóa dữ liệu số")
     st.write("""
         Các giá trị số có thể có khoảng giá trị khác nhau, làm ảnh hưởng đến mô hình. Ta sẽ chuẩn hóa toàn bộ về cùng một thang đo bằng StandardScaler.
