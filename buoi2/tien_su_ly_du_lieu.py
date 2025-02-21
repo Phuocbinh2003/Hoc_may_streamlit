@@ -62,6 +62,7 @@ def train_test_size(df):
     if st.button("✅ Chia dữ liệu"):
         X = df.drop(columns=[target_column])
         y = df[target_column]
+        st.write(y)
         
         # Chọn tỷ lệ tập Test và Validation
         test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
