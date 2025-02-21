@@ -477,17 +477,16 @@ def main():
             
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
-            if X_train is None or X_test is None or y_train is None or y_test is None:
-                st.error("❌ Dữ liệu chưa được chia đúng cách! Hãy kiểm tra lại.")
-                st.stop()
-                # Khi nhấn nút sẽ huấn luyện mô hình
-                if st.button("Huấn luyện mô hình"):
-                    st.dataframe(X_train.head())
-                    model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
+            
+            # Khi nhấn nút sẽ huấn luyện mô hình
+            st.datafeam(X_train.head())
+            if st.button("Huấn luyện mô hình"):
+                st.dataframe(X_train.head())
+                model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
 
-                    # Gọi hàm với đúng thứ tự tham số
-                    final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
-                
+                # Gọi hàm với đúng thứ tự tham số
+                final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
+            
             
             
             
