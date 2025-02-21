@@ -78,6 +78,8 @@ def train_test_size(df):
         # Chia dữ liệu thành Test trước
         X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
         st.write(X_train_full.shape ,y_train_full.shape)
+        
+        
         # Chia tiếp phần còn lại thành Train và Validation
         stratify_option = y_train_full if y_train_full.nunique() > 1 else None
         X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
@@ -99,7 +101,7 @@ def train_test_size(df):
         st.table(summary_df)
 
         st.success("✅ Dữ liệu đã được chia thành công!")
-        st.dataframe(X_train.head())
+        
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
@@ -308,7 +310,7 @@ def hien_thi_ly_thuyet(df):
     """)
        
     X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
-    
+    st.dataframe(X_train.head())
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
