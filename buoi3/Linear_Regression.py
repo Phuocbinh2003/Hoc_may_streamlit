@@ -193,7 +193,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
         degree = 2
         fold_mse = []  # Danh sách MSE của từng fold
-        poly = None  # Biến để lưu PolynomialFeatures nếu dùng hồi quy đa thức
+        scaler = StandardScaler()  # Chuẩn hóa dữ liệu cho hồi quy đa thức nếu cần
 
         for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
