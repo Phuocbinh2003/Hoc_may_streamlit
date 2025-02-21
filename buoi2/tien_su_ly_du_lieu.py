@@ -438,7 +438,7 @@ def chon_mo_hinh(model_type, X_train, X_test, y_train, y_test, n_folds=5):
 
 
 
-def tien_xu_ly_du_lieu():
+def main():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
     if uploaded_file is not None:  # Kiểm tra xem file đã được tải lên chư
         try:
@@ -472,4 +472,4 @@ def tien_xu_ly_du_lieu():
   
 
 if __name__ == "__main__":
-    tien_xu_ly_du_lieu()
+    main()
