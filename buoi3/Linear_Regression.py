@@ -113,21 +113,49 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
 
 
-    def train_polynomial_regression(X_train, y_train, X_valid, y_valid, degree=2):
-        """Huấn luyện mô hình hồi quy đa thức."""
-        poly = PolynomialFeatures(degree=degree)
-        X_train_poly = poly.fit_transform(X_train)
-        X_valid_poly = poly.transform(X_valid)
+    def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.01, n_iterations=500):
+        """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
 
-        model = LinearRegression()
-        model.fit(X_train_poly, y_train)
-        
-        y_pred = model.predict(X_valid_poly)
-        mse = mean_squared_error(y_valid, y_pred)
-        
-        return model, mse, poly  # Trả về cả model và poly để sử dụng sau
+        # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
+        X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
+        y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, (pd.Series, pd.DataFrame)) else y_train.reshape(-1, 1)
 
-    def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf, df):
+        # Tạo đặc trưng đa thức
+        poly = PolynomialFeatures(degree=degree, include_bias=False)
+        X_poly = poly.fit_transform(X_train)
+
+        # Chuẩn hóa dữ liệu để tránh tràn số
+        scaler = StandardScaler()
+        X_poly = scaler.fit_transform(X_poly)
+
+        # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
+        m, n = X_poly.shape
+        st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
+
+        # Thêm cột bias (x0 = 1)
+        X_b = np.c_[np.ones((m, 1)), X_poly]
+        st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+
+        # Khởi tạo trọng số ngẫu nhiên nhỏ
+        w = np.random.randn(X_b.shape[1], 1) * 0.01  
+        st.write(f"Trọng số ban đầu: {w.flatten()}")
+
+        # Gradient Descent
+        for iteration in range(n_iterations):
+            gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
+
+            # Kiểm tra nếu gradient có giá trị NaN
+            if np.isnan(gradients).any():
+                raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
+
+            w -= learning_rate * gradients
+
+        st.success("✅ Huấn luyện hoàn tất!")
+        st.write(f"Trọng số cuối cùng: {w.flatten()}")
+        
+        return w, poly, scaler
+
+    def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf):
         """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
         degree = 2
         fold_mse = []  # Danh sách MSE của từng fold
@@ -140,13 +168,17 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
 
             if model_type == "linear":
-                model = train_multiple_linear_regression(X_train_fold, y_train_fold)
+                w = train_multiple_linear_regression(X_train_fold, y_train_fold)
+                X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
+                y_valid_pred = X_valid_b.dot(w)  # Dự đoán
             elif model_type == "polynomial":
-                model, _, poly = train_polynomial_regression(X_train_fold, y_train_fold, X_valid, y_valid, degree)
+                w, poly, scaler = train_polynomial_regression(X_train_fold, y_train_fold, degree)
+                X_valid_poly = scaler.transform(poly.transform(X_valid))  # Biến đổi đặc trưng
+                X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]  # Thêm bias
+                y_valid_pred = X_valid_b.dot(w)  # Dự đoán
             else:
                 raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
 
-            y_valid_pred = model.predict(X_valid if model_type == "linear" else poly.transform(X_valid))
             mse = mean_squared_error(y_valid, y_valid_pred)
             fold_mse.append(mse)
 
@@ -154,22 +186,23 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # 🔥 Huấn luyện lại trên toàn bộ tập train
         if model_type == "linear":
-            final_model = train_multiple_linear_regression(X_train, y_train,y)
+            final_w = train_multiple_linear_regression(X_train, y_train)
+            X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+            y_test_pred = X_test_b.dot(final_w)
         else:
-            X_train_poly = poly.fit_transform(X_train)
-            final_model = LinearRegression()
-            final_model.fit(X_train_poly, y_train)
+            final_w, poly, scaler = train_polynomial_regression(X_train, y_train, degree)
+            X_test_poly = scaler.transform(poly.transform(X_test))
+            X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+            y_test_pred = X_test_b.dot(final_w)
 
         # 📌 Đánh giá trên tập test
-        y_test_pred = final_model.predict(X_test if model_type == "linear" else poly.transform(X_test))
         test_mse = mean_squared_error(y_test, y_test_pred)
-
-        avg_mse = np.mean(fold_mse)  # Lấy trung bình MSE qua các folds
+        avg_mse = np.mean(fold_mse)  # Trung bình MSE qua các folds
 
         st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
         st.success(f"MSE trên tập test: {test_mse:.4f}")
 
-        return final_model, avg_mse, poly
+        return final_w, avg_mse, poly, scaler if model_type == "polynomial" else None
 
     def bt_buoi3():
         uploaded_file = "buoi2/data.txt"
