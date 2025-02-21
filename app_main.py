@@ -1,6 +1,6 @@
 import streamlit as st
 
-from buoi2.tien_su_ly_du_lieu import tien_xu_ly_du_lieu 
+from buoi2.tien_su_ly_du_lieu import main 
 from buoi2.Data_Processing import report as CR
 from buoi3.Linear_Regression import bt_buoi3
 
@@ -10,7 +10,7 @@ option = st.sidebar.selectbox(
 )
 
 if option == 'Tiền xử lý dữ liệu':
-    tien_xu_ly_du_lieu () 
+    main() 
 if option == 'Data Processing':
     CR() 
 if option == 'Linear Regression':
