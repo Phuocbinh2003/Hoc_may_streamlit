@@ -42,7 +42,7 @@ def train_test_size(df):
     if st.button("✅ Xác nhận"):
         X = df.drop(columns=[target_column])
         y = df[target_column]
-        st.write(f"📌 **Kích thước dữ liệu:** X={X}")
+        st.dataframe(X.head())
         # Người dùng chọn tỷ lệ tập Test
         test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
 
