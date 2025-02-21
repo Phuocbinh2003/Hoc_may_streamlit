@@ -478,7 +478,7 @@ def main():
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
             
-            # Khi nhấn nút sẽ huấn luyện mô hình
+            # Khi nhấn nút sẽ huấn luyện mô hìn
             st.datafeam(X_train.head())
             if st.button("Huấn luyện mô hình"):
                 st.dataframe(X_train.head())
