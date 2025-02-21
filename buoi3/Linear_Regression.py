@@ -149,7 +149,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         
     #     return w, poly, scaler
     
-    def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
+    def train_polynomial_regression(X_train, y_train, degree=3, learning_rate=0.001, n_iterations=500):
         """Huấn luyện hồi quy đa thức **không có tương tác** bằng Gradient Descent."""
 
         # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
