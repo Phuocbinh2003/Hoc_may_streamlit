@@ -54,9 +54,7 @@ def choose_label(df):
 
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
-    # Khởi tạo các biến với giá trị mặc định
-    # X_train, X_val, X_test = None, None, None
-    # y_train, y_val, y_test = None, None, None
+    
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
@@ -420,8 +418,14 @@ def chon_mo_hinh(n_folds=5):
     X_test = st.session_state.X_test
     y_train = st.session_state.y_train
     y_test = st.session_state.y_test
-    st.write(X_train.shape ,y_train.shape)
-    st.dataframe(X_train)
+    # st.write(X_train.shape ,y_train.shape)
+    # st.dataframe(X_train)
+    st.write("📌 Kiểm tra kiểu dữ liệu của X:")
+    st.write(X_train.dtypes)
+
+    st.write("📌 Kiểm tra kiểu dữ liệu của y:")
+    st.write(y_train.dtypes)
+
     if st.button("Huấn luyện mô hình"):
         st.write("⏳ Đang huấn luyện mô hình...")  # Giúp debug xem có chạy vào đây không
 
