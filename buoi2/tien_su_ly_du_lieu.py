@@ -404,76 +404,73 @@ def chon_mo_hinh( X_train, X_test, y_train, y_test, n_folds=5):
     if st.button("Huấn luyện mô hình"):
         st.dataframe(X_train.head())
         model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
-
-                
-                
     
-    degree = 2
-    fold_mse = []  # Danh sách MSE của từng fold
-    scaler = StandardScaler()  # Chuẩn hóa dữ liệu cho hồi quy đa thức nếu cần
-    kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
-    
-    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
-        X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
-        y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
+        degree = 2
+        fold_mse = []  # Danh sách MSE của từng fold
+        scaler = StandardScaler()  # Chuẩn hóa dữ liệu cho hồi quy đa thức nếu cần
+        kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
+        
+        for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
+            X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
+            y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
 
-        st.write("🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
+            # st.write("🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
 
+            if model_type == "linear":
+                w= train_multiple_linear_regression(X_train_fold, y_train_fold)
+
+                w = np.array(w).reshape(-1, 1)
+                
+                X_valid = X_valid.to_numpy()
+
+
+                X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
+                y_valid_pred = X_valid_b.dot(w)  # Dự đoán
+            elif model_type == "polynomial":
+                
+                X_train_fold = scaler.fit_transform(X_train_fold)
+                    
+                w = train_polynomial_regression(X_train_fold, y_train_fold, degree)
+                
+                w = np.array(w).reshape(-1, 1)
+                
+                X_valid_scaled = scaler.transform(X_valid.to_numpy())
+                X_valid_poly = np.hstack([X_valid_scaled] + [X_valid_scaled**d for d in range(2, degree + 1)])
+                X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+                
+                y_valid_pred = X_valid_b.dot(w)  # Dự đoán
+            else:
+                raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
+
+            mse = mean_squared_error(y_valid, y_valid_pred)
+            fold_mse.append(mse)
+
+            print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+
+        # 🔥 Huấn luyện lại trên toàn bộ tập train
         if model_type == "linear":
-            w= train_multiple_linear_regression(X_train_fold, y_train_fold)
-
-            w = np.array(w).reshape(-1, 1)
-            
-            X_valid = X_valid.to_numpy()
-
-
-            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
-            y_valid_pred = X_valid_b.dot(w)  # Dự đoán
-        elif model_type == "polynomial":
-            
-            X_train_fold = scaler.fit_transform(X_train_fold)
-                
-            w = train_polynomial_regression(X_train_fold, y_train_fold, degree)
-            
-            w = np.array(w).reshape(-1, 1)
-            
-            X_valid_scaled = scaler.transform(X_valid.to_numpy())
-            X_valid_poly = np.hstack([X_valid_scaled] + [X_valid_scaled**d for d in range(2, degree + 1)])
-            X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
-            
-            y_valid_pred = X_valid_b.dot(w)  # Dự đoán
+            final_w = train_multiple_linear_regression(X_train, y_train)
+            X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+            y_test_pred = X_test_b.dot(final_w)
         else:
-            raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
+            X_train_scaled = scaler.fit_transform(X_train)
+            final_w = train_polynomial_regression(X_train_scaled, y_train, degree)
 
-        mse = mean_squared_error(y_valid, y_valid_pred)
-        fold_mse.append(mse)
+            X_test_scaled = scaler.transform(X_test.to_numpy())
+            X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
+            X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
 
-        print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+            y_test_pred = X_test_b.dot(final_w)
 
-    # 🔥 Huấn luyện lại trên toàn bộ tập train
-    if model_type == "linear":
-        final_w = train_multiple_linear_regression(X_train, y_train)
-        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
-        y_test_pred = X_test_b.dot(final_w)
-    else:
-        X_train_scaled = scaler.fit_transform(X_train)
-        final_w = train_polynomial_regression(X_train_scaled, y_train, degree)
+        # 📌 Đánh giá trên tập test
+        test_mse = mean_squared_error(y_test, y_test_pred)
+        avg_mse = np.mean(fold_mse)  # Trung bình MSE qua các folds
 
-        X_test_scaled = scaler.transform(X_test.to_numpy())
-        X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
-        X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+        st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+        st.success(f"MSE trên tập test: {test_mse:.4f}")
 
-        y_test_pred = X_test_b.dot(final_w)
-
-    # 📌 Đánh giá trên tập test
-    test_mse = mean_squared_error(y_test, y_test_pred)
-    avg_mse = np.mean(fold_mse)  # Trung bình MSE qua các folds
-
-    st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
-    st.success(f"MSE trên tập test: {test_mse:.4f}")
-
-    return final_w, avg_mse, scaler
-
+        return final_w, avg_mse, scaler
+    return None, None, None
 
 
 
