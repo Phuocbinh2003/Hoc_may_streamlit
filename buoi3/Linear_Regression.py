@@ -94,6 +94,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             w -= learning_rate * gradients
 
         st.success("✅ Huấn luyện hoàn tất!")
+        st.write(f"Trọng số cuối cùng: {w.flatten()}")
         return w
 
 
