@@ -396,8 +396,18 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     return w
 
-def chon_mo_hinh(model_type, X_train, X_test, y_train, y_test, n_folds=5):
+def chon_mo_hinh( X_train, X_test, y_train, y_test, n_folds=5):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
+    
+    model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
+    st.datafeam(X_train.head())
+    if st.button("Huấn luyện mô hình"):
+        st.dataframe(X_train.head())
+        model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
+
+                
+                
+    
     degree = 2
     fold_mse = []  # Danh sách MSE của từng fold
     scaler = StandardScaler()  # Chuẩn hóa dữ liệu cho hồi quy đa thức nếu cần
@@ -474,18 +484,11 @@ def main():
             df = pd.read_csv(uploaded_file, delimiter=",")
             
             X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
+            final_w, avg_mse, scaler = chon_mo_hinh( X_train, X_test, y_train, y_test)
             
             
-            model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
             
-            # Khi nhấn nút sẽ huấn luyện mô hìn
-            st.datafeam(X_train.head())
-            if st.button("Huấn luyện mô hình"):
-                st.dataframe(X_train.head())
-                model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
-
-                # Gọi hàm với đúng thứ tự tham số
-                final_w, avg_mse, scaler = chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
+            
             
             
             
