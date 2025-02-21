@@ -76,7 +76,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # Thêm cột bias (x0 = 1) vào X_train
         X_b = np.c_[np.ones((m, 1)), X_train]
-        st.write(f"Kích thước ma trận X_b: {X_b}")
+        st.write(f"Kích thước ma trận X_b: {X_b[1]}")
 
         # Khởi tạo trọng số ngẫu nhiên
         w = np.random.randn(X_b.shape[1], 1)  
