@@ -54,7 +54,9 @@ def choose_label(df):
 
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
-    
+    # Khởi tạo các biến với giá trị mặc định
+    X_train, X_val, X_test = None, None, None
+    y_train, y_val, y_test = None, None, None
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
@@ -408,9 +410,9 @@ def chon_mo_hinh(n_folds=5):
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
     # Kiểm tra nếu dữ liệu có trong session_state
-    if "X_train" not in st.session_state:
-        st.warning("⚠️ Dữ liệu chưa được tách từ df! Vui lòng thực hiện bước tách dữ liệu trước.")
-        return None, None, None  # Thoát ngay nếu không có dữ liệu
+    if "X_train" not in st.session_state or st.session_state.X_train is None:
+        st.warning("⚠️ Vui lòng chia dữ liệu trước khi huấn luyện mô hình!")
+        return None, None, None
 
     # Lấy dữ liệu từ session_state
     X_train = st.session_state.X_train
