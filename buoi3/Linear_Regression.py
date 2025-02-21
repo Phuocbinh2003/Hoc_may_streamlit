@@ -58,7 +58,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         
         kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
         st.write(y_train.shape, y_test.shape)
-        st.write(kf, kf.shape)
+        st.write(kf)
         return X_train, X_val, X_test, y_train, y_val, y_test, kf, df
 
     
