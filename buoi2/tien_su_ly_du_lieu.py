@@ -55,8 +55,8 @@ def choose_label(df):
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
     # Khởi tạo các biến với giá trị mặc định
-    X_train, X_val, X_test = None, None, None
-    y_train, y_val, y_test = None, None, None
+    # X_train, X_val, X_test = None, None, None
+    # y_train, y_val, y_test = None, None, None
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
@@ -103,7 +103,7 @@ def train_test_size(df):
 
         st.success("✅ Dữ liệu đã được chia thành công!")
         
-    st.dataframe("11",X_train.head())
+    st.dataframe(X_train.head())
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 def xu_ly_gia_tri_thieu(df):
