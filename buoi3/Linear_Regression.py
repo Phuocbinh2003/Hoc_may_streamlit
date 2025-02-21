@@ -67,14 +67,18 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
     #     model = LinearRegression()
     #     model.fit(X_train, y_train)
     #     return model
-    def train_multiple_linear_regression(X_train, y_train ,learning_rate=0.01, n_iterations=200):
+    def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
-        # Kiểm tra xem X_train hoặc y_train có chứa NaN hoặc Inf không
+        
+        # Kiểm tra dữ liệu có NaN hoặc Inf không
         if np.isnan(X_train).any() or np.isnan(y_train).any():
             raise ValueError("Dữ liệu đầu vào chứa giá trị NaN!")
-
         if np.isinf(X_train).any() or np.isinf(y_train).any():
             raise ValueError("Dữ liệu đầu vào chứa giá trị vô cùng (Inf)!")
+
+        # Chuẩn hóa dữ liệu để tránh tràn số
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
 
         # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
         m, n = X_train.shape
@@ -82,10 +86,10 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # Thêm cột bias (x0 = 1) vào X_train
         X_b = np.c_[np.ones((m, 1)), X_train]
-        st.write(f"Kích thước ma trận X_b: {X_b[1]}")
+        st.write(f"Kích thước ma trận X_b: {X_b.shape}")
 
-        # Khởi tạo trọng số ngẫu nhiên
-        w = np.random.randn(X_b.shape[1], 1)  
+        # Khởi tạo trọng số ngẫu nhiên nhỏ để tránh overflow
+        w = np.random.randn(X_b.shape[1], 1) * 0.01  
         st.write(f"Trọng số ban đầu: {w.flatten()}")
 
         # Chuyển y_train về dạng ma trận cột
@@ -97,6 +101,11 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         # Gradient Descent
         for iteration in range(n_iterations):
             gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
+
+            # Kiểm tra xem gradients có NaN không
+            if np.isnan(gradients).any():
+                raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
+
             w -= learning_rate * gradients
 
         st.success("✅ Huấn luyện hoàn tất!")
