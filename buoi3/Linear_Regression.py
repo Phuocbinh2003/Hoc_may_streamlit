@@ -187,7 +187,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         print("✅ Huấn luyện hoàn tất!")
         print(f"Trọng số cuối cùng: {w.flatten()}")
         
-        return w, X_poly,scaler
+        return w
 
     def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf):
         """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
@@ -212,9 +212,17 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
                 X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
                 y_valid_pred = X_valid_b.dot(w)  # Dự đoán
             elif model_type == "polynomial":
-                w, poly, scaler = train_polynomial_regression(X_train_fold, y_train_fold, degree)
-                X_valid_poly = scaler.transform(poly.transform(X_valid))  # Biến đổi đặc trưng
-                X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]  # Thêm bias
+                
+                X_train_fold = scaler.fit_transform(X_train_fold)
+                 
+                w = train_polynomial_regression(X_train_fold, y_train_fold, degree)
+                
+                w = np.array(w).reshape(-1, 1)
+                
+                X_valid_scaled = scaler.transform(X_valid.to_numpy())
+                X_valid_poly = np.hstack([X_valid_scaled] + [X_valid_scaled**d for d in range(2, degree + 1)])
+                X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+                
                 y_valid_pred = X_valid_b.dot(w)  # Dự đoán
             else:
                 raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
