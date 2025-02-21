@@ -102,7 +102,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
 
             # Kiểm tra xem gradients có NaN không
-            st.write(gradients)
+            # st.write(gradients)
             if np.isnan(gradients).any():
                 raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
 
@@ -170,6 +170,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
             if model_type == "linear":
                 w = train_multiple_linear_regression(X_train_fold, y_train_fold)
+                w = np.array(w).reshape(-1, 1)
                 X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
                 y_valid_pred = X_valid_b.dot(w)  # Dự đoán
             elif model_type == "polynomial":
