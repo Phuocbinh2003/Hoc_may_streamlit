@@ -73,8 +73,7 @@ def train_test_size(df):
         
         # Kiểm tra y có nhiều hơn 1 giá trị không trước khi stratify
         stratify_option = y if y.nunique() > 1 else None
-        st.write(f"📊 Kích thước dữ liệu trước khi chia: {stratify_option.shape[0]} mẫu")
-        st.write(X.shape ,y.shape)
+        
         # Chia dữ liệu thành Test trước
         X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
         st.write(X_train_full.shape ,y_train_full.shape)
@@ -310,7 +309,8 @@ def hien_thi_ly_thuyet(df):
     """)
        
     X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
-    st.dataframe("2",X_train.head())
+    st.write("2")
+    st.dataframe(X_train.head())
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
