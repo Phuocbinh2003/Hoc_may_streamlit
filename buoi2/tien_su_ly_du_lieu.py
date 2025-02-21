@@ -101,8 +101,8 @@ def train_test_size(df):
 
         st.success("✅ Dữ liệu đã được chia thành công!")
         
-    if "X_train" in st.session_state:
-        st.dataframe(st.session_state.X_train.head())
+    # if "X_train" in st.session_state:
+    #     st.dataframe(st.session_state.X_train.head())
 
 
 def xu_ly_gia_tri_thieu(df):
@@ -421,12 +421,7 @@ def chon_mo_hinh(n_folds=5):
     y_test = st.session_state.y_test
     # st.write(X_train.shape ,y_train.shape)
     # st.dataframe(X_train)
-    st.write("📌 Kiểm tra kiểu dữ liệu của X:")
-    st.write(X_train.dtypes)
-
-    st.write("📌 Kiểm tra kiểu dữ liệu của y:")
-    st.write(y_train.dtypes)
-
+    
     if st.button("Huấn luyện mô hình"):
         st.write("⏳ Đang huấn luyện mô hình...")  # Giúp debug xem có chạy vào đây không
 
