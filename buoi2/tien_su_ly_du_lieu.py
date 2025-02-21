@@ -398,13 +398,22 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     return w
 
-def chon_mo_hinh(n_folds=5):
+def chon_mo_hinh():
     st.subheader("🔍 Chọn mô hình hồi quy")
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     
     # Xác định loại mô hình
     model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
-    degree = 2
+    
+    
+    n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
+
+    # Thanh trượt chọn tốc độ học (learning rate)
+    learning_rate = st.slider("Chọn tốc độ học (learning rate):", min_value=0.0001, max_value=0.1, value=0.01, step=0.0001)
+    
+    ddegree = 2
+    if model_type == "polynomial":
+        degree = st.slider("Chọn bậc đa thức:", min_value=2, max_value=5, value=2)
     fold_mse = []
     scaler = StandardScaler()
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
@@ -430,13 +439,13 @@ def chon_mo_hinh(n_folds=5):
             y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
 
             if model_type == "linear":
-                w = train_multiple_linear_regression(X_train_fold, y_train_fold)
+                w = train_multiple_linear_regression(X_train_fold, y_train_fold, learning_rate=learning_rate)
                 w = np.array(w).reshape(-1, 1)
                 X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid.to_numpy()]
                 y_valid_pred = X_valid_b.dot(w)
             else:  # Polynomial Regression
                 X_train_fold = scaler.fit_transform(X_train_fold)
-                w = train_polynomial_regression(X_train_fold, y_train_fold, degree)
+                w = train_polynomial_regression(X_train_fold, y_train_fold, degree,learning_rate=learning_rate)
                 w = np.array(w).reshape(-1, 1)
 
                 X_valid_scaled = scaler.transform(X_valid.to_numpy())
@@ -450,12 +459,12 @@ def chon_mo_hinh(n_folds=5):
 
         # Huấn luyện trên toàn bộ tập train
         if model_type == "linear":
-            final_w = train_multiple_linear_regression(X_train, y_train)
+            final_w = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
             X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
             y_test_pred = X_test_b.dot(final_w)
         else:
             X_train_scaled = scaler.fit_transform(X_train)
-            final_w = train_polynomial_regression(X_train_scaled, y_train, degree)
+            final_w = train_polynomial_regression(X_train_scaled, y_train, degree,learning_rate=learning_rate)
 
             X_test_scaled = scaler.transform(X_test.to_numpy())
             X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
