@@ -110,7 +110,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         st.success("✅ Huấn luyện hoàn tất!")
         st.write(f"Trọng số cuối cùng: {w.flatten()}")
-        return w, scaler
+        return w
 
 
 
@@ -169,7 +169,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
 
             if model_type == "linear":
-                w,_ = train_multiple_linear_regression(X_train_fold, y_train_fold)
+                w= train_multiple_linear_regression(X_train_fold, y_train_fold)
                 st.write('w1',w)
                 w = np.array(w).reshape(-1, 1)
                 st.write('w1',w)
