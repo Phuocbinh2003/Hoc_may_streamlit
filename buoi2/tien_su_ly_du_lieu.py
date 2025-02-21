@@ -472,7 +472,7 @@ def main():
             df = pd.read_csv(uploaded_file, delimiter=",")
             st.success("📂 File tải lên thành công!")
 
-            # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng khôn
+            # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng khô
             hien_thi_ly_thuyet(df)
             if "X_train" in st.session_state and "X_test" in st.session_state:
                 X_train = st.session_state.X_train
