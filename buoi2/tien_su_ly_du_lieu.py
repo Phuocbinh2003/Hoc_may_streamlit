@@ -170,15 +170,16 @@ def chuan_hoa_du_lieu(df):
         st.success("✅ Không có thuộc tính dạng số cần chuẩn hóa!")
         return df
 
-    # Chuẩn hóa tất cả các cột số
-    scaler = StandardScaler()
-    df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
-    
-    # Lưu lại trong session_state để tránh mất dữ liệu khi tải lại trang
-    st.session_state.df = df
+    # Nút bấm để thực hiện chuẩn hóa
+    if st.button("🚀 Thực hiện Chuẩn hóa"):
+        scaler = StandardScaler()
+        df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
 
-    st.success(f"✅ Đã chuẩn hóa tất cả các cột số: {', '.join(numerical_cols)}")
-    st.dataframe(df.head())
+        # Lưu lại vào session_state
+        st.session_state.df = df
+
+        st.success(f"✅ Đã chuẩn hóa tất cả các cột số: {', '.join(numerical_cols)}")
+        st.dataframe(df.head())  # Hiển thị dữ liệu sau chuẩn hóa
 
     return df
 
