@@ -72,7 +72,7 @@ def train_test_size(df):
 
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
     if st.button("✅ Xác nhận Chia"):
-        
+        st.write(f"⏳ Đang chia dữ liệu...")  # Giúp debug xem có chạy vào đây không
         # Kiểm tra y có nhiều hơn 1 giá trị không trước khi stratify
         stratify_option = y if y.nunique() > 1 else None
         
@@ -103,7 +103,8 @@ def train_test_size(df):
 
         st.success("✅ Dữ liệu đã được chia thành công!")
         
-    st.dataframe(X_train.head())
+    if "X_train" in st.session_state:
+        st.dataframe(st.session_state.X_train.head())
 
 
 def xu_ly_gia_tri_thieu(df):
