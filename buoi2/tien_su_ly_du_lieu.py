@@ -54,13 +54,12 @@ def choose_label(df):
 
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
-    st.write(df.shape)  
+    
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
-
     df = st.session_state.df  # Lấy dữ liệu từ session_state
-    st.write(df.shape) 
+    
     X, y = choose_label(df)
    
     df = st.session_state.df
@@ -76,10 +75,10 @@ def train_test_size(df):
         stratify_option = y if y.nunique() > 1 else None
 
         # Chia dữ liệu thành Test trước
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
+        X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
 
         # Chia tiếp phần còn lại thành Train và Validation
-        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
+        X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
 
         # Lưu vào session_state
         st.session_state.X_train = X_train
