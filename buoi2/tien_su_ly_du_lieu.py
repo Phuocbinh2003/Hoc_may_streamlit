@@ -484,8 +484,12 @@ def main():
             # Hiển thị lý thuyết và xử lý dữ liệu
             hien_thi_ly_thuyet(df)
 
-          
-            final_w, avg_mse, scaler = chon_mo_hinh()
+            try:
+                
+                final_w, avg_mse, scaler = chon_mo_hinh()
+            except Exception as e:
+                st.error(f"Lỗi xảy ra: {e}")
+            
 
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
