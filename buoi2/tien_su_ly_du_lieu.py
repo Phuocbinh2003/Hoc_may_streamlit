@@ -396,29 +396,31 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     return w
 
-def chon_mo_hinh( n_folds=5):
-    """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    
+def chon_mo_hinh(n_folds=5):
     st.subheader("🔍 Chọn mô hình hồi quy")
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     
-    # Định nghĩa trước model_type
+    # Xác định loại mô hình
     model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
     degree = 2
     fold_mse = []
     scaler = StandardScaler()
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
+    # Kiểm tra nếu dữ liệu có trong session_state
+    if "X_train" not in st.session_state:
+        st.warning("⚠️ Dữ liệu chưa được tách từ df! Vui lòng thực hiện bước tách dữ liệu trước.")
+        return None, None, None  # Thoát ngay nếu không có dữ liệu
+
+    # Lấy dữ liệu từ session_state
+    X_train = st.session_state.X_train
+    X_test = st.session_state.X_test
+    y_train = st.session_state.y_train
+    y_test = st.session_state.y_test
+
     if st.button("Huấn luyện mô hình"):
-        st.write("...")
-        if "X_train" in st.session_state:
-            X_train = st.session_state.X_train
-            X_test = st.session_state.X_test
-            y_train = st.session_state.y_train
-            y_test = st.session_state.y_test
-        else:
-            st.warning("Dữ liệu chưa được tách từ df! Vui lòng thực hiện bước tách dữ liệu trước.")
-        
+        st.write("⏳ Đang huấn luyện mô hình...")  # Giúp debug xem có chạy vào đây không
+
         for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
             y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
@@ -442,7 +444,7 @@ def chon_mo_hinh( n_folds=5):
             fold_mse.append(mse)
             print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
-        # Huấn luyện lại trên toàn bộ tập train
+        # Huấn luyện trên toàn bộ tập train
         if model_type == "linear":
             final_w = train_multiple_linear_regression(X_train, y_train)
             X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
@@ -463,7 +465,7 @@ def chon_mo_hinh( n_folds=5):
         st.success(f"MSE trên tập test: {test_mse:.4f}")
 
         return final_w, avg_mse, scaler
-    
+
     return None, None, None
 
 
@@ -476,14 +478,20 @@ def main():
             df = pd.read_csv(uploaded_file, delimiter=",")
             st.success("📂 File tải lên thành công!")
 
-            # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng khô
+            # Hiển thị lý thuyết và xử lý dữ liệu
             hien_thi_ly_thuyet(df)
-            
-            final_w, avg_mse, scaler = chon_mo_hinh()
-            
+
+            # Kiểm tra nếu dữ liệu đã được tách
+            if "X_train" not in st.session_state:
+                st.warning("⚠️ Dữ liệu chưa được tách! Vui lòng chia train-test trước khi huấn luyện.")
+            else:
+                final_w, avg_mse, scaler = chon_mo_hinh()
+
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
 
+if __name__ == "__main__":
+    main()
     
         
 
@@ -494,5 +502,3 @@ def main():
             
   
 
-if __name__ == "__main__":
-    main()
