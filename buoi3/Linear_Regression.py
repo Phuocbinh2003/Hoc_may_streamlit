@@ -54,7 +54,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / actual_train_size, stratify=y_train, random_state=42)
 
         # Đảm bảo rằng số lần chia của KFold hợp lệ
-        num_splits = max(2, int(1 / test_size))  # Đảm bảo n_splits >= 2
+        num_splits = max(2, int(1 / test_size))  # Đảm bảo n_splits >= 
         
         kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
         st.write(y_train.shape, y_test.shape)
