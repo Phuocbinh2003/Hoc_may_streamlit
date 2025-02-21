@@ -404,18 +404,19 @@ def chon_mo_hinh( n_folds=5):
     
     # Định nghĩa trước model_type
     model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
-    
     degree = 2
     fold_mse = []
     scaler = StandardScaler()
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
     if st.button("Huấn luyện mô hình"):
-        if "X_train" in st.session_state and "X_test" in st.session_state:
-                X_train = st.session_state.X_train
-                X_test = st.session_state.X_test
-                y_train = st.session_state.y_train
-                y_test = st.session_state.y_test
+        if "X_train" in st.session_state:
+            X_train = st.session_state.X_train
+            X_test = st.session_state.X_test
+            y_train = st.session_state.y_train
+            y_test = st.session_state.y_test
+        else:
+            st.warning("Dữ liệu chưa được tách từ df! Vui lòng thực hiện bước tách dữ liệu trước.")
         
         for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
