@@ -102,6 +102,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
 
             # Kiểm tra xem gradients có NaN không
+            st.write(gradients)
             if np.isnan(gradients).any():
                 raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
 
