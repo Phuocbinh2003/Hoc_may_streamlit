@@ -486,7 +486,10 @@ def main():
             # Kiểm tra nếu dữ liệu đã được tách
             if "X_train" not in st.session_state:
                 st.warning("⚠️ Dữ liệu chưa được tách! Vui lòng chia train-test trước khi huấn luyện.")
+                
             else:
+                X_train = st.session_state.X_train
+                st.dataframe(X_train.head())
                 final_w, avg_mse, scaler = chon_mo_hinh()
 
         except Exception as e:
