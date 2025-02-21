@@ -398,11 +398,7 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
 
 def chon_mo_hinh(X_train, X_test, y_train, y_test, n_folds=5):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
-    X_train = X_train.copy()
-    X_test = X_test.copy()
-    y_train = y_train.copy()
-    y_test = y_test.copy()
-    st.dataframe(X_train)
+    
     st.subheader("🔍 Chọn mô hình hồi quy")
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     
@@ -415,6 +411,11 @@ def chon_mo_hinh(X_train, X_test, y_train, y_test, n_folds=5):
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
     if st.button("Huấn luyện mô hình"):
+        X_train = X_train.copy()
+        X_test = X_test.copy()
+        y_train = y_train.copy()
+        y_test = y_test.copy()
+        
         for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
             y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
