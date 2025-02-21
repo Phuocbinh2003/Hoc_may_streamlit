@@ -1,9 +1,18 @@
 import streamlit as st
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
 from scipy.stats import zscore
 from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from scipy.stats import zscore
+from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.metrics import mean_squared_error
+import mlflow
+import io
+from sklearn.model_selection import KFold
 
 def drop(df):
     st.subheader("🗑️ Xóa cột dữ liệu")
@@ -27,35 +36,52 @@ def drop(df):
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")
 
-    # Người dùng chọn % dữ liệu Test trước
-    test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
+    # Chọn cột dự đoán (chỉ chọn 1 cột)
+    target_column = st.selectbox("🎯 Chọn cột dự đoán (label)", df.columns)
 
-    # Phần còn lại là Train + Validation
-    remaining_size = 100 - test_size
-    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
+    if st.button("✅ Xác nhận"):
+        X = df.drop(columns=[target_column])
+        y = df[target_column]
 
-    st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
+        # Người dùng chọn tỷ lệ tập Test
+        test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
 
-    # Chia dữ liệu thành Test trước
-    train_val_df, test_df = train_test_split(df, test_size=test_size / 100, random_state=42)
+        # Phần còn lại là Train + Validation
+        remaining_size = 100 - test_size
+        val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
 
-    # Chia tiếp phần còn lại thành Train và Validation
-    train_df, val_df = train_test_split(train_val_df, test_size=val_size / remaining_size, random_state=42)
+        st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
-    # Lưu vào session_state
-    st.session_state.train_df = train_df
-    st.session_state.val_df = val_df
-    st.session_state.test_df = test_df
+        # Chia dữ liệu thành Test trước
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size/100, stratify=y, random_state=42)
 
-    # Hiển thị thông tin số lượng mẫu
-    summary_df = pd.DataFrame({
-        "Tập dữ liệu": ["Train", "Validation", "Test"],
-        "Số lượng mẫu": [train_df.shape[0], val_df.shape[0], test_df.shape[0]]
-    })
-    st.table(summary_df)
+        # Chia tiếp phần còn lại thành Train và Validation
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / (100 - test_size), stratify=y_train, random_state=42)
 
-    return train_df, val_df, test_df
-    
+        # Thiết lập số fold cho KFold
+        num_splits = max(2, int(1 / (test_size / 100)))  # Đảm bảo n_splits >= 2
+        kf = StratifiedKFold(n_splits=num_splits, shuffle=True, random_state=42)
+
+        # Lưu vào session_state
+        st.session_state.X_train = X_train
+        st.session_state.X_val = X_val
+        st.session_state.X_test = X_test
+        st.session_state.y_train = y_train
+        st.session_state.y_val = y_val
+        st.session_state.y_test = y_test
+        st.session_state.kf = kf
+
+        # Hiển thị thông tin số lượng mẫu
+        summary_df = pd.DataFrame({
+            "Tập dữ liệu": ["Train", "Validation", "Test"],
+            "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
+        })
+        st.table(summary_df)
+
+        st.success("✅ Dữ liệu đã được chia thành công!")
+
+        return X_train, X_val, X_test, y_train, y_val, y_test, kf
+
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
 
@@ -253,18 +279,184 @@ def hien_thi_ly_thuyet(df):
     ```
     """)
        
-    df=train_test_size(df)
+    X_train, X_val, X_test, y_train, y_val, y_test, kf =train_test_size(df)
     
+    return X_train, X_val, X_test, y_train, y_val, y_test, kf
+
+
+def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
+    """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
+    
+    # Chuyển đổi X_train, y_train sang NumPy array để tránh lỗi
+    X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
+    y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, (pd.Series, pd.DataFrame)) else y_train.reshape(-1, 1)
+
+    # Kiểm tra NaN hoặc Inf
+    if np.isnan(X_train).any() or np.isnan(y_train).any():
+        raise ValueError("Dữ liệu đầu vào chứa giá trị NaN!")
+    if np.isinf(X_train).any() or np.isinf(y_train).any():
+        raise ValueError("Dữ liệu đầu vào chứa giá trị vô cùng (Inf)!")
+
+    # Chuẩn hóa dữ liệu để tránh tràn số
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+
+    # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
+    m, n = X_train.shape
+    #st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
+
+    # Thêm cột bias (x0 = 1) vào X_train
+    X_b = np.c_[np.ones((m, 1)), X_train]
+    #st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+
+    # Khởi tạo trọng số ngẫu nhiên nhỏ
+    w = np.random.randn(X_b.shape[1], 1) * 0.01  
+    #st.write(f"Trọng số ban đầu: {w.flatten()}")
+
+    # Gradient Descent
+    for iteration in range(n_iterations):
+        gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
+
+        # Kiểm tra xem gradients có NaN không
+        # st.write(gradients)
+        if np.isnan(gradients).any():
+            raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
+
+        w -= learning_rate * gradients
+
+    #st.success("✅ Huấn luyện hoàn tất!")
+    #st.write(f"Trọng số cuối cùng: {w.flatten()}")
+    return w
+def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
+    """Huấn luyện hồi quy đa thức **không có tương tác** bằng Gradient Descent."""
+
+    # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
+    X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
+    y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, (pd.Series, pd.DataFrame)) else y_train.reshape(-1, 1)
+
+    # Tạo đặc trưng đa thức **chỉ thêm bậc cao, không có tương tác**
+    X_poly = np.hstack([X_train] + [X_train**d for d in range(2, degree + 1)])
+    # Chuẩn hóa dữ liệu để tránh tràn số
+    scaler = StandardScaler()
+    X_poly = scaler.fit_transform(X_poly)
+
+    # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
+    m, n = X_poly.shape
+    print(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
+
+    # Thêm cột bias (x0 = 1)
+    X_b = np.c_[np.ones((m, 1)), X_poly]
+    print(f"Kích thước ma trận X_b: {X_b.shape}")
+
+    # Khởi tạo trọng số ngẫu nhiên nhỏ
+    w = np.random.randn(X_b.shape[1], 1) * 0.01  
+    print(f"Trọng số ban đầu: {w.flatten()}")
+
+    # Gradient Descent
+    for iteration in range(n_iterations):
+        gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
+
+        # Kiểm tra nếu gradient có giá trị NaN
+        if np.isnan(gradients).any():
+            raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
+
+        w -= learning_rate * gradients
+
+    print("✅ Huấn luyện hoàn tất!")
+    print(f"Trọng số cuối cùng: {w.flatten()}")
+    
+    return w
+
+def chon_mo_hinh(model_type, X_train, X_test, y_train, y_test, n_folds=5):
+    """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
+    degree = 2
+    fold_mse = []  # Danh sách MSE của từng fold
+    scaler = StandardScaler()  # Chuẩn hóa dữ liệu cho hồi quy đa thức nếu cần
+    kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    
+    for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
+        X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
+        y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
+
+        st.write("🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
+
+        if model_type == "linear":
+            w= train_multiple_linear_regression(X_train_fold, y_train_fold)
+
+            w = np.array(w).reshape(-1, 1)
+            
+            X_valid = X_valid.to_numpy()
+
+
+            X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid]  # Thêm bias
+            y_valid_pred = X_valid_b.dot(w)  # Dự đoán
+        elif model_type == "polynomial":
+            
+            X_train_fold = scaler.fit_transform(X_train_fold)
+                
+            w = train_polynomial_regression(X_train_fold, y_train_fold, degree)
+            
+            w = np.array(w).reshape(-1, 1)
+            
+            X_valid_scaled = scaler.transform(X_valid.to_numpy())
+            X_valid_poly = np.hstack([X_valid_scaled] + [X_valid_scaled**d for d in range(2, degree + 1)])
+            X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+            
+            y_valid_pred = X_valid_b.dot(w)  # Dự đoán
+        else:
+            raise ValueError("⚠️ Chọn 'linear' hoặc 'polynomial'!")
+
+        mse = mean_squared_error(y_valid, y_valid_pred)
+        fold_mse.append(mse)
+
+        print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+
+    # 🔥 Huấn luyện lại trên toàn bộ tập train
+    if model_type == "linear":
+        final_w = train_multiple_linear_regression(X_train, y_train)
+        X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+        y_test_pred = X_test_b.dot(final_w)
+    else:
+        X_train_scaled = scaler.fit_transform(X_train)
+        final_w = train_polynomial_regression(X_train_scaled, y_train, degree)
+
+        X_test_scaled = scaler.transform(X_test.to_numpy())
+        X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
+        X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+
+        y_test_pred = X_test_b.dot(final_w)
+
+    # 📌 Đánh giá trên tập test
+    test_mse = mean_squared_error(y_test, y_test_pred)
+    avg_mse = np.mean(fold_mse)  # Trung bình MSE qua các folds
+
+    st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+    st.success(f"MSE trên tập test: {test_mse:.4f}")
+
+    return final_w, avg_mse, scaler
+
+
+
 
 def tien_xu_ly_du_lieu():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
     if uploaded_file is not None:  # Kiểm tra xem file đã được tải lên chưa
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
-            hien_thi_ly_thuyet(df)
+            X_train, X_val, X_test, y_train, y_val, y_test, kf=hien_thi_ly_thuyet(df)
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
-  
+    
+        model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
+
+        # Khi nhấn nút sẽ huấn luyện mô hình
+        if st.button("Huấn luyện mô hình"):
+        
+            model_type_value = "linear" if model_type == "Multiple Linear Regression" else "polynomial"
+
+            # Gọi hàm với đúng thứ tự tham số
+            final_w, avg_mse, poly, scaler= chon_mo_hinh(model_type_value, X_train, X_test, y_train, y_test)
+
 
         
 
