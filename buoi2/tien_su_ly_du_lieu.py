@@ -396,7 +396,7 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     return w
 
-def chon_mo_hinh(X_train, X_test, y_train, y_test, n_folds=5):
+def chon_mo_hinh( n_folds=5):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     
     st.subheader("🔍 Chọn mô hình hồi quy")
@@ -411,10 +411,11 @@ def chon_mo_hinh(X_train, X_test, y_train, y_test, n_folds=5):
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
     if st.button("Huấn luyện mô hình"):
-        X_train = X_train.copy()
-        X_test = X_test.copy()
-        y_train = y_train.copy()
-        y_test = y_test.copy()
+        if "X_train" in st.session_state and "X_test" in st.session_state:
+                X_train = st.session_state.X_train
+                X_test = st.session_state.X_test
+                y_train = st.session_state.y_train
+                y_test = st.session_state.y_test
         
         for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
@@ -475,16 +476,8 @@ def main():
 
             # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng khô
             hien_thi_ly_thuyet(df)
-            if "X_train" in st.session_state and "X_test" in st.session_state:
-                X_train = st.session_state.X_train
-                X_test = st.session_state.X_test
-                y_train = st.session_state.y_train
-                y_test = st.session_state.y_test
-            else:
-                st.error("⚠️ Dữ liệu chưa được lưu! Hãy chạy bước tiền xử lý trước.")
-                return
-            # Gọi hàm chọn mô hình
-            final_w, avg_mse, scaler = chon_mo_hinh(X_train, X_test, y_train, y_test)
+            
+            final_w, avg_mse, scaler = chon_mo_hinh()
         
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file: {e}")
