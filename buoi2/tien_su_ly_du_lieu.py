@@ -310,7 +310,7 @@ def hien_thi_ly_thuyet(df):
        
     X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
     
-    return X_train, X_val, X_test, y_train, y_val, y_test
+    
 
 
 def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
@@ -473,18 +473,15 @@ def main():
             st.success("📂 File tải lên thành công!")
 
             # Kiểm tra `hien_thi_ly_thuyet(df)` có hoạt động đúng khôn
-            result = hien_thi_ly_thuyet(df)
-            if result is None or len(result) != 6:
-                st.error("⚠️ Lỗi khi xử lý dữ liệu! Đảm bảo file đúng định dạng.")
+            hien_thi_ly_thuyet(df)
+            if "X_train" in st.session_state and "X_test" in st.session_state:
+                X_train = st.session_state.X_train
+                X_test = st.session_state.X_test
+                y_train = st.session_state.y_train
+                y_test = st.session_state.y_test
+            else:
+                st.error("⚠️ Dữ liệu chưa được lưu! Hãy chạy bước tiền xử lý trước.")
                 return
-
-            X_train, X_val, X_test, y_train, y_val, y_test = result
-
-            # Kiểm tra nếu dữ liệu rỗng hoặc không đúng
-            if X_train is None or X_test is None or y_train is None or y_test is None:
-                st.error("⚠️ Dữ liệu không hợp lệ! Vui lòng kiểm tra lại file.")
-                return
-
             # Gọi hàm chọn mô hình
             final_w, avg_mse, scaler = chon_mo_hinh(X_train, X_test, y_train, y_test)
         
