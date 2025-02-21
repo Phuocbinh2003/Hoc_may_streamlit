@@ -166,20 +166,26 @@ def chuan_hoa_du_lieu(df):
     # Lọc tất cả các cột số
     numerical_cols = df.select_dtypes(include=['number']).columns.tolist()
 
-    if not numerical_cols:
+    # Tìm các cột nhị phân (chỉ chứa 0 và 1)
+    binary_cols = [col for col in numerical_cols if df[col].dropna().isin([0, 1]).all()]
+
+    # Loại bỏ cột nhị phân khỏi danh sách cần chuẩn hóa
+    cols_to_scale = list(set(numerical_cols) - set(binary_cols))
+
+    if not cols_to_scale:
         st.success("✅ Không có thuộc tính dạng số cần chuẩn hóa!")
         return df
 
-    # Nút bấm để thực hiện chuẩn hóa
     if st.button("🚀 Thực hiện Chuẩn hóa"):
         scaler = StandardScaler()
-        df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
+        df[cols_to_scale] = scaler.fit_transform(df[cols_to_scale])
 
-        # Lưu lại vào session_state
+        # Lưu vào session_state
         st.session_state.df = df
 
-        st.success(f"✅ Đã chuẩn hóa tất cả các cột số: {', '.join(numerical_cols)}")
-        st.dataframe(df.head())  # Hiển thị dữ liệu sau chuẩn hóa
+        st.success(f"✅ Đã chuẩn hóa các cột số (loại bỏ cột nhị phân): {', '.join(cols_to_scale)}")
+        st.info(f"🚫 Giữ nguyên các cột nhị phân: {', '.join(binary_cols) if binary_cols else 'Không có'}")
+        st.dataframe(df.head())
 
     return df
 
@@ -234,7 +240,7 @@ def hien_thi_ly_thuyet(df):
             df.drop(columns=columns_to_drop, inplace=True)
         ```
         """)
-    df1=drop(df)
+    df=drop(df)
     
     st.subheader("2️⃣ Xử lý giá trị thiếu")
     st.write("""
@@ -250,7 +256,7 @@ def hien_thi_ly_thuyet(df):
 
         ```
         """)
-    df=xu_ly_gia_tri_thieu(df1)
+    df=xu_ly_gia_tri_thieu(df)
 
     st.subheader("3️⃣ Chuyển đổi kiểu dữ liệu")
     st.write("""
