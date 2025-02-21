@@ -54,7 +54,7 @@ def choose_label(df):
 
 def train_test_size(df):
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")    
-    st.write(df.head()) 
+    st.write("1",df.head()) 
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
