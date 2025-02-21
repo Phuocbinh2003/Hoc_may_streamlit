@@ -149,7 +149,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         
     #     return w, poly, scaler
     
-    def train_polynomial_regression(X_train, y_train, degree=3, learning_rate=0.001, n_iterations=500):
+    def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
         """Huấn luyện hồi quy đa thức **không có tương tác** bằng Gradient Descent."""
 
         # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
@@ -199,7 +199,8 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
             y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
 
-            print(f"\n🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
+            st.write(f"🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
+
 
             if model_type == "linear":
                 w= train_multiple_linear_regression(X_train_fold, y_train_fold)
