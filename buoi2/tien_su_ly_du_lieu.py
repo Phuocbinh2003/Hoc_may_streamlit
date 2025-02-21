@@ -400,7 +400,7 @@ def chon_mo_hinh( X_train, X_test, y_train, y_test, n_folds=5):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
-    st.datafeam(X_train.head())
+    st.dataframe(X_train.head())
     if st.button("Huấn luyện mô hình"):
         st.dataframe(X_train.head())
         model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
