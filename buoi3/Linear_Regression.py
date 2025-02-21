@@ -159,7 +159,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # Tạo đặc trưng đa thức **chỉ thêm bậc cao, không có tương tác**
         X_poly = np.hstack([X_train] + [X_train**d for d in range(2, degree + 1)])
-        st.write(f"Kích thước ma trận X_poly: {X_poly}")
+        st.write(f"Kích thước ma trận X_poly: {X_poly[1]}")
         
         # Chuẩn hóa dữ liệu để tránh tràn số
         scaler = StandardScaler()
