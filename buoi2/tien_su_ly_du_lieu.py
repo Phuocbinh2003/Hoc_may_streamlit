@@ -483,7 +483,7 @@ def main():
 
             # Hiển thị lý thuyết và xử lý dữ liệu
             hien_thi_ly_thuyet(df)
-
+            st.write("...")
             try:
                 
                 final_w, avg_mse, scaler = chon_mo_hinh()
