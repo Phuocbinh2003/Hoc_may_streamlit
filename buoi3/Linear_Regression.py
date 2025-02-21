@@ -69,7 +69,13 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
     #     return model
     def train_multiple_linear_regression(X_train, y_train ,learning_rate=0.01, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
-        
+        # Kiểm tra xem X_train hoặc y_train có chứa NaN hoặc Inf không
+        if np.isnan(X_train).any() or np.isnan(y_train).any():
+            raise ValueError("Dữ liệu đầu vào chứa giá trị NaN!")
+
+        if np.isinf(X_train).any() or np.isinf(y_train).any():
+            raise ValueError("Dữ liệu đầu vào chứa giá trị vô cùng (Inf)!")
+
         # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
         m, n = X_train.shape
         st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
