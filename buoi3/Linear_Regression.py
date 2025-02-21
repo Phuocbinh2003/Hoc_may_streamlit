@@ -60,13 +60,6 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         st.write(y_train.shape, y_test.shape)
         return X_train, X_val, X_test, y_train, y_val, y_test, kf, df
 
-
-
-    # def train_multiple_linear_regression(X_train, y_train):
-    #     """Huấn luyện mô hình hồi quy tuyến tính bội."""
-    #     model = LinearRegression()
-    #     model.fit(X_train, y_train)
-    #     return model
     
     def train_multiple_linear_regression(X_train, y_train, learning_rate=0.001, n_iterations=200):
         """Huấn luyện hồi quy tuyến tính bội bằng Gradient Descent."""
@@ -87,15 +80,15 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
         m, n = X_train.shape
-        st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
+        #st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
 
         # Thêm cột bias (x0 = 1) vào X_train
         X_b = np.c_[np.ones((m, 1)), X_train]
-        st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+        #st.write(f"Kích thước ma trận X_b: {X_b.shape}")
 
         # Khởi tạo trọng số ngẫu nhiên nhỏ
         w = np.random.randn(X_b.shape[1], 1) * 0.01  
-        st.write(f"Trọng số ban đầu: {w.flatten()}")
+        #st.write(f"Trọng số ban đầu: {w.flatten()}")
 
         # Gradient Descent
         for iteration in range(n_iterations):
@@ -108,13 +101,13 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
             w -= learning_rate * gradients
 
-        st.success("✅ Huấn luyện hoàn tất!")
-        st.write(f"Trọng số cuối cùng: {w.flatten()}")
+        #st.success("✅ Huấn luyện hoàn tất!")
+        #st.write(f"Trọng số cuối cùng: {w.flatten()}")
         return w
 
 
 
-    def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.01, n_iterations=500):
+    def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
         """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
 
         # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
