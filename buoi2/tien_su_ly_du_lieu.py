@@ -279,7 +279,7 @@ def hien_thi_ly_thuyet(df):
     ```
     """)
        
-    X_train, X_val, X_test, y_train, y_val, y_test, kf =train_test_size(df)
+    X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
     
     return X_train, X_val, X_test, y_train, y_val, y_test
 
