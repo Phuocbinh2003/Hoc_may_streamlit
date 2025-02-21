@@ -79,7 +79,9 @@ def train_test_size(df):
 
         # Chia tiếp phần còn lại thành Train và Validation
         X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
-
+        st.write(f"📊 Kích thước tập Train: {X_train.shape[0]} mẫu")
+        st.write(f"📊 Kích thước tập Validation: {X_val.shape[0]} mẫu")
+        st.write(f"📊 Kích thước tập Test: {X_test.shape[0]} mẫu")
         # Lưu vào session_state
         st.session_state.X_train = X_train
         st.session_state.X_test = X_test
