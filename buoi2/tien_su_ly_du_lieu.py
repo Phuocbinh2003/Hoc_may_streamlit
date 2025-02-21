@@ -410,6 +410,7 @@ def chon_mo_hinh( n_folds=5):
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
     if st.button("Huấn luyện mô hình"):
+        st.write("...")
         if "X_train" in st.session_state:
             X_train = st.session_state.X_train
             X_test = st.session_state.X_test
