@@ -238,9 +238,13 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
             X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
             y_test_pred = X_test_b.dot(final_w)
         else:
-            final_w, poly, scaler = train_polynomial_regression(X_train, y_train, degree)
-            X_test_poly = scaler.transform(poly.transform(X_test))
+            X_train_scaled = scaler.fit_transform(X_train)
+            final_w = train_polynomial_regression(X_train_scaled, y_train, degree)
+
+            X_test_scaled = scaler.transform(X_test.to_numpy())
+            X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
             X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+
             y_test_pred = X_test_b.dot(final_w)
 
         # 📌 Đánh giá trên tập test
@@ -250,7 +254,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
         st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
         st.success(f"MSE trên tập test: {test_mse:.4f}")
 
-        return final_w, avg_mse, poly, scaler if model_type == "polynomial" else None
+        return final_w, avg_mse, scaler
 
     def bt_buoi3():
         uploaded_file = "buoi2/data.txt"
