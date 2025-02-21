@@ -107,16 +107,57 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
 
 
-    def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
-        """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
+    # def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
+    #     """Huấn luyện hồi quy đa thức bằng Gradient Descent."""
+
+    #     # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
+    #     X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
+    #     y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, (pd.Series, pd.DataFrame)) else y_train.reshape(-1, 1)
+
+    #     # Tạo đặc trưng đa thức
+    #     poly = PolynomialFeatures(degree=degree, include_bias=False)
+    #     X_poly = poly.fit_transform(X_train)
+
+    #     # Chuẩn hóa dữ liệu để tránh tràn số
+    #     scaler = StandardScaler()
+    #     X_poly = scaler.fit_transform(X_poly)
+
+    #     # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
+    #     m, n = X_poly.shape
+    #     st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
+
+    #     # Thêm cột bias (x0 = 1)
+    #     X_b = np.c_[np.ones((m, 1)), X_poly]
+    #     st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+
+    #     # Khởi tạo trọng số ngẫu nhiên nhỏ
+    #     w = np.random.randn(X_b.shape[1], 1) * 0.01  
+    #     st.write(f"Trọng số ban đầu: {w.flatten()}")
+
+    #     # Gradient Descent
+    #     for iteration in range(n_iterations):
+    #         gradients = (2/m) * X_b.T.dot(X_b.dot(w) - y_train)
+
+    #         # Kiểm tra nếu gradient có giá trị NaN
+    #         if np.isnan(gradients).any():
+    #             raise ValueError("Gradient chứa giá trị NaN! Hãy kiểm tra lại dữ liệu hoặc learning rate.")
+
+    #         w -= learning_rate * gradients
+
+    #     st.success("✅ Huấn luyện hoàn tất!")
+    #     st.write(f"Trọng số cuối cùng: {w.flatten()}")
+        
+    #     return w, poly, scaler
+    
+    def train_polynomial_regression_no_interaction(X_train, y_train, degree=2, learning_rate=0.001, n_iterations=500):
+        """Huấn luyện hồi quy đa thức **không có tương tác** bằng Gradient Descent."""
 
         # Chuyển dữ liệu sang NumPy array nếu là pandas DataFrame/Series
         X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
         y_train = y_train.to_numpy().reshape(-1, 1) if isinstance(y_train, (pd.Series, pd.DataFrame)) else y_train.reshape(-1, 1)
 
-        # Tạo đặc trưng đa thức
-        poly = PolynomialFeatures(degree=degree, include_bias=False)
-        X_poly = poly.fit_transform(X_train)
+        # Tạo đặc trưng đa thức **chỉ thêm bậc cao, không có tương tác**
+        X_poly = np.hstack([X_train] + [X_train**d for d in range(2, degree + 1)])
 
         # Chuẩn hóa dữ liệu để tránh tràn số
         scaler = StandardScaler()
@@ -124,15 +165,15 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         # Lấy số lượng mẫu (m) và số lượng đặc trưng (n)
         m, n = X_poly.shape
-        st.write(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
+        print(f"Số lượng mẫu (m): {m}, Số lượng đặc trưng (n): {n}")
 
         # Thêm cột bias (x0 = 1)
         X_b = np.c_[np.ones((m, 1)), X_poly]
-        st.write(f"Kích thước ma trận X_b: {X_b.shape}")
+        print(f"Kích thước ma trận X_b: {X_b.shape}")
 
         # Khởi tạo trọng số ngẫu nhiên nhỏ
         w = np.random.randn(X_b.shape[1], 1) * 0.01  
-        st.write(f"Trọng số ban đầu: {w.flatten()}")
+        print(f"Trọng số ban đầu: {w.flatten()}")
 
         # Gradient Descent
         for iteration in range(n_iterations):
@@ -144,10 +185,10 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
             w -= learning_rate * gradients
 
-        st.success("✅ Huấn luyện hoàn tất!")
-        st.write(f"Trọng số cuối cùng: {w.flatten()}")
+        print("✅ Huấn luyện hoàn tất!")
+        print(f"Trọng số cuối cùng: {w.flatten()}")
         
-        return w, poly, scaler
+        return w, scaler
 
     def chon_mo_hinh(model_type, X_train, X_val, X_test, y_train, y_val, y_test, kf):
         """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
