@@ -400,7 +400,9 @@ def chon_mo_hinh( X_train, X_test, y_train, y_test, n_folds=5):
     """Chọn mô hình hồi quy tuyến tính bội hoặc hồi quy đa thức."""
     
     model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
-    st.dataframe(X_train.head())
+    st.dataframe(X_train.shape)
+    
+    
     if st.button("Huấn luyện mô hình"):
         st.dataframe(X_train.head())
         model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
@@ -414,7 +416,6 @@ def chon_mo_hinh( X_train, X_test, y_train, y_test, n_folds=5):
             X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
             y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
 
-            # st.write("🚀 Fold {fold + 1}: Train size = {len(X_train_fold)}, Validation size = {len(X_valid)}")
 
             if model_type == "linear":
                 w= train_multiple_linear_regression(X_train_fold, y_train_fold)
