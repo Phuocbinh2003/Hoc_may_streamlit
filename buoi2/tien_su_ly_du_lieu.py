@@ -310,7 +310,7 @@ def hien_thi_ly_thuyet(df):
     """)
        
     X_train, X_val, X_test, y_train, y_val, y_test =train_test_size(df)
-    st.dataframe(X_train.head())
+    st.dataframe("2",X_train.head())
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
