@@ -62,32 +62,33 @@ def train_test_size(df):
     val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
 
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
+    if st.button("✅ Xác nhận Chia"):
+        
+        # Kiểm tra y có nhiều hơn 1 giá trị không trước khi stratify
+        stratify_option = y if y.nunique() > 1 else None
 
-    # Kiểm tra y có nhiều hơn 1 giá trị không trước khi stratify
-    stratify_option = y if y.nunique() > 1 else None
+        # Chia dữ liệu thành Test trước
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
 
-    # Chia dữ liệu thành Test trước
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
+        # Chia tiếp phần còn lại thành Train và Validation
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
 
-    # Chia tiếp phần còn lại thành Train và Validation
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
+        # Lưu vào session_state
+        st.session_state.X_train = X_train
+        st.session_state.X_test = X_test
+        st.session_state.y_train = y_train
+        st.session_state.y_test = y_test
+        st.session_state.y = y
 
-    # Lưu vào session_state
-    st.session_state.X_train = X_train
-    st.session_state.X_test = X_test
-    st.session_state.y_train = y_train
-    st.session_state.y_test = y_test
-    st.session_state.y = y
+        # Hiển thị thông tin số lượng mẫu
+        summary_df = pd.DataFrame({
+            "Tập dữ liệu": ["Train", "Validation", "Test"],
+            "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
+        })
+        st.table(summary_df)
 
-    # Hiển thị thông tin số lượng mẫu
-    summary_df = pd.DataFrame({
-        "Tập dữ liệu": ["Train", "Validation", "Test"],
-        "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
-    })
-    st.table(summary_df)
-
-    st.success("✅ Dữ liệu đã được chia thành công!")
-    st.dataframe(X_train.head())
+        st.success("✅ Dữ liệu đã được chia thành công!")
+        st.dataframe(X_train.head())
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
