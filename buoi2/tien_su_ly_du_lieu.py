@@ -80,7 +80,7 @@ def train_test_size(df):
         st.success("✅ Dữ liệu đã được chia thành công!")
         st.dataframe(X_train.head())
 
-        return X_train, X_val, X_test, y_train, y_val, y_test, df
+        return X_train, X_val, X_test, y_train, y_val, y_test
 
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
@@ -443,7 +443,7 @@ def main():
     if uploaded_file is not None:  # Kiểm tra xem file đã được tải lên chư
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
-            X_train, X_val, X_test, y_train, y_val, y_test, df=hien_thi_ly_thuyet(df)
+            X_train, X_val, X_test, y_train, y_val, y_test=hien_thi_ly_thuyet(df)
             
             
             model_type = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
