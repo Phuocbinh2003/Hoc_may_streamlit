@@ -581,7 +581,7 @@ def test():
 
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
-    
+    st.write(X_train_input)
     X_train_input_without_binary = np.delete(X_train_input, binary_columns, axis=1)
 
     # Chuẩn hóa các cột không phải nhị phân
