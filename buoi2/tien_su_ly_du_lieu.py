@@ -591,8 +591,7 @@ def test():
     # Kết hợp lại cột nhị phân và các cột đã chuẩn hóa
     X_train_input_final = np.hstack([X_train_input_normalized, X_train_input[:, binary_columns]])
     st.write(model)
-    X_train_input_final_rounded = [f"{x:.2f}" for x in X_train_input_final]
-    st.write(X_train_input_final_rounded)
+    st.write(X_train_input_final[0])
     # Dự đoán khi nhấn nút
     if st.button("Dự đoán"):
         # Thêm cột 1 cho intercept (nếu cần)
