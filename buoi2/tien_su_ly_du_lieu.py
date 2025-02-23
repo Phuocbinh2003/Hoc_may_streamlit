@@ -582,12 +582,13 @@ def test():
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
     st.write(X_train_input)
+    
     X_train_input_without_binary = np.delete(X_train_input, binary_columns, axis=1)
-
+    st.write(X_train_input_without_binary)
     # Chuẩn hóa các cột không phải nhị phân
     scaler = StandardScaler()
     X_train_input_normalized = scaler.fit_transform(X_train_input_without_binary)
-
+    st.write(X_train_input_normalized)
     # Kết hợp lại cột nhị phân và các cột đã chuẩn hóa
     X_train_input_final = np.hstack([X_train_input_normalized, X_train_input[:, binary_columns]])
     st.write(model)
