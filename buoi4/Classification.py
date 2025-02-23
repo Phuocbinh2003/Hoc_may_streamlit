@@ -301,23 +301,25 @@ def du_doan():
     if st.button("Dự đoán số"):
         if canvas_result.image_data is not None:
             img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))  # Chỉ lấy 1 kênh
-            img = img.resize((8, 8)).convert("L")  # Resize về 8x8 và chuyển thành grayscale
+            img = img.resize((28, 28)).convert("L")  # Resize về 28x28 thay vì 8x8
             img = ImageOps.invert(img)  # Đảo màu để chữ số đúng hướng
-            img = np.array(img, dtype=np.float32)  # Chuyển về dạng numpy array
+            img = np.array(img, dtype=np.float32)  # Chuyển về numpy array
 
-            # Chuẩn hóa pixel về khoảng [0, 16]
-            img = img / 255.0 * 16
+            # Chuẩn hóa pixel về khoảng [0, 1] vì MNIST dùng giá trị 0-255
+            img = img / 255.0  
 
-            # Chuyển về dạng mảng 1D như trong `load_digits()`
-            img = img.reshape(1, -1)
+            # Chuyển về dạng mảng 1D nếu dùng mô hình như SVM hoặc cây quyết định
+            img = img.reshape(1, -1)  
+
+            # Nếu dùng CNN thì reshape về (1, 28, 28, 1)
+            # img = img.reshape(1, 28, 28, 1)  
 
             # Hiển thị ảnh sau khi xử lý
-            st.image(Image.fromarray((img.reshape(8, 8) * 255 / 16).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
-
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
 
             # Dự đoán
             prediction = model.predict(img)
-            st.subheader(f"🔢 Dự đoán: {prediction[0]}") 
+            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
             
             
 def Classification():
