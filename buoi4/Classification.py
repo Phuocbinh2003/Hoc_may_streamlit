@@ -271,8 +271,8 @@ def train():
 
 
     # 🌟 Chuẩn hóa dữ liệu
-    X_train = X_train.to_numpy().reshape(-1, 28 * 28) / 255.0
-    X_test = X_test.to_numpy().reshape(-1, 28 * 28) / 255.0
+    X_train = X_train.reshape(-1, 28 * 28) / 255.0
+    X_test = X_test.reshape(-1, 28 * 28) / 255.0
 
 
     st.header("⚙️ Chọn mô hình & Huấn luyện")
