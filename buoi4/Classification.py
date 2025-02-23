@@ -321,7 +321,7 @@ def train():
   
         
         
-import pickle
+import joblib
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
