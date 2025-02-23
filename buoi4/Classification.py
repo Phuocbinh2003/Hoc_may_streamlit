@@ -117,26 +117,50 @@ def Classification():
     # 📌 2️⃣ Công thức toán học
     st.subheader("📌 Công thức toán học")
 
-    st.markdown(r"""
-    - **Hàm mục tiêu cần tối ưu**:
-    $$
-    \min_{w, b} \frac{1}{2} ||w||^2
-    $$
-    Với ràng buộc:
-    $$
-    y_i (w \cdot x_i + b) \geq 1, \forall i
-    $$
+    st.write("### 1️⃣ Hàm mục tiêu cần tối ưu")
+    st.latex(r"\min_{w, b} \frac{1}{2} ||w||^2")
+    st.write("""
+    💡 **Ý nghĩa**:  
+    - Đây là **hàm mất mát** của SVM, mục tiêu là tìm **vector trọng số** \( w \) có độ dài nhỏ nhất nhưng vẫn đảm bảo phân tách hai lớp dữ liệu một cách tốt nhất.  
+    - Giá trị **\( \frac{1}{2} ||w||^2 \)** thể hiện mức độ phức tạp của siêu phẳng, cần tối thiểu hóa nó để có mô hình đơn giản và hiệu quả.  
+    """)
 
-    - **Khoảng cách từ một điểm đến siêu phẳng**:
-    $$
-    d = \frac{|w \cdot x + b|}{||w||}
-    $$
+    st.write("### 2️⃣ Điều kiện ràng buộc")
+    st.latex(r"y_i (w \cdot x_i + b) \geq 1, \forall i")
+    st.write("""
+    💡 **Ý nghĩa**:  
+    - Điều kiện này đảm bảo **tất cả điểm dữ liệu** nằm đúng bên siêu phẳng phân cách.  
+    - Với mỗi điểm dữ liệu \( x_i \):  
+    - Nếu \( y_i = 1 \), tức là thuộc nhóm **dương**, thì \( w \cdot x_i + b \) phải lớn hơn 1.  
+    - Nếu \( y_i = -1 \), tức là thuộc nhóm **âm**, thì \( w \cdot x_i + b \) phải nhỏ hơn -1.  
+    - **Khoảng cách từ siêu phẳng đến điểm gần nhất được tối ưu**, giúp mô hình có độ tổng quát cao.  
+    """)
 
-    - **Hàm mất mát với soft margin (SVM không tuyến tính)**:
-    $$
-    \min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i
-    $$
-    Với \( \xi_i \) là biến slack cho phép phân loại sai một số điểm.
+    st.write("### 3️⃣ Khoảng cách từ một điểm đến siêu phẳng")
+    st.latex(r"d = \frac{|w \cdot x + b|}{||w||}")
+    st.write("""
+    💡 **Ý nghĩa**:  
+    - Công thức này tính **khoảng cách vuông góc từ một điểm đến siêu phẳng phân cách**.  
+    - Một mô hình SVM tốt sẽ chọn siêu phẳng sao cho khoảng cách này **lớn nhất** với các điểm dữ liệu gần nhất (support vectors).  
+    - Nếu khoảng cách này nhỏ, có nghĩa là mô hình có thể dễ bị lỗi khi gặp dữ liệu mới.  
+    """)
+
+    st.write("### 4️⃣ Hàm mất mát với soft margin (cho dữ liệu không hoàn toàn tách tuyến tính)")
+    st.latex(r"\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i")
+    st.write("""
+    💡 **Ý nghĩa**:  
+    - Khi dữ liệu **không thể phân tách hoàn hảo**, ta cần cho phép một số điểm nằm sai bên siêu phẳng (sai số nhỏ).  
+    - **\( \xi_i \)** là **biến slack**, cho phép một số điểm bị phân loại sai nhưng vẫn cố gắng tối ưu hóa khoảng cách.  
+    - **\( C \)** là một tham số điều chỉnh:  
+    - Nếu **\( C \) lớn**, mô hình cố gắng phân loại chính xác tất cả điểm nhưng có thể bị overfitting.  
+    - Nếu **\( C \) nhỏ**, mô hình có thể bỏ qua một số lỗi nhỏ nhưng có khả năng tổng quát tốt hơn.  
+    """)
+
+    st.write("""
+    ### 🔥 **Tóm tắt**
+    - **SVM tìm một siêu phẳng tối ưu** để phân loại dữ liệu với khoảng cách lớn nhất đến các điểm gần nhất.
+    - **Nếu dữ liệu không tuyến tính**, ta có thể dùng **kernel trick** để ánh xạ lên không gian cao hơn.
+    - **Tham số \( C \)** giúp điều chỉnh giữa độ chính xác và khả năng tổng quát.
     """)
 
     st.write("""
@@ -156,6 +180,21 @@ def Classification():
 
     🚀 **Bạn có muốn thử nghiệm với dữ liệu thực tế?**
     """)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     ### **Phần 3: Chọn mô hình & Train**
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
