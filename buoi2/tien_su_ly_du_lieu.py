@@ -139,6 +139,8 @@ def xu_ly_gia_tri_thieu(df):
 
 
 
+
+
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
@@ -154,7 +156,7 @@ def chuyen_doi_kieu_du_lieu(df):
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
     
-    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhất
+    # Tạo từ điển lưu trữ số lượng giá trị thay thế cho mỗi giá trị độc nhất
     mapping_dict = {}
     
     # Nếu có ít hơn 5 giá trị độc nhất, yêu cầu người dùng nhập giá trị thay thế
@@ -165,12 +167,12 @@ def chuyen_doi_kieu_du_lieu(df):
 
         # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
-            # Lưu tên cột và giá trị trước khi chuyển đổi vào session_stat
-            if "column_names_before" not in st.session_state:
-                st.session_state.column_names_before = {}
+            # Lưu số lượng giá trị duy nhất trong cột trước khi chuyển đổi vào session_state
+            if "column_value_counts" not in st.session_state:
+                st.session_state.column_value_counts = {}
 
-            # Lưu giá trị cũ của cột
-            st.session_state.column_names_before[selected_col] = df[selected_col].copy()
+            # Lưu số lượng giá trị duy nhất của cột
+            st.session_state.column_value_counts[selected_col] = len(unique_values)
 
             # Chuyển đổi các giá trị trong cột
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
@@ -180,17 +182,13 @@ def chuyen_doi_kieu_du_lieu(df):
             st.session_state.df = df
             st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
 
-            # In ra các giá trị cũ và mới của cột đã chọn
-            st.write(f"Tên cột: {selected_col}")
-            st.write("Giá trị cũ trước khi chuyển đổi:")
-            st.write(st.session_state.column_names_before[selected_col].head())  # Hiển thị giá trị cũ
-
-            st.write("Giá trị sau khi chuyển đổi:")
-            st.write(df[selected_col].head())  # Hiển thị giá trị đã chuyển đổi
+            # Hiển thị số lượng giá trị duy nhất đã lưu vào session_state
+            st.write(f"Số lượng giá trị duy nhất trong cột `{selected_col}` trước khi chuyển đổi: {st.session_state.column_value_counts[selected_col]}")
 
     # Hiển thị DataFrame đã được chuyển đổi
     st.dataframe(df.head())
     return df
+
 
 def chuan_hoa_du_lieu(df):
     # st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
