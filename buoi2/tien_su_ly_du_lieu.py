@@ -586,7 +586,7 @@ def test():
     X_train_input_final = X_train_input.copy()  # Sao chép X_train_input để thay đổi giá trị không làm ảnh hưởng đến dữ liệu gốc
 
     # Tạo mảng chỉ số của các phần tử khác 0 và 1
-    non_binary_indices = ~np.isin(X_train_input, [0, 1])
+    non_binary_indices = ~np.isin(X_train_input, [0.0, 1.0])
     st.write("1", non_binary_indices)
 
     # if np.all(np.isin(X_train_input, [0, 1])):
