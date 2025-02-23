@@ -214,17 +214,14 @@ def ly_thuyet_SVM():
 
 
 
-def load_data():
-    # Đọc dữ liệu từ file
-    X = np.load("buoi4/X.npy")
-    y = np.load("buoi4/y.npy")
-    return X, y
+
 def split_data():
     
     st.title("📌 Chia dữ liệu Train/Test")
 
     # Đọc dữ liệu
-    X, y = load_data()
+    X = np.load("buoi4/X.npy")
+    y = np.load("buoi4/y.npy")
     total_samples = X.shape[0]
 
     # Thanh kéo chọn số lượng ảnh để train
@@ -262,6 +259,7 @@ def train():
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
         X_train = st.session_state["X_train"]
+        st.write(type(X_train))
         y_train = st.session_state["y_train"]
         X_test = st.session_state["X_test"]
         y_test = st.session_state["y_test"]
@@ -271,7 +269,10 @@ def train():
 
 
     # 🌟 Chuẩn hóa dữ liệu
-    X_train = X_train.reshape(-1, 28 * 28) / 255.0
+    try:
+        X_train = X_train.to_numpy().reshape(-1, 28 * 28) / 255.0
+    except AttributeError:
+        X_train = X_train.reshape(-1, 28 * 28) / 255.0  # Nếu lỗi thì chạy cái này
     X_test = X_test.reshape(-1, 28 * 28) / 255.0
 
 
