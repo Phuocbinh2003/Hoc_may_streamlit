@@ -388,20 +388,20 @@ def Classification2():
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
-    tab1, tab2, tab3, tab4 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "⚙️ Huấn luyện", "🔢 Dự đoán"])
+    # tab1, tab2, tab3, tab4 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "⚙️ Huấn luyện", "🔢 Dự đoán"])
 
-    with tab1:
-        ly_thuyet_Decision_tree()
+    # with tab1:
+    #     ly_thuyet_Decision_tree()
 
-    with tab2:
-        ly_thuyet_SVM()
+    # with tab2:
+    #     ly_thuyet_SVM()
 
-    with tab3:
-        split_data()
-        train()
+    # with tab3:
+    #     split_data()
+    #     train()
 
-    with tab4:
-        du_doan()
+    # with tab4:
+    du_doan()
         
 
 
