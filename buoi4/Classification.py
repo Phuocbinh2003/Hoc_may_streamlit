@@ -122,9 +122,17 @@ def Classification():
     $$\min_{w, b} \frac{1}{2} ||w||^2$$  
     → Mô hình cố gắng tìm **siêu phẳng phân cách** sao cho **vector trọng số \( w \) có độ lớn nhỏ nhất**, giúp tăng độ tổng quát.  
 
+    **Trong đó:**  
+    - \( w \) : vector trọng số xác định hướng của siêu phẳng.  
+    - \( b \) : bias (độ dịch của siêu phẳng).  
+
     - **Ràng buộc**:  
     $$y_i (w \cdot x_i + b) \geq 1, \forall i$$  
     → Mọi điểm dữ liệu **phải nằm đúng phía** của siêu phẳng, đảm bảo phân loại chính xác.  
+
+    **Trong đó:**  
+    - \( x_i \) : điểm dữ liệu đầu vào.  
+    - \( y_i \) : nhãn của điểm dữ liệu (\(+1\) hoặc \(-1\)).  
 
     - **Khoảng cách từ một điểm đến siêu phẳng**:  
     $$d = \frac{|w \cdot x + b|}{||w||}$$  
@@ -133,8 +141,10 @@ def Classification():
     - **Hàm mất mát với soft margin (SVM không tuyến tính)**:  
     $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i$$  
     → Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( \xi_i \)**.  
-    - **\( C \) lớn** → cố gắng phân loại chính xác, dễ overfitting.  
-    - **\( C \) nhỏ** → chấp nhận một số lỗi, mô hình tổng quát tốt hơn.  
+
+    **Trong đó:**  
+    - \( C \) : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
+    - \( \xi_i \) : biến slack cho phép một số điểm bị phân loại sai.  
     """)
 
     st.write("""
@@ -146,14 +156,7 @@ def Classification():
 
     # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
     
-    st.write("""
-    ### 🔥 **Tóm tắt**
-    - SVM tìm siêu phẳng tối ưu để phân loại dữ liệu.
-    - Nếu dữ liệu không tuyến tính, có thể dùng **kernel trick**.
-    - Cần chọn tham số **C, kernel** phù hợp để tránh overfitting.
-
-    🚀 **Bạn có muốn thử nghiệm với dữ liệu thực tế?**
-    """)
+    
     ### **Phần 3: Chọn mô hình & Train**
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
