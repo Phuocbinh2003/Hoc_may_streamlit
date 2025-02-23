@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
 
+from sklearn.datasets import make_classification
 # Khởi tạo MLflow
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
 # mlflow.set_experiment("MNIST Classification")
