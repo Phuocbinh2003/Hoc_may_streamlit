@@ -343,8 +343,8 @@ def du_doan():
         stroke_width=10,
         stroke_color="white",
         background_color="black",
-        height=150,
-        width=150,  # ✅ Giữ ảnh vuông (fix lỗi canva bị méo)
+        height=1500,
+        width=1500,  # ✅ Giữ ảnh vuông (fix lỗi canva bị méo)
         drawing_mode="freedraw",
         key="canvas"
     )
