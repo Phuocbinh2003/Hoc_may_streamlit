@@ -237,7 +237,7 @@ def du_doan():
             img = img.resize((8, 8)).convert("L")
             img = ImageOps.invert(img)
             img = np.array(img).reshape(1, -1)
-            st.image(img, caption="Ảnh sau khi xử lý", width=100)
+            st.image(img, caption="Ảnh sau khi xử lý", width=1000)
             st.write("Giá trị pixel đầu vào:", img)
 
             # Dự đoán
