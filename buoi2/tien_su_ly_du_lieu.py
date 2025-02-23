@@ -142,28 +142,56 @@ def xu_ly_gia_tri_thieu(df):
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
+    # Lấy các cột dạng chuỗi (categorical columns)
     categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
+    
+    # Nếu không có cột dạng chuỗi, thông báo và trả lại DataFrame ban đầu
     if not categorical_cols:
         st.success("✅ Không có cột dạng chuỗi cần chuyển đổi!")
         return df
 
+    # Cho phép người dùng chọn cột cần chuyển đổi
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
     
+    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhất
     mapping_dict = {}
-    if len(unique_values) <10:
+    
+    # Nếu có ít hơn 5 giá trị độc nhất, yêu cầu người dùng nhập giá trị thay thế
+    if len(unique_values) < 5:
         for val in unique_values:
             new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
             mapping_dict[val] = new_val
 
+        # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
+            # Lưu tên cột và giá trị trước khi chuyển đổi vào session_state
+            if "column_names_before" not in st.session_state:
+                st.session_state.column_names_before = {}
+
+            # Lưu giá trị cũ của cột
+            st.session_state.column_names_before[selected_col] = df[selected_col].copy()
+
+            # Chuyển đổi các giá trị trong cột
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
-            df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
+            df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')  # Chuyển thành số
+            
+            # Lưu lại DataFrame đã chuyển đổi trong session_state
             st.session_state.df = df
             st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
-    
+
+            # In ra các giá trị cũ và mới của cột đã chọn
+            st.write(f"Tên cột: {selected_col}")
+            st.write("Giá trị cũ trước khi chuyển đổi:")
+            st.write(st.session_state.column_names_before[selected_col].head())  # Hiển thị giá trị cũ
+
+            st.write("Giá trị sau khi chuyển đổi:")
+            st.write(df[selected_col].head())  # Hiển thị giá trị đã chuyển đổi
+
+    # Hiển thị DataFrame đã được chuyển đổi
     st.dataframe(df.head())
     return df
+
 def chuan_hoa_du_lieu(df):
     # st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
 
