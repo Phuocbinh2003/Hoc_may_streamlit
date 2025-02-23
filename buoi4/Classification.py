@@ -118,25 +118,23 @@ def Classification():
     st.subheader("📌 Công thức toán học")
 
     st.markdown(r"""
-    - **Hàm mục tiêu cần tối ưu**:
-    $$
-    \min_{w, b} \frac{1}{2} ||w||^2
-    $$
-    Với ràng buộc:
-    $$
-    y_i (w \cdot x_i + b) \geq 1, \forall i
-    $$
+    - **Hàm mục tiêu cần tối ưu**:  
+    $$\min_{w, b} \frac{1}{2} ||w||^2$$  
+    → Mô hình cố gắng tìm **siêu phẳng phân cách** sao cho **vector trọng số \( w \) có độ lớn nhỏ nhất**, giúp tăng độ tổng quát.  
 
-    - **Khoảng cách từ một điểm đến siêu phẳng**:
-    $$
-    d = \frac{|w \cdot x + b|}{||w||}
-    $$
+    - **Ràng buộc**:  
+    $$y_i (w \cdot x_i + b) \geq 1, \forall i$$  
+    → Mọi điểm dữ liệu **phải nằm đúng phía** của siêu phẳng, đảm bảo phân loại chính xác.  
 
-    - **Hàm mất mát với soft margin (SVM không tuyến tính)**:
-    $$
-    \min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i
-    $$
-    Với \( \xi_i \) là biến slack cho phép phân loại sai một số điểm.
+    - **Khoảng cách từ một điểm đến siêu phẳng**:  
+    $$d = \frac{|w \cdot x + b|}{||w||}$$  
+    → Đo **khoảng cách vuông góc** từ một điểm đến siêu phẳng, khoảng cách càng lớn thì mô hình càng đáng tin cậy.  
+
+    - **Hàm mất mát với soft margin (SVM không tuyến tính)**:  
+    $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i$$  
+    → Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( \xi_i \)**.  
+    - **\( C \) lớn** → cố gắng phân loại chính xác, dễ overfitting.  
+    - **\( C \) nhỏ** → chấp nhận một số lỗi, mô hình tổng quát tốt hơn.  
     """)
 
     st.write("""
