@@ -233,12 +233,20 @@ def du_doan():
 
     if st.button("Dự đoán số"):
         if canvas_result.image_data is not None:
-            img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
-            img = img.resize((8, 8)).convert("L")
-            img = ImageOps.invert(img)
-            img = np.array(img).reshape(1, -1)
-            st.image(img, caption="Ảnh sau khi xử lý", width=1000)
-            st.write("Giá trị pixel đầu vào:", img)
+            img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))  # Chỉ lấy 1 kênh
+            img = img.resize((8, 8)).convert("L")  # Resize về 8x8 và chuyển thành grayscale
+            img = ImageOps.invert(img)  # Đảo màu để chữ số đúng hướng
+            img = np.array(img, dtype=np.float32)  # Chuyển về dạng numpy array
+
+            # Chuẩn hóa pixel về khoảng [0, 16]
+            img = img / 255.0 * 16
+
+            # Chuyển về dạng mảng 1D như trong `load_digits()`
+            img = img.reshape(1, -1)
+
+            # Hiển thị ảnh sau khi xử lý
+            st.image(Image.fromarray((img.reshape(8, 8) * 255 / 16).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
+
 
             # Dự đoán
             prediction = model.predict(img)
