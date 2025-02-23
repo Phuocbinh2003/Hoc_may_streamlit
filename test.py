@@ -207,6 +207,7 @@ def data():
 
 def plot_tree_metrics():
     # Dữ liệu bạn đã cung cấp
+
     accuracies = [
         0.4759, 0.5759, 0.6593, 0.7741, 0.8241, 0.8259, 0.8481, 0.8574, 0.8537, 0.8463,
         0.8463, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426
@@ -215,26 +216,15 @@ def plot_tree_metrics():
         3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
     ]
 
-    # Vẽ biểu đồ
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    # Tạo DataFrame từ dữ liệu
+    data = pd.DataFrame({
+        "Tree Depth": tree_depths,
+        "Accuracy": accuracies
+    })
 
-    # Đồ thị Accuracy vs Tree Depth
-    ax[0].plot(tree_depths, accuracies, label="Accuracy theo chiều sâu cây", marker='o', color='blue')
-    ax[0].set_title("Độ chính xác theo chiều sâu cây quyết định")
-    ax[0].set_xlabel("Chiều sâu cây (max_depth)")
-    ax[0].set_ylabel("Độ chính xác (Accuracy)")
-    ax[0].legend()
-
-    # Đồ thị Accuracy theo chiều sâu cây với các điểm dữ liệu
-    ax[1].scatter(tree_depths, accuracies, color='red', label="Các điểm dữ liệu", zorder=5)
-    ax[1].plot(tree_depths, accuracies, label="Độ chính xác theo chiều sâu cây", color='blue', linestyle='--')
-    ax[1].set_title("Accuracy qua các độ sâu cây")
-    ax[1].set_xlabel("Chiều sâu cây (max_depth)")
-    ax[1].set_ylabel("Độ chính xác (Accuracy)")
-    ax[1].legend()
-
-    # Hiển thị biểu đồ trong Streamlit
-    st.pyplot(fig)
+    # Vẽ biểu đồ với st.line_chart
+    st.subheader("Độ chính xác theo chiều sâu cây quyết định")
+    st.line_chart(data.set_index('Tree Depth'))
 
 
 
