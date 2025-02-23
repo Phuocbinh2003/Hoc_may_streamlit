@@ -207,16 +207,7 @@ def train():
         st.session_state["model"] = model
         
     
- # Lưu kết quả vào MLflow
-        # with mlflow.start_run():
-        #     mlflow.log_param("model", model_choice)
-        #     if model_choice == "Decision Tree":
-        #         mlflow.log_param("max_depth", max_depth)
-        #     else:
-        #         mlflow.log_param("C", C)
-        #         mlflow.log_param("kernel", kernel)
-        #     mlflow.log_metric("accuracy", acc)
-        #     mlflow.sklearn.log_model(model, model_choice)       
+    
         
         
 
@@ -246,6 +237,8 @@ def du_doan():
             img = img.resize((8, 8)).convert("L")
             img = ImageOps.invert(img)
             img = np.array(img).reshape(1, -1)
+            st.image(img, caption="Ảnh sau khi xử lý", width=100)
+            st.write("Giá trị pixel đầu vào:", img)
 
             # Dự đoán
             prediction = model.predict(img)
