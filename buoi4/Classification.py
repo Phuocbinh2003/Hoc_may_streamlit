@@ -75,7 +75,7 @@ def Classification():
 
     **Trong đó:**  
     - \( c \) : số lượng lớp trong tập dữ liệu.  
-    - \( p_i \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
+    - \( $$p_i$$ \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
 
     - **Information Gain (Lợi ích thông tin sau khi chia tách)**:
     $$
@@ -87,14 +87,14 @@ def Classification():
 
     **Trong đó:**  
     - \( S \) : tập dữ liệu ban đầu.  
-    - \( S_j \) : tập con sau khi chia theo thuộc tính đang xét.  
-    - \( |S_j| / |S| \) : tỷ lệ số lượng mẫu trong tập con \( S_j \) so với tổng số mẫu.  
+    - \( $$S_j$$ \) : tập con sau khi chia theo thuộc tính đang xét.  
+    - \( $$|S_j| / |S|$$ \) : tỷ lệ số lượng mẫu trong tập con \( $$S_j$$ \) so với tổng số mẫu.  
     - \( H(S) \) : Entropy của tập dữ liệu ban đầu.  
-    - \( H(S_j) \) : Entropy của tập con \( S_j \).
+    - \( $$H(S_j)$$ \) : Entropy của tập con \( $$S_j$$ \).
 
     💡 **Cách áp dụng**:
     1️⃣ **Tính Entropy \( H(S) \) của tập dữ liệu ban đầu**.  
-    2️⃣ **Tính Entropy \( H(S_j) \) của từng tập con khi chia theo từng thuộc tính**.  
+    2️⃣ **Tính Entropy \( $$H(S_j)$$ \) của từng tập con khi chia theo từng thuộc tính**.  
     3️⃣ **Tính Information Gain cho mỗi thuộc tính**.  
     4️⃣ **Chọn thuộc tính có Information Gain cao nhất để chia nhánh**.  
     5️⃣ **Lặp lại quy trình trên cho đến khi dữ liệu được phân loại hoàn toàn**.  
