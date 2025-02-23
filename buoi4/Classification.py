@@ -65,25 +65,47 @@ def Classification():
     # 2️⃣ Công thức toán học
     st.subheader("2️⃣ Các bước tính toán trong Decision Tree")
 
-    st.markdown(r"""
+    st.markdown("""
     ### 📌 **Công thức chính**
     - **Entropy (Độ hỗn loạn của dữ liệu)**:
-    \[
+    $$
     H(S) = - \sum_{i=1}^{c} p_i \log_2 p_i
-    \]
-    Trong đó:
-    - \( c \) là số lượng lớp.
-    - \( p_i \) là xác suất xuất hiện của lớp \( i \).
+    $$
+    → **Đo lường mức độ hỗn loạn của tập dữ liệu**. Nếu dữ liệu hoàn toàn đồng nhất, Entropy = 0. Nếu dữ liệu được phân bố đều giữa các lớp, Entropy đạt giá trị lớn nhất.
+
+    **Trong đó:**  
+    - \( c \) : số lượng lớp trong tập dữ liệu.  
+    - \( p_i \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
 
     - **Information Gain (Lợi ích thông tin sau khi chia tách)**:
-    \[
+    $$
     IG = H(S) - \sum_{j=1}^{k} \frac{|S_j|}{|S|} H(S_j)
-    \]
-
-   
-
-    💡 **Sau khi tính toán Entropy, mô hình chọn đặc trưng tốt nhất làm gốc, rồi tính Information Gain của các đặc trưng còn lại để tìm nhánh tiếp theo.**
+    $$
+    → **Đo lường mức độ giảm Entropy khi chia tập dữ liệu** theo một thuộc tính nào đó.  
+    - Nếu **IG cao**, nghĩa là thuộc tính đó giúp phân loại tốt hơn.  
+    - Nếu **IG thấp**, nghĩa là thuộc tính đó không có nhiều ý nghĩa để phân tách dữ liệu.
     """)
+    st.write("""
+    **Trong đó:**  
+    - \( S \) : tập dữ liệu ban đầu.  
+    - \( S_j \) : tập con sau khi chia theo thuộc tính đang xét.  
+    - \( |S_j| / |S| \) : tỷ lệ số lượng mẫu trong tập con \( S_j \) so với tổng số mẫu.  
+    - \( H(S) \) : Entropy của tập dữ liệu ban đầu.  
+    - \( H(S_j) \) : Entropy của tập con \( S_j \).
+
+    💡 **Cách áp dụng**:
+    1️⃣ **Tính Entropy \( H(S) \) của tập dữ liệu ban đầu**.  
+    2️⃣ **Tính Entropy \( H(S_j) \) của từng tập con khi chia theo từng thuộc tính**.  
+    3️⃣ **Tính Information Gain cho mỗi thuộc tính**.  
+    4️⃣ **Chọn thuộc tính có Information Gain cao nhất để chia nhánh**.  
+    5️⃣ **Lặp lại quy trình trên cho đến khi dữ liệu được phân loại hoàn toàn**.  
+    """)
+
+
+
+
+
+
 
 
 
