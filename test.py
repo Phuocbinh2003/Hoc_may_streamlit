@@ -210,10 +210,10 @@ def plot_tree_metrics():
     max_depths = list(range(3, 21))  # Các giá trị max_depth từ 3 đến 20
     accuracies = [
         0.4759, 0.5759, 0.6593, 0.7741, 0.8241, 0.8259, 0.8481, 0.8574, 0.8537, 0.8463,
-        0.8463, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426
+        0.8463, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426
     ]
     tree_depths = [
-        3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 14, 14, 14, 14, 14, 14
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
     ]
     
     # Vẽ biểu đồ Accuracy theo max_depth
@@ -479,7 +479,7 @@ def Classification2():
     
     with tab3:
         data()
-        #plot_tree_metrics()
+        plot_tree_metrics()
     with tab4:
         
         split_data()
