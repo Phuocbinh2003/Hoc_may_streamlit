@@ -322,93 +322,47 @@ def train():
         
         
 import joblib
-import cv2
-def preprocess_canvas_image(canvas_result):
-    """Tìm và cắt số lớn nhất từ ảnh để chuẩn bị cho model MNIST"""
-    if canvas_result.image_data is not None:
-        # Chuyển ảnh thành numpy array, lấy kênh đầu tiên (grayscale)
-        img = np.array(canvas_result.image_data[:, :, 0]).astype(np.uint8)
-
-        # Chuyển sang nền trắng, chữ đen (chuẩn MNIST)
-        _, img = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY_INV)
-
-        # Tìm contours để phát hiện số
-        contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        if contours:
-            # Chọn số có diện tích lớn nhất (tránh nhiễu)
-            largest_contour = max(contours, key=cv2.contourArea)
-            x, y, w, h = cv2.boundingRect(largest_contour)
-            digit = img[y:y+h, x:x+w]  # Cắt số lớn nhất
-
-            # Tạo ảnh vuông 28x28 giữ tỷ lệ
-            square_digit = np.full((28, 28), 0, dtype=np.uint8)  # Nền đen
-
-            # Tính toán kích thước để giữ tỷ lệ số
-            aspect_ratio = w / h
-            if aspect_ratio > 1:  # Nếu số rộng hơn cao
-                new_w = 20
-                new_h = int(20 / aspect_ratio)
-            else:  # Nếu số cao hơn rộng
-                new_h = 20
-                new_w = int(20 * aspect_ratio)
-
-            # Resize số về kích thước tính toán
-            resized_digit = cv2.resize(digit, (new_w, new_h), interpolation=cv2.INTER_AREA)
-
-            # Chèn số vào chính giữa ảnh 28x28
-            x_offset = (28 - new_w) // 2
-            y_offset = (28 - new_h) // 2
-            square_digit[y_offset:y_offset+new_h, x_offset:x_offset+new_w] = resized_digit
-
-            # Chuẩn hóa về [0,1]
-            square_digit = square_digit.astype(np.float32) / 255.0
-
-            return square_digit.reshape(1, -1), img
-
-    return None, None
-
-
 def load_model(path):
-    """Tải mô hình từ file `.joblib`"""
     try:
         return joblib.load(path)
     except FileNotFoundError:
         st.error(f"⚠️ Không tìm thấy mô hình tại `{path}`")
         st.stop()
 
+# ✅ Xử lý ảnh từ canvas (chuẩn 28x28 cho MNIST)
+def preprocess_canvas_image(canvas_result):
+    if canvas_result.image_data is not None:
+        img = Image.fromarray(canvas_result.image_data[:, :, 0].astype(np.uint8))
+        img = img.resize((28, 28)).convert("L")  # Resize và chuyển thành grayscale
+        img = np.array(img, dtype=np.float32) / 255.0  # Chuẩn hóa về [0, 1]
+        return img.reshape(1, -1)  # Chuyển thành vector 1D
+    return None
+
+# ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # 🔹 Danh sách mô hình mặc định
-    default_models = {
+    # 🔹 Danh sách mô hình
+    models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
         "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
 
-    # 🔹 Kiểm tra nếu có mô hình train thêm trong session_state
-    trained_models = st.session_state.get("trained_models", {})
-
-    # 🔹 Gộp danh sách mô hình
-    all_models = {**default_models, **trained_models}
-
-    # 📌 Chọn mô hình để dự đoán
-    model_option = st.selectbox("🔍 Chọn mô hình để dự đoán:", list(all_models.keys()))
-
-    # 📌 Tải mô hình đã chọn
-    model = trained_models.get(model_option, load_model(all_models[model_option]))
+    # 📌 Chọn mô hình
+    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()))
+    model = load_model(models[model_option])
     st.success(f"✅ Đã tải mô hình: {model_option}")
 
-    # ✍️ Vẽ số để dự đoán
+    # ✍️ Vẽ số
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
         stroke_color="white",
         background_color="black",
         height=150,
-        width=400,
+        width=150,  # ✅ Giữ ảnh vuông (fix lỗi canva bị méo)
         drawing_mode="freedraw",
         key="canvas"
     )
@@ -417,16 +371,19 @@ def du_doan():
         img = preprocess_canvas_image(canvas_result)
 
         if img is not None:
-            # Hiển thị ảnh sau khi xử lý
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
+            # Hiển thị ảnh sau xử lý
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
-
-
-            # Dự đoán với mô hình đã chọn
+            # Dự đoán
             prediction = model.predict(img)
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
+            
+            
+            
+            
+            
             
             
 def Classification():
