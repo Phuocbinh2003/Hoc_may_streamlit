@@ -481,11 +481,8 @@ def chon_mo_hinh():
 
     return None, None, None
 
-
-
-def main():
+def data():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
-    
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
@@ -493,17 +490,30 @@ def main():
 
             # Hiển thị lý thuyết và xử lý dữ liệu
             hien_thi_ly_thuyet(df)
-            
-            try:
-                
-                final_w, avg_mse, scaler = chon_mo_hinh()
-            except Exception as e:
-                st.error(f"Lỗi xảy ra: {e}")
-            
-
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
+def chon():
+    try:
+                
+        final_w, avg_mse, scaler = chon_mo_hinh()
+    except Exception as e:
+        st.error(f"Lỗi xảy ra: {e}")
+def main():
+    
+    tab1, tab2, tab3 = st.tabs(["📘 Tiền xử lý dữ liệu","⚙️ Huấn luyện", "🔢 Dự đoán"])
+    with tab1:
+        data()
+    with tab2:
+        chon()
+    with tab3:
+        pass
+    
+    
+            
+            
+            
 
+        
 if __name__ == "__main__":
     main()
     
