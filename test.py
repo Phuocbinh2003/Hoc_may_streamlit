@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
 import joblib
-
+import pandas as pd
 
 
 # Khởi tạo MLflow
