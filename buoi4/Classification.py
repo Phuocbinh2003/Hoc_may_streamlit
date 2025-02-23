@@ -344,17 +344,19 @@ def Classification():
     # 1️⃣ Phần giới thiệu
     
     # === Sidebar để chọn trang ===
-    st.sidebar.title("📌 Chọn trang:")
-    page = st.sidebar.radio("Điều hướng", ["Lý thuyết Decision Tree", "Lý thuyết SVM", "Huấn luyện", "Dự đoán"])
+    # === Tạo Tabs ===
+    tab1, tab2, tab3, tab4 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "⚙️ Huấn luyện", "🔢 Dự đoán"])
 
-    # === Gọi hàm theo trang được chọn ===
-    if page == "Lý thuyết Decision Tree":
+    with tab1:
         ly_thuyet_Decision_tree()
-    elif page == "Lý thuyết SVM":
+
+    with tab2:
         ly_thuyet_SVM()
-    elif page == "Huấn luyện":
+
+    with tab3:
         train()
-    elif page == "Dự đoán":
+
+    with tab4:
         du_doan()
         
 
