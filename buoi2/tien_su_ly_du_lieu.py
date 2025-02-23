@@ -502,24 +502,24 @@ def test():
         st.warning("Mô hình chưa được huấn luyện.")
         return
 
-    # Điền các giá trị cho cột X_train (ở đây là một ví dụ, bạn có thể tùy chỉnh)
-    # Giả sử X_train là một mảng NumPy, bạn có thể thay thế bằng DataFrame hoặc array tương ứng
-    X_train_input = st.text_input("Nhập giá trị X_train (dạng mảng, ví dụ: [1, 2, 3])", "[0, 0, 0]")
+    # Nhập các giá trị cho các cột của X_train
+    num_columns = len(model) - 1  # Trừ đi 1 cho cột intercept (bias)
 
-    # Chuyển đổi X_train_input từ chuỗi thành mảng NumPy
-    try:
-        X_train_input = np.array(eval(X_train_input))  # Chuyển đổi chuỗi thành mảng
-        if len(X_train_input) != len(model):  # Kiểm tra nếu kích thước không phù hợp
-            st.warning(f"Độ dài của X_train không khớp với mô hình.")
-            return
-    except:
-        st.warning("Vui lòng nhập X_train hợp lệ.")
-        return
+    st.write(f"Nhập các giá trị cho {num_columns} cột của X_train:")
+
+    # Tạo các trường nhập liệu cho từng cột
+    X_train_input = []
+    for i in range(num_columns):
+        value = st.number_input(f"Giá trị cột {i+1}", key=f"column_{i}")
+        X_train_input.append(value)
+
+    # Chuyển đổi list thành array
+    X_train_input = np.array(X_train_input).reshape(1, -1)
 
     # Dự đoán khi nhấn nút
     if st.button("Dự đoán"):
         # Thêm cột 1 cho intercept (nếu cần)
-        X_input_b = np.c_[np.ones((1, 1)), X_train_input]
+        X_input_b = np.c_[np.ones((X_train_input.shape[0], 1)), X_train_input]
         
         # Dự đoán với mô hình đã lưu
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
