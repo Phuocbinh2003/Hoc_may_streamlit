@@ -318,12 +318,12 @@ def train():
                 new_model_name = f"{model_name}_{count}"
             
             # Sử dụng tên mới đã tạo
-            model_name_moi = new_model_name
-            st.warning(f"⚠️ Mô hình với tên '{model_name}' đã tồn tại, sử dụng tên mới: {model_name_moi}")
+            model_name = new_model_name
+            st.warning(f"⚠️ Mô hình được lưu với tên là: {model_name}")
 
         # Lưu mô hình vào danh sách với tên mô hình cụ thể
-        st.session_state["models"].append({"name": model_name_moi, "model": model})
-        st.write(f"🔹 Mô hình đã được lưu với tên: {model_name_moi}")
+        st.session_state["models"].append({"name": model_name, "model": model})
+        st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
         st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
 
         # In tên các mô hình đã lưu
