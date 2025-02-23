@@ -3,3 +3,6 @@ scikit-learn
 pandas
 matplotlib
 mlflow
+streamlit-drawable-canvas
+pillow
+numpy 
