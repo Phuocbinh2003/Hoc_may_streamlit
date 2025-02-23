@@ -103,7 +103,7 @@ def Classification():
         - Nhạy cảm với lựa chọn tham số (C, Kernel).
     """)
 
-    # Hiển thị hình ảnh minh họa SVM
+    # Hiển thị hình ảnh minh họa SV
     #st.image("buoi4/svm_example.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_column_width=True)
 
     st.write("""
