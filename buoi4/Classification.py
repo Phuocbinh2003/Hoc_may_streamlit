@@ -226,6 +226,50 @@ from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 
+def load_data():
+    # Đọc dữ liệu từ file
+    X = np.load("buoi4/X.npy")
+    y = np.load("buoi4/y.npy")
+    return X, y
+def train_test_split():
+    
+    st.title("📌 Chia dữ liệu Train/Test")
+
+    # Đọc dữ liệu
+    X, y = load_data()
+    total_samples = X.shape[0]
+
+    # Thanh kéo chọn số lượng ảnh để train
+    num_samples = st.slider("Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
+
+    # Thanh kéo chọn tỷ lệ Train/Test
+    test_size = st.slider("Chọn tỷ lệ test:", 0.1, 0.5, 0.2)
+
+    if st.button("✅ Xác nhận & Lưu"):
+        # Lấy số lượng ảnh mong muốn
+        X_selected, y_selected = X[:num_samples], y[:num_samples]
+
+        # Chia train/test theo tỷ lệ đã chọn
+        X_train, X_test, y_train, y_test = train_test_split(X_selected, y_selected, test_size=test_size, random_state=42)
+
+        # Lưu vào session_state để sử dụng sau
+        st.session_state["X_train"] = X_train
+        st.session_state["y_train"] = y_train
+        st.session_state["X_test"] = X_test
+        st.session_state["y_test"] = y_test
+
+        st.success(f"🔹 Dữ liệu đã được chia: Train ({len(X_train)}), Test ({len(X_test)})")
+
+    # Kiểm tra nếu đã lưu dữ liệu vào session_state
+    if "X_train" in st.session_state:
+        st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
+        
+    
+    
+    
+    
+    
+    
 def train():
     # 📥 **Tải dữ liệu MNIST**
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -354,6 +398,7 @@ def Classification():
         ly_thuyet_SVM()
 
     with tab3:
+        train_test_split()
         train()
 
     with tab4:
