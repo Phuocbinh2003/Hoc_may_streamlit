@@ -511,8 +511,8 @@ def test():
 
     # Tạo các trường nhập liệu cho từng cột
     X_train_input = []
-    for i in range(num_columns):
-        value = st.number_input(f"Giá trị cột {column_names[i]}", key=f"column_{i}")
+    for i, column_name in enumerate(column_names):
+        value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
         X_train_input.append(value)
 
     # Chuyển đổi list thành array
