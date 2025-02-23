@@ -327,10 +327,10 @@ def du_doan():
 
     # 🔹 Danh sách mô hình mặc định
     default_models = {
-        "SVM Linear": "buoi4/svm_mnist_linear.pkl",
-        "SVM Poly": "buoi4/svm_mnist_poly.pkl",
-        "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.pkl",
-        "SVM RBF": "buoi4/svm_mnist_rbf.pkl",
+        "SVM Linear": "buoi4/svm_mnist_linear.joblib",
+        "SVM Poly": "buoi4/svm_mnist_poly.joblib",
+        "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
+        "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
 
     # 🔹 Kiểm tra nếu có mô hình train thêm trong session_stat
@@ -344,9 +344,8 @@ def du_doan():
 
     # 📌 Tải mô hình đã chọn
     def load_model(path):
-        """Tải mô hình từ file"""
-        with open(path, "rb") as file:
-            return pickle.load(file)
+        """Tải mô hình từ file `.joblib`"""
+        return joblib.load(path)
 
     try:
         # Nếu mô hình có sẵn trong session_state thì dùng luôn, nếu không thì tải từ file
