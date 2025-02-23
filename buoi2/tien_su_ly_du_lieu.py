@@ -52,7 +52,7 @@ def choose_label(df):
     
     return X, y
 
-def train_test_size(df):
+def train_test_size():
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
     
     if "df" not in st.session_state:
@@ -290,6 +290,7 @@ def hien_thi_ly_thuyet(df):
     
     df=chuan_hoa_du_lieu(df)
     
+def chia():
     st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
     st.write("""
     ### 📌 Chia tập dữ liệu
@@ -310,7 +311,7 @@ def hien_thi_ly_thuyet(df):
     ```
     """)
        
-    train_test_size(df)
+    train_test_size()
     
     
 
@@ -504,6 +505,7 @@ def main():
     with tab1:
         data()
     with tab2:
+        chia()
         chon()
     with tab3:
         pass
