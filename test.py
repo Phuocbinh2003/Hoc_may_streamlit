@@ -250,7 +250,7 @@ def split_data():
     # Thanh kéo chọn số lượng ảnh để train
     num_samples = st.slider("Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
 
-    # Thanh kéo chọn tỷ lệ Train/Tes
+    # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("Chọn tỷ lệ test:", 0.1, 0.5, 0.2)
 
     if st.button("✅ Xác nhận & Lưu"):
@@ -479,7 +479,7 @@ def Classification2():
     
     with tab3:
         data()
-        plot_tree_metrics()
+        #plot_tree_metrics()
     with tab4:
         
         split_data()
