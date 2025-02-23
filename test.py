@@ -151,7 +151,57 @@ def ly_thuyet_SVM():
 
 
 def data():
-   pass
+    st.header("MNIST Dataset")
+    st.write("""
+      **MNIST** là một trong những bộ dữ liệu nổi tiếng và phổ biến nhất trong cộng đồng học máy, 
+      đặc biệt là trong các nghiên cứu về nhận diện mẫu và phân loại hình ảnh.
+  
+      - Bộ dữ liệu bao gồm tổng cộng **70.000 ảnh chữ số viết tay** từ **0** đến **9**, 
+        mỗi ảnh có kích thước **28 x 28 pixel**.
+      - Chia thành:
+        - **Training set**: 60.000 ảnh để huấn luyện.
+        - **Test set**: 10.000 ảnh để kiểm tra.
+      - Mỗi hình ảnh là một chữ số viết tay, được chuẩn hóa và chuyển thành dạng grayscale (đen trắng).
+  
+      Dữ liệu này được sử dụng rộng rãi để xây dựng các mô hình nhận diện chữ số.
+      """)
+
+    st.subheader("Một số hình ảnh từ MNIST Dataset")
+    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
+
+    st.subheader("Ứng dụng thực tế của MNIST")
+    st.write("""
+      Bộ dữ liệu MNIST đã được sử dụng trong nhiều ứng dụng nhận dạng chữ số viết tay, chẳng hạn như:
+      - Nhận diện số trên các hoá đơn thanh toán, biên lai cửa hàng.
+      - Xử lý chữ số trên các bưu kiện gửi qua bưu điện.
+      - Ứng dụng trong các hệ thống nhận diện tài liệu tự động.
+    """)
+
+    st.subheader("Ví dụ về các mô hình học máy với MNIST")
+    st.write("""
+      Các mô hình học máy phổ biến đã được huấn luyện với bộ dữ liệu MNIST bao gồm:
+      - **Logistic Regression**
+      - **Decision Trees**
+      - **K-Nearest Neighbors (KNN)**
+      - **Support Vector Machines (SVM)**
+      - **Convolutional Neural Networks (CNNs)**
+    """)
+
+    st.subheader("Kết quả của một số mô hình trên MNIST")
+    st.write("""
+      Để đánh giá hiệu quả của các mô hình học máy với MNIST, người ta thường sử dụng độ chính xác (accuracy) trên tập test:
+      
+      - **Decision Tree**: 85%
+      - **SVM (Linear)**: 98%
+      - **SVM (Linear)**: 98%
+      - **SVM (Linear)**: 98%
+      - **SVM (Linear)**: 98%
+      
+      
+      
+    """)
+
+
 
 
 
