@@ -298,12 +298,17 @@ def train():
         if "models" not in st.session_state:
             st.session_state["models"] = []
 
-        # Lưu mô hình vào danh sách với tên riêng
-        model_name = f"model_{len(st.session_state['models']) + 1}"
+        model_name = model_choice.lower().replace(" ", "_")
+        if model_choice == "SVM":
+            model_name += f"_{kernel}"
+
+        # Lưu mô hình vào danh sách với tên mô hình cụ thể
         st.session_state["models"].append({"name": model_name, "model": model})
 
         st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
         st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
+
+        # In tên các mô hình đã lưu
         st.write("📋 Danh sách các mô hình đã lưu:")
         model_names = [model["name"] for model in st.session_state["models"]]
         st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
