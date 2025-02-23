@@ -555,7 +555,7 @@ def test():
 
     # Tạo các trường nhập liệu cho từng cột
     X_train_input = []
-    
+    binary_columns = [] 
     # Kiểm tra nếu có dữ liệu mapping_dicts trong session_state
     if "mapping_dicts" not in st.session_state:
         st.session_state.mapping_dicts = []
@@ -573,19 +573,28 @@ def test():
             value = st.selectbox(f"Giá trị cột {column_name}", options=list(mapping_dict.keys()), key=f"column_{i}")
             
             value = mapping_dict[value]  # Lấy giá trị thay thế tương ứng
-            st.write(value)
+            
         else:  # Nếu không có mapping_dict, yêu cầu người dùng nhập số
             value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
-            st.write(value)
+            
         X_train_input.append(value)
 
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
+    
+    X_train_input_without_binary = np.delete(X_train_input, binary_columns, axis=1)
+
+    # Chuẩn hóa các cột không phải nhị phân
+    scaler = StandardScaler()
+    X_train_input_normalized = scaler.fit_transform(X_train_input_without_binary)
+
+    # Kết hợp lại cột nhị phân và các cột đã chuẩn hóa
+    X_train_input_final = np.hstack([X_train_input_normalized, X_train_input[:, binary_columns]])
 
     # Dự đoán khi nhấn nút
     if st.button("Dự đoán"):
         # Thêm cột 1 cho intercept (nếu cần)
-        X_input_b = np.c_[np.ones((X_train_input.shape[0], 1)), X_train_input]
+        X_input_b = np.c_[np.ones((X_train_input_final.shape[0], 1)), X_train_input_final]
         
         # Dự đoán với mô hình đã lưu
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
