@@ -530,12 +530,13 @@ def chon_mo_hinh():
     return None, None, None
 
 
+import numpy as np
+import streamlit as st
+
 def test():
-    
-    # Chọn mô hình linear hoặc polynomial
+    # Kiểm tra xem mô hình đã được lưu trong session_state chưa
     model_type = st.selectbox("Chọn mô hình:", ["linear", "polynomial"])
 
-    # Kiểm tra xem mô hình đã được lưu trong session_state chưa
     if model_type == "linear" and "linear_model" in st.session_state:
         model = st.session_state["linear_model"]
     elif model_type == "polynomial" and "polynomial_model" in st.session_state:
@@ -545,17 +546,35 @@ def test():
         return
 
     # Nhập các giá trị cho các cột của X_train
-    X_train = st.session_state.X_train 
-    st.write(X_train.head()) # Đảm bảo bạn dùng session_state
-    num_columns = len(X_train.columns)  # Sửa lại số lượng cột
+    X_train = st.session_state.X_train
+    st.write(X_train.head())  # Đảm bảo bạn dùng session_state
+    num_columns = len(X_train.columns)
     column_names = X_train.columns.tolist()
-    
+
     st.write(f"Nhập các giá trị cho {num_columns} cột của X_train:")
 
     # Tạo các trường nhập liệu cho từng cột
     X_train_input = []
+    
+    # Kiểm tra nếu có dữ liệu mapping_dicts trong session_state
+    if "mapping_dicts" not in st.session_state:
+        st.session_state.mapping_dicts = []
+
+    # Duyệt qua các cột và kiểm tra nếu có thông tin chuyển đổi
     for i, column_name in enumerate(column_names):
-        value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
+        # Kiểm tra xem cột có nằm trong mapping_dicts không
+        mapping_dict = None
+        for column_info in st.session_state.mapping_dicts:
+            if column_info["column_name"] == column_name:
+                mapping_dict = column_info["mapping_dict"]
+                break
+
+        if mapping_dict:  # Nếu có mapping_dict, hiển thị dropdown với các giá trị thay thế
+            value = st.selectbox(f"Giá trị cột {column_name}", options=list(mapping_dict.keys()), key=f"column_{i}")
+            value = mapping_dict[value]  # Lấy giá trị thay thế tương ứng
+        else:  # Nếu không có mapping_dict, yêu cầu người dùng nhập số
+            value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
+
         X_train_input.append(value)
 
     # Chuyển đổi list thành array
@@ -570,7 +589,7 @@ def test():
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
         
         # Hiển thị kết quả dự đoán
-        st.write(f"Dự đoán: {y_pred[0]}") 
+        st.write(f"Dự đoán: {y_pred[0]}")
 
     
 def data():
