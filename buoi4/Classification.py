@@ -92,7 +92,8 @@ def Classification():
     - \( H(S) \) : Entropy của tập dữ liệu ban đầu.  
     - \( $$H(S_j)$$ \) : Entropy của tập con \( $$S_j$$ \).
 
-    💡 **Cách áp dụng**:
+    💡 **Cách áp dụng**:.
+    
     1️⃣ **Tính Entropy \( H(S) \) của tập dữ liệu ban đầu**.  
     2️⃣ **Tính Entropy \( $$H(S_j)$$ \) của từng tập con khi chia theo từng thuộc tính**.  
     3️⃣ **Tính Information Gain cho mỗi thuộc tính**.  
@@ -181,12 +182,35 @@ def Classification():
     ### **Phần 3: Chọn mô hình & Train**
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
+    # Lựa chọn mô hình
     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
 
     if model_choice == "Decision Tree":
+        st.markdown("""
+        - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
+        - **Tham số cần chọn:**  
+            - **max_depth**: Giới hạn độ sâu tối đa của cây.  
+                - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
+                - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
+        """)
+
         max_depth = st.slider("max_depth", 1, 20, 5)
         model = DecisionTreeClassifier(max_depth=max_depth)
+
     elif model_choice == "SVM":
+        st.markdown("""
+        - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
+        - **Tham số cần chọn:**  
+            - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
+                - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
+                - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
+            - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
+                - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
+                - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
+                - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
+                - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
+        """)
+
         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
         model = SVC(C=C, kernel=kernel)
