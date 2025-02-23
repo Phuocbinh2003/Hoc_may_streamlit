@@ -323,14 +323,40 @@ def train():
         
 
 def du_doan():
-    if "model" in st.session_state:
-        model = st.session_state["model"]
-        st.write("📌 Mô hình đã sẵn sàng để dự đoán!")
-    else:
-        st.warning("⚠️ Chưa có mô hình nào được huấn luyện. Vui lòng train trước.")
-    ### **Phần 4: Vẽ số & Dự đoán**
     st.header("✍️ Vẽ số để dự đoán")
 
+    # 🔹 Danh sách mô hình mặc định
+    default_models = {
+        "SVM Linear": "buoi4/svm_mnist_linear.pkl",
+        "SVM Poly": "buoi4/svm_mnist_poly.pkl",
+        "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.pkl",
+        "SVM RBF": "buoi4/svm_mnist_rbf.pkl",
+    }
+
+    # 🔹 Kiểm tra nếu có mô hình train thêm trong session_state
+    trained_models = st.session_state.get("trained_models", {})
+
+    # 🔹 Gộp danh sách mô hình
+    all_models = {**default_models, **trained_models}
+
+    # 📌 Chọn mô hình để dự đoán
+    model_option = st.selectbox("🔍 Chọn mô hình để dự đoán:", list(all_models.keys()))
+
+    # 📌 Tải mô hình đã chọn
+    def load_model(path):
+        """Tải mô hình từ file"""
+        with open(path, "rb") as file:
+            return pickle.load(file)
+
+    try:
+        # Nếu mô hình có sẵn trong session_state thì dùng luôn, nếu không thì tải từ file
+        model = trained_models.get(model_option, load_model(all_models[model_option]))
+        st.success(f"✅ Đã tải mô hình: {model_option}")
+    except FileNotFoundError:
+        st.error(f"⚠️ Không tìm thấy mô hình `{all_models[model_option]}`")
+        st.stop()
+
+    # ✍️ Vẽ số để dự đoán
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -344,24 +370,16 @@ def du_doan():
 
     if st.button("Dự đoán số"):
         if canvas_result.image_data is not None:
-            img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))  # Chỉ lấy 1 kênh
-            img = img.resize((28, 28)).convert("L")  # Resize về 28x28 thay vì 8x8
-            img = ImageOps.invert(img)  # Đảo màu để chữ số đúng hướng
-            img = np.array(img, dtype=np.float32)  # Chuyển về numpy array
-
-            # Chuẩn hóa pixel về khoảng [0, 1] vì MNIST dùng giá trị 0-255
-            img = img / 255.0  
-
-            # Chuyển về dạng mảng 1D nếu dùng mô hình như SVM hoặc cây quyết định
-            img = img.reshape(1, -1)  
-
-            # Nếu dùng CNN thì reshape về (1, 28, 28, 1)
-            # img = img.reshape(1, 28, 28, 1)  
+            img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
+            img = img.resize((28, 28)).convert("L")
+            img = ImageOps.invert(img)
+            img = np.array(img, dtype=np.float32) / 255.0
+            img = img.reshape(1, -1)
 
             # Hiển thị ảnh sau khi xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
 
-            # Dự đoán
+            # Dự đoán với mô hình đã chọn
             prediction = model.predict(img)
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
             
