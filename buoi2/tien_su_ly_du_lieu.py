@@ -613,10 +613,10 @@ def test():
         # Dự đoán với mô hình đã lưu
         st.write(X_input_b)
         
-        #y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
+        y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
         
         # Hiển thị kết quả dự đoán
-        #st.write(f"Dự đoán: {y_pred[0]}")
+        st.write(f"Dự đoán: {y_pred[0]}")
 
     
 def data():
