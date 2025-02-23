@@ -141,6 +141,8 @@ def xu_ly_gia_tri_thieu(df):
 
 
 
+
+
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
@@ -156,7 +158,7 @@ def chuyen_doi_kieu_du_lieu(df):
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
     
-    # Tạo từ điển lưu trữ số lượng giá trị thay thế cho mỗi giá trị độc nhất
+    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhất
     mapping_dict = {}
     
     # Nếu có ít hơn 5 giá trị độc nhất, yêu cầu người dùng nhập giá trị thay thế
@@ -164,16 +166,15 @@ def chuyen_doi_kieu_du_lieu(df):
         for val in unique_values:
             new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
             mapping_dict[val] = new_val
-            
 
         # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
-            # Lưu số lượng giá trị duy nhất trong cột trước khi chuyển đổi vào session_state
-            if "column_value_counts" not in st.session_state:
-                st.session_state.column_value_counts = {}
+            # Kiểm tra xem session_state đã có mảng lưu các mapping_dict chưa
+            if "mapping_dicts" not in st.session_state:
+                st.session_state.mapping_dicts = []  # Tạo một mảng rỗng nếu chưa có
 
-            # Lưu số lượng giá trị duy nhất của cột
-            st.session_state.column_value_counts[selected_col] = mapping_dict
+            # Lưu từ điển mapping_dict vào mảng
+            st.session_state.mapping_dicts.append(mapping_dict)
 
             # Chuyển đổi các giá trị trong cột
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
@@ -183,12 +184,16 @@ def chuyen_doi_kieu_du_lieu(df):
             st.session_state.df = df
             st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
 
-            # Hiển thị số lượng giá trị duy nhất đã lưu vào session_state
-            st.write(f"Số lượng giá trị duy nhất trong cột `{selected_col}` trước khi chuyển đổi: {st.session_state.column_value_counts[selected_col]}")
-
     # Hiển thị DataFrame đã được chuyển đổi
     st.dataframe(df.head())
+    
+    # Hiển thị mảng các mapping_dict đã lưu trong session_state
+    if "mapping_dicts" in st.session_state:
+        st.write("Danh sách các từ điển mapping_dict cho các cột đã chuyển đổi:")
+        st.write(st.session_state.mapping_dicts)
+    
     return df
+
 
 
 def chuan_hoa_du_lieu(df):
@@ -486,6 +491,7 @@ def chon_mo_hinh():
             print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
         # Huấn luyện trên toàn bộ tập train
+        
         if model_type == "linear":
             final_w = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
             st.session_state['linear_model'] = final_w
@@ -516,6 +522,7 @@ def chon_mo_hinh():
 
 
 def test():
+    chuyen_doi_kdl=st.session_state.column_value_counts[selected_col]
     # Chọn mô hình linear hoặc polynomial
     model_type = st.selectbox("Chọn mô hình:", ["linear", "polynomial"])
 
