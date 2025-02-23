@@ -211,30 +211,32 @@ def ly_thuyet_SVM():
 #         st.session_state["model"] = model
         
     
-import matplotlib.pyplot as plt
+
+
+import streamlit as st
 import numpy as np
-import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.datasets import load_digits
+import pandas as pd
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
-import streamlit as st
 
 def train():
-    digits = load_digits()
-    X, y = digits.data, digits.target
+    # 📥 **Tải dữ liệu MNIST**
+    (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-    # Chia tập train/test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    y_train = np.ravel(y_train)
-    y_test = np.ravel(y_test)  # Đảm bảo y_test cũng có đúng dạng
+    # 🌟 Chuẩn hóa dữ liệu
+    X_train = X_train.reshape(-1, 28 * 28) / 255.0  # Chuyển về vector 1D và chuẩn hóa
+    X_test = X_test.reshape(-1, 28 * 28) / 255.0
 
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
-    # Lựa chọn mô hình
+    # 📌 **Chọn mô hình**
     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
 
     if model_choice == "Decision Tree":
@@ -253,11 +255,11 @@ def train():
         st.success(f"✅ Độ chính xác: {acc:.4f}")
         st.session_state["model"] = model
 
-        # 📌 **1. In các ảnh trong tập train**
+        # 📸 **1. Hiển thị một số ảnh trong tập train**
         st.subheader("📸 Một số ảnh từ tập train:")
         fig, axes = plt.subplots(1, 5, figsize=(10, 2))
         for i, ax in enumerate(axes):
-            ax.imshow(X_train[i].reshape(8, 8), cmap="gray")  # Chuyển về 8x8
+            ax.imshow(X_train[i].reshape(28, 28), cmap="gray")  # Chuyển về 28x28
             ax.set_title(f"Label: {y_train[i]}")
             ax.axis("off")
         st.pyplot(fig)
@@ -271,6 +273,7 @@ def train():
         ax.set_ylabel("Số lượng mẫu")
         ax.set_title("Số lượng mẫu trong tập train")
         st.pyplot(fig)
+
   
         
         
