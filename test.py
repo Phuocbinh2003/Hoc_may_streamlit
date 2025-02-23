@@ -304,8 +304,10 @@ def train():
 
         st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
         st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
-
-    
+        st.write("📋 Danh sách các mô hình đã lưu:")
+        model_names = [model["name"] for model in st.session_state["models"]]
+        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
+        
 
       
 
