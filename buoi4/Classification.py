@@ -11,6 +11,13 @@ from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
 
+import joblib
+
+import seaborn as sns
+
+from tensorflow.keras.datasets import mnist
+
+from sklearn.metrics import accuracy_score
 
 # Khởi tạo MLflow
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
@@ -213,18 +220,6 @@ def ly_thuyet_SVM():
     
 
 
-import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-from tensorflow.keras.datasets import mnist
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
 
 def load_data():
     # Đọc dữ liệu từ file
@@ -321,7 +316,7 @@ def train():
   
         
         
-import joblib
+
 def load_model(path):
     try:
         return joblib.load(path)
