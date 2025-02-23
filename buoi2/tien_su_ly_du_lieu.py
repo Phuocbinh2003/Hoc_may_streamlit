@@ -158,7 +158,7 @@ def chuyen_doi_kieu_du_lieu(df):
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
     
-    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhất
+    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhấ
     mapping_dict = {}
     
     # Nếu có ít hơn 5 giá trị độc nhất, yêu cầu người dùng nhập giá trị thay thế
