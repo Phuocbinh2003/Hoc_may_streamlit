@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
-import joblib
+from sklearn.externals import joblib
 
 
 
@@ -343,8 +343,8 @@ def du_doan():
         stroke_width=10,
         stroke_color="white",
         background_color="black",
-        height=1500,
-        width=1500,  # ✅ Giữ ảnh vuông (fix lỗi canva bị méo)
+        height=150,
+        width=150,  # ✅ Giữ ảnh vuông (fix lỗi canva bị méo)
         drawing_mode="freedraw",
         key="canvas"
     )
