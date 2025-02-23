@@ -165,7 +165,7 @@ def chuyen_doi_kieu_du_lieu(df):
     if len(unique_values) < 5:
         for val in unique_values:
             new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
-            mapping_dict[val] = new_val
+            mapping_dict[selected_col] = new_val
 
         # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
