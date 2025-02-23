@@ -323,23 +323,25 @@ def train():
         
 import joblib
 def preprocess_canvas_image(canvas_result):
-    """Chuyển ảnh từ canvas về dạng 28x28 chuẩn MNIST"""
+    """Chuyển ảnh từ canvas về danh sách các số được cắt riêng lẻ"""
     if canvas_result.image_data is not None:
-        # Chuyển ảnh thành mảng numpy, lấy kênh đầu tiên (gray)
-        img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
+        # Chuyển ảnh thành numpy array
+        img = (canvas_result.image_data[:, :, 0]).astype(np.uint8)
+        img = Image.fromarray(img).convert("L")  # Chuyển thành ảnh xám
+        img = np.array(img)
 
-        # Resize về 28x28 và chuyển thành ảnh xám
-        img = img.resize((28, 28)).convert("L")
+        # Tìm contour của các chữ số
+        contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        digit_images = []
+        for cnt in contours:
+            x, y, w, h = cv2.boundingRect(cnt)
+            digit = img[y:y+h, x:x+w]  # Cắt vùng chứa chữ số
+            digit = cv2.resize(digit, (28, 28))  # Resize về 28x28
+            digit = np.array(digit, dtype=np.float32) / 255.0  # Chuẩn hóa
+            digit = digit.reshape(1, -1)  # Reshape về vector
+            digit_images.append(digit)
 
-        # Đảo màu (MNIST là chữ đen trên nền trắng)
-        #img = ImageOps.invert(img)
-
-        # Chuyển thành mảng numpy và chuẩn hóa về [0, 1]
-        img = np.array(img, dtype=np.float32) / 255.0
-
-        # Reshape thành vector 1D để đưa vào mô hình
-        img = img.reshape(1, -1)
-        return img
+        return digit_images  # Trả về danh sách các số
     return None
 
 def load_model(path):
@@ -381,25 +383,28 @@ def du_doan():
         stroke_color="white",
         background_color="black",
         height=150,
-        width=150,
+        width=400,
         drawing_mode="freedraw",
         key="canvas"
     )
 
     if st.button("Dự đoán số"):
-        img = preprocess_canvas_image(canvas_result)
+        digit_images = preprocess_canvas_image(canvas_result)
 
-        if img is not None:
-            # Hiển thị ảnh sau khi xử lý
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
+        if digit_images:
+            predictions = []
+            for digit in digit_images:
+                pred = model.predict(digit)[0]
+                predictions.append(str(pred))
 
-
-
-            # Dự đoán với mô hình đã chọn
-            prediction = model.predict(img)
-            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
+            # Hiển thị kết quả
+            st.subheader(f"🔢 Dự đoán: {' '.join(predictions)}")
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
+            
+            
+            
+            
             
             
 def Classification():
