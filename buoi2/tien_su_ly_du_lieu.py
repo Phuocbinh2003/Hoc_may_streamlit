@@ -588,7 +588,8 @@ def test():
     else:
         # Nếu có giá trị khác 0 và 1, chuẩn hó
         scaler = StandardScaler()
-        X_train_input_final = scaler.fit_transform(X_train_input.reshape(-1, 1)).flatten()
+        # X_train_input_final = scaler.fit_transform(X_train_input.reshape(-1, 1)).flatten()
+        X_train_input_final = scaler.fit_transform(X_train_input.T).T 
 
     # Hiển thị kết quả
     st.write("Dữ liệu sau khi xử lý:")
