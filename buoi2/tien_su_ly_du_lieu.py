@@ -164,7 +164,7 @@ def chuyen_doi_kieu_du_lieu(df):
         for val in unique_values:
             new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
             mapping_dict[val] = new_val
-            st.write(mapping_dict)
+            
 
         # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
@@ -173,7 +173,7 @@ def chuyen_doi_kieu_du_lieu(df):
                 st.session_state.column_value_counts = {}
 
             # Lưu số lượng giá trị duy nhất của cột
-            st.session_state.column_value_counts[selected_col] = len(unique_values)
+            st.session_state.column_value_counts[selected_col] = mapping_dict
 
             # Chuyển đổi các giá trị trong cột
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
