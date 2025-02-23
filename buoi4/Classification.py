@@ -17,7 +17,7 @@ from PIL import Image, ImageOps
 # mlflow.set_experiment("MNIST Classification")
 
 # Load dữ liệu MNIST
-def ly_thuye_Decision_tree():
+def ly_thuyet_Decision_tree():
     st.header("📖 Lý thuyết về Decision Tree")
 
     # 1️⃣ Giới thiệu về Decision Tree
@@ -343,12 +343,20 @@ def Classification():
     
     # 1️⃣ Phần giới thiệu
     
-    ly_thuye_Decision_tree()
+    # === Sidebar để chọn trang ===
+    st.sidebar.title("📌 Chọn trang:")
+    page = st.sidebar.radio("Điều hướng", ["Lý thuyết Decision Tree", "Lý thuyết SVM", "Huấn luyện", "Dự đoán"])
 
-    ly_thuyet_SVM()
-    train()
-    du_doan()
-    
+    # === Gọi hàm theo trang được chọn ===
+    if page == "Lý thuyết Decision Tree":
+        ly_thuyet_Decision_tree()
+    elif page == "Lý thuyết SVM":
+        ly_thuyet_SVM()
+    elif page == "Huấn luyện":
+        train()
+    elif page == "Dự đoán":
+        du_doan()
+        
 
 
 
