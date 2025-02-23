@@ -461,12 +461,17 @@ def chon_mo_hinh():
         # Huấn luyện trên toàn bộ tập train
         if model_type == "linear":
             final_w = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
+            st.session_state['linear_model'] = final_w
             X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
             y_test_pred = X_test_b.dot(final_w)
+            
+            
+            
         else:
             X_train_scaled = scaler.fit_transform(X_train)
             final_w = train_polynomial_regression(X_train_scaled, y_train, degree,learning_rate=learning_rate)
-
+            st.session_state['polynomial_model'] = final_w
+            
             X_test_scaled = scaler.transform(X_test.to_numpy())
             X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
             X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
@@ -481,7 +486,48 @@ def chon_mo_hinh():
         return final_w, avg_mse, scaler
 
     return None, None, None
+import streamlit as st
+import numpy as np
 
+def test():
+    # Chọn mô hình linear hoặc polynomial
+    model_type = st.selectbox("Chọn mô hình:", ["linear", "polynomial"])
+
+    # Kiểm tra xem mô hình đã được lưu trong session_state chưa
+    if model_type == "linear" and "linear_model" in st.session_state:
+        model = st.session_state["linear_model"]
+    elif model_type == "polynomial" and "polynomial_model" in st.session_state:
+        model = st.session_state["polynomial_model"]
+    else:
+        st.warning("Mô hình chưa được huấn luyện.")
+        return
+
+    # Điền các giá trị cho cột X_train (ở đây là một ví dụ, bạn có thể tùy chỉnh)
+    # Giả sử X_train là một mảng NumPy, bạn có thể thay thế bằng DataFrame hoặc array tương ứng
+    X_train_input = st.text_input("Nhập giá trị X_train (dạng mảng, ví dụ: [1, 2, 3])", "[0, 0, 0]")
+
+    # Chuyển đổi X_train_input từ chuỗi thành mảng NumPy
+    try:
+        X_train_input = np.array(eval(X_train_input))  # Chuyển đổi chuỗi thành mảng
+        if len(X_train_input) != len(model):  # Kiểm tra nếu kích thước không phù hợp
+            st.warning(f"Độ dài của X_train không khớp với mô hình.")
+            return
+    except:
+        st.warning("Vui lòng nhập X_train hợp lệ.")
+        return
+
+    # Dự đoán khi nhấn nút
+    if st.button("Dự đoán"):
+        # Thêm cột 1 cho intercept (nếu cần)
+        X_input_b = np.c_[np.ones((1, 1)), X_train_input]
+        
+        # Dự đoán với mô hình đã lưu
+        y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
+        
+        # Hiển thị kết quả dự đoán
+        st.write(f"Dự đoán: {y_pred[0]}")
+
+    
 def data():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
     if uploaded_file is not None:
@@ -508,7 +554,7 @@ def main():
         chia()
         chon()
     with tab3:
-        pass
+        test()
     
     
             
