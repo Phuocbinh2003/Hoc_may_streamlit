@@ -259,7 +259,7 @@ def train():
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
         X_train = st.session_state["X_train"]
-        st.write(type(X_train))
+        st.write(type(X_train[0]))
         y_train = st.session_state["y_train"]
         X_test = st.session_state["X_test"]
         y_test = st.session_state["y_test"]
