@@ -581,7 +581,7 @@ def test():
     st.write(model)
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
-    st.write(X_train_input[0].dtype)
+    st.write(X_train_input)
     if np.all(np.isin(X_train_input, [0, 1])):
     # Nếu tất cả giá trị là 0 hoặc 1 thì không cần chuẩn hó
         X_train_input_final = X_train_input
