@@ -204,9 +204,9 @@ def train():
         y_pred = model.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         st.success(f"✅ Độ chính xác: {acc:.4f}")
-
+        st.session_state["model"] = model
         
-    return model   
+    
  # Lưu kết quả vào MLflow
         # with mlflow.start_run():
         #     mlflow.log_param("model", model_choice)
@@ -219,43 +219,14 @@ def train():
         #     mlflow.sklearn.log_model(model, model_choice)       
         
         
-# def train():
-#     # Load dữ liệu digits
-#     digits = datasets.load_digits()
-#     X, y = digits.data, digits.targe
 
-#     # Chia tập train/test
-#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-#     # Debug kích thước dữ liệu
-#     st.write(f"📌 X_train shape: {X_train.shape}")
-#     st.write(f"📌 y_train shape: {y_train.shape}")
-
-#     # Đảm bảo y_train có dạng vector 1D
-#     y_train = np.ravel(y_train)
-#     y_test = np.ravel(y_test)  # Đảm bảo y_test cũng có đúng dạng
-
-#     st.header("⚙️ Chọn mô hình & Huấn luyện")
-#     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
-
-#     if model_choice == "Decision Tree":
-#         max_depth = st.slider("max_depth", 1, 20, 5)
-#         model = DecisionTreeClassifier(max_depth=max_depth)
-
-#     elif model_choice == "SVM":
-#         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
-#         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
-#         model = SVC(C=C, kernel=kernel)
-
-#     if st.button("Huấn luyện mô hình"):
-#         model.fit(X_train, y_train)
-#         y_pred = model.predict(X_test)
-#         acc = accuracy_score(y_test, y_pred)
-#         st.success(f"✅ Độ chính xác: {acc:.4f}")
-
-#     return model
-def du_doan(model):
-        ### **Phần 4: Vẽ số & Dự đoán**
+def du_doan():
+    if "model" in st.session_state:
+        model = st.session_state["model"]
+        st.write("📌 Mô hình đã sẵn sàng để dự đoán!")
+    else:
+        st.warning("⚠️ Chưa có mô hình nào được huấn luyện. Vui lòng train trước.")
+    ### **Phần 4: Vẽ số & Dự đoán**
     st.header("✍️ Vẽ số để dự đoán")
 
     canvas_result = st_canvas(
@@ -305,8 +276,8 @@ def Classification():
     ly_thuye_Decision_tree()
 
     ly_thuyet_SVM()
-    model=train()
-    du_doan(model)
+    train()
+    du_doan()
     
 
 
