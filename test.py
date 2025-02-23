@@ -374,14 +374,7 @@ def Classification2():
     st.title("🖊️ MNIST Classification App")
 
     ### **Phần 1: Hiển thị dữ liệu MNIST**
-    # st.header("📊 Một số hình ảnh trong tập MNIST")
-    # fig, axes = plt.subplots(2, 5, figsize=(10, 5))
-    # for i, ax in enumerate(axes.flatten()):
-    #     ax.imshow(X[i].reshape(8, 8), cmap="gray")
-    #     ax.set_title(f"Số {y[i]}")
-    #     ax.axis("off")
-    # st.pyplot(fig)
-
+    
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
     
     # 1️⃣ Phần giới thiệu
@@ -399,7 +392,7 @@ def Classification2():
     with tab3:
         split_data()
         train()
-
+        du_doan()
     with tab4:
         du_doan()
         
