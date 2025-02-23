@@ -294,17 +294,35 @@ def train():
         y_pred = model.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         st.success(f"✅ Độ chính xác: {acc:.4f}")
-        
+
+        # Lưu mô hình vào session_state dưới dạng danh sách nếu chưa có
         if "models" not in st.session_state:
             st.session_state["models"] = []
 
+        # Tạo tên mô hình dựa trên lựa chọn mô hình và kernel
         model_name = model_choice.lower().replace(" ", "_")
         if model_choice == "SVM":
             model_name += f"_{kernel}"
 
+        # Kiểm tra nếu tên mô hình đã tồn tại trong session_state
+        existing_model = next((item for item in st.session_state["models"] if item["name"] == model_name), None)
+        
+        if existing_model:
+            # Tạo tên mới với số đếm phía sau
+            count = 1
+            new_model_name = f"{model_name}_{count}"
+            
+            # Kiểm tra tên mới chưa tồn tại
+            while any(item["name"] == new_model_name for item in st.session_state["models"]):
+                count += 1
+                new_model_name = f"{model_name}_{count}"
+            
+            # Sử dụng tên mới đã tạo
+            model_name = new_model_name
+            st.warning(f"⚠️ Mô hình với tên '{model_name}' đã tồn tại, sử dụng tên mới: {model_name}")
+
         # Lưu mô hình vào danh sách với tên mô hình cụ thể
         st.session_state["models"].append({"name": model_name, "model": model})
-
         st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
         st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
 
