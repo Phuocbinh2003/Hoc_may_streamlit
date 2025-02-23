@@ -222,7 +222,7 @@ def train(X_train, y_train,X_test, y_test):
 # def train():
 #     # Load dữ liệu digits
 #     digits = datasets.load_digits()
-#     X, y = digits.data, digits.target
+#     X, y = digits.data, digits.targe
 
 #     # Chia tập train/test
 #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
