@@ -150,7 +150,7 @@ def ly_thuyet_SVM():
     """)
 
 
-def train(X_train, y_train,X_test, y_test):
+def train():
     digits = datasets.load_digits()
     X, y = digits.data, digits.target
 
