@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
 
-from sklearn.datasets import make_classification
+
 # Khởi tạo MLflow
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
 # mlflow.set_experiment("MNIST Classification")
@@ -80,10 +80,7 @@ def Classification():
     IG = H(S) - \sum_{j=1}^{k} \frac{|S_j|}{|S|} H(S_j)
     \]
 
-    - **Gini Impurity (Thước đo thay thế Entropy)**:
-    \[
-    Gini(S) = 1 - \sum_{i=1}^{c} p_i^2
-    \]
+   
 
     💡 **Sau khi tính toán Entropy, mô hình chọn đặc trưng tốt nhất làm gốc, rồi tính Information Gain của các đặc trưng còn lại để tìm nhánh tiếp theo.**
     """)
@@ -106,7 +103,7 @@ def Classification():
     """)
 
     # Hiển thị hình ảnh minh họa SV
-    #st.image("buoi4/svm_example.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_column_width=True)
+    st.image("buoi4/img2.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_column_width=True)
 
     st.write("""
     ### 🔍 **Cách hoạt động của SVM**
@@ -122,29 +119,24 @@ def Classification():
 
     st.markdown(r"""
     - **Hàm mục tiêu cần tối ưu**:
-    \[
+    $$
     \min_{w, b} \frac{1}{2} ||w||^2
-    \]
-    với ràng buộc:
-    \[
+    $$
+    Với ràng buộc:
+    $$
     y_i (w \cdot x_i + b) \geq 1, \forall i
-    \]
-    Trong đó:
-    - \( w \) là vector trọng số.
-    - \( b \) là bias (độ dịch của siêu phẳng).
-    - \( x_i \) là điểm dữ liệu.
-    - \( y_i \) là nhãn của điểm dữ liệu (\(+1\) hoặc \(-1\)).
+    $$
 
     - **Khoảng cách từ một điểm đến siêu phẳng**:
-    \[
+    $$
     d = \frac{|w \cdot x + b|}{||w||}
-    \]
-    
+    $$
+
     - **Hàm mất mát với soft margin (SVM không tuyến tính)**:
-    \[
+    $$
     \min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i
-    \]
-    với \( \xi_i \) là biến slack cho phép phân loại sai một số điểm.
+    $$
+    Với \( \xi_i \) là biến slack cho phép phân loại sai một số điểm.
     """)
 
     st.write("""
@@ -155,44 +147,7 @@ def Classification():
     """)
 
     # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
-    st.subheader("📌 Ví dụ tính toán")
-
-    # Mô phỏng dữ liệu đơn giản
-    w = np.array([2, -3])  # Trọng số w
-    b = 5  # Bias
-    x_sample = np.array([1, 2])  # Một điểm dữ liệu
-
-    # Tính khoảng cách đến siêu phẳng
-    distance = np.abs(np.dot(w, x_sample) + b) / np.linalg.norm(w)
-
-    st.write(f"📌 **Khoảng cách từ điểm {x_sample} đến siêu phẳng**: {distance:.4f}")
-
-    # 📌 4️⃣ Minh họa phân tách dữ liệu bằng SVM
-    st.subheader("📌 Minh họa phân tách dữ liệu")
-
-    # Tạo dữ liệu mô phỏng
-    X, y = make_classification(n_samples=100, n_features=2, n_classes=2, n_clusters_per_class=1, n_redundant=0, random_state=42)
-    svm_model = SVC(kernel="linear", C=1.0)
-    svm_model.fit(X, y)
-
-    # Vẽ siêu phẳng
-    fig, ax = plt.subplots(figsize=(6, 4))
-
-    # Vẽ dữ liệu
-    ax.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm", edgecolors="k")
-
-    # Vẽ siêu phẳng
-    xx = np.linspace(X[:, 0].min(), X[:, 0].max(), 50)
-    yy = - (svm_model.coef_[0][0] * xx + svm_model.intercept_[0]) / svm_model.coef_[0][1]
-    ax.plot(xx, yy, "k--", label="Siêu phẳng")
-
-    # Vẽ support vectors
-    ax.scatter(svm_model.support_vectors_[:, 0], svm_model.support_vectors_[:, 1], facecolors="none", edgecolors="k", s=100, label="Support Vectors")
-
-    ax.set_title("Minh họa SVM với dữ liệu đơn giản")
-    ax.legend()
-    st.pyplot(fig)
-
+    
     st.write("""
     ### 🔥 **Tóm tắt**
     - SVM tìm siêu phẳng tối ưu để phân loại dữ liệu.
