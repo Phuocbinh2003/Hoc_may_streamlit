@@ -294,7 +294,16 @@ def train():
         y_pred = model.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         st.success(f"✅ Độ chính xác: {acc:.4f}")
-        st.session_state["model"] = model
+        
+        if "models" not in st.session_state:
+            st.session_state["models"] = []
+
+        # Lưu mô hình vào danh sách với tên riêng
+        model_name = f"model_{len(st.session_state['models']) + 1}"
+        st.session_state["models"].append({"name": model_name, "model": model})
+
+        st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
+        st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
 
     
 
