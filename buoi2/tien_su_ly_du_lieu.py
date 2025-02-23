@@ -578,7 +578,7 @@ def test():
             value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
             
         X_train_input.append(value)
-    st.write(model)
+    
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
     st.write(X_train_input)
@@ -586,8 +586,9 @@ def test():
     X_train_input_final = X_train_input.copy()  # Sao chép X_train_input để thay đổi giá trị không làm ảnh hưởng đến dữ liệu gốc
 
     # Tạo mảng chỉ số của các phần tử khác 0 và 1
-    non_binary_indices = ~np.isin(X_train_input, [0.0, 1.0])
-    st.write(non_binary_indices)
+    non_binary_indices = ~np.isin(X_train_input, [0, 1])
+    st.write("1", non_binary_indices)
+
     # if np.all(np.isin(X_train_input, [0, 1])):
     # # Nếu tất cả giá trị là 0 hoặc 1 thì không cần chuẩn hó
     #     X_train_input_final = X_train_input
