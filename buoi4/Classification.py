@@ -62,7 +62,7 @@ def Classification():
     - Dựa trên câu trả lời, mô hình sẽ tiếp tục chia nhỏ tập dữ liệu.
     """)
 
-    # 2️⃣ Công thức toán học
+    # 2️⃣ Công thức toán họ
     st.subheader("2️⃣ Các bước tính toán trong Decision Tree")
 
     st.markdown(r"""
