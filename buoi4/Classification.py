@@ -144,7 +144,7 @@ def Classification():
 
     **Trong đó:**  
     - \( C \) : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
-    - \( \xi_i \) : biến slack cho phép một số điểm bị phân loại sai.  
+    - $$\( \xi_i \)$$ : biến slack cho phép một số điểm bị phân loại sai.  
     """)
 
     st.write("""
