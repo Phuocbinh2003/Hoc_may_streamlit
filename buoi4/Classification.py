@@ -29,7 +29,7 @@ def ly_thuyet_Decision_tree():
     """)
 
     # Hiển thị ảnh minh họa Decision Tree
-    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_column_width=True)
+    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_container_width =True)
 
     st.write("""
     ### 🔍 Cách Decision Tree hoạt động với MNIST:
@@ -98,7 +98,7 @@ def ly_thuyet_SVM():
     """)
 
     # Hiển thị hình ảnh minh họa SV
-    st.image("buoi4/img2.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_column_width=True)
+    st.image("buoi4/img2.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_container_width =True)
 
     st.write("""
     ### 🔍 **Cách hoạt động của SVM**
