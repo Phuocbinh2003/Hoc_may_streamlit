@@ -486,8 +486,7 @@ def chon_mo_hinh():
         return final_w, avg_mse, scaler
 
     return None, None, None
-import streamlit as st
-import numpy as np
+
 
 def test():
     # Chọn mô hình linear hoặc polynomial
@@ -503,14 +502,16 @@ def test():
         return
 
     # Nhập các giá trị cho các cột của X_train
-    num_columns = len(model) - 1  # Trừ đi 1 cho cột intercept (bias)
-
+    X_train = st.session_state.X_train # Đảm bảo bạn dùng session_state
+    num_columns = len(X_train.columns)  # Sửa lại số lượng cột
+    column_names = X_train.columns.tolist()
+    
     st.write(f"Nhập các giá trị cho {num_columns} cột của X_train:")
 
     # Tạo các trường nhập liệu cho từng cột
     X_train_input = []
     for i in range(num_columns):
-        value = st.number_input(f"Giá trị cột {i+1}", key=f"column_{i}")
+        value = st.number_input(f"Giá trị cột {column_names[i]}", key=f"column_{i}")
         X_train_input.append(value)
 
     # Chuyển đổi list thành array
@@ -525,7 +526,7 @@ def test():
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
         
         # Hiển thị kết quả dự đoán
-        st.write(f"Dự đoán: {y_pred[0]}")
+        st.write(f"Dự đoán: {y_pred[0]}") 
 
     
 def data():
