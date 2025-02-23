@@ -586,7 +586,7 @@ def test():
     # Nếu tất cả giá trị là 0 hoặc 1 thì không cần chuẩn hóa
         X_train_input_final = X_train_input
     else:
-        # Nếu có giá trị khác 0 và 1, chuẩn hóa
+        # Nếu có giá trị khác 0 và 1, chuẩn hó
         scaler = StandardScaler()
         X_train_input_final = scaler.fit_transform(X_train_input.reshape(-1, 1)).flatten()
 
