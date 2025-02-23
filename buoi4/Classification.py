@@ -331,6 +331,9 @@ def preprocess_canvas_image(canvas_result):
         # Resize về 28x28 và chuyển thành ảnh xám
         img = img.resize((28, 28)).convert("L")
 
+        # Đảo màu (MNIST là chữ đen trên nền trắng)
+        #img = ImageOps.invert(img)
+
         # Chuyển thành mảng numpy và chuẩn hóa về [0, 1]
         img = np.array(img, dtype=np.float32) / 255.0
 
