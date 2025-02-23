@@ -143,6 +143,8 @@ def xu_ly_gia_tri_thieu(df):
 
 
 
+
+
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
@@ -158,14 +160,14 @@ def chuyen_doi_kieu_du_lieu(df):
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
     
-    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhấ
+    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhất
     mapping_dict = {}
     
     # Nếu có ít hơn 5 giá trị độc nhất, yêu cầu người dùng nhập giá trị thay thế
     if len(unique_values) < 5:
         for val in unique_values:
             new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
-            mapping_dict[selected_col] = new_val
+            mapping_dict[val] = new_val
 
         # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
@@ -173,8 +175,12 @@ def chuyen_doi_kieu_du_lieu(df):
             if "mapping_dicts" not in st.session_state:
                 st.session_state.mapping_dicts = []  # Tạo một mảng rỗng nếu chưa có
 
-            # Lưu từ điển mapping_dict vào mảng
-            st.session_state.mapping_dicts.append(mapping_dict)
+            # Lưu thông tin cột (tên cột và mapping_dict) vào mảng
+            column_info = {
+                "column_name": selected_col,
+                "mapping_dict": mapping_dict
+            }
+            st.session_state.mapping_dicts.append(column_info)
 
             # Chuyển đổi các giá trị trong cột
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
@@ -189,10 +195,13 @@ def chuyen_doi_kieu_du_lieu(df):
     
     # Hiển thị mảng các mapping_dict đã lưu trong session_state
     if "mapping_dicts" in st.session_state:
-        st.write("Danh sách các từ điển mapping_dict cho các cột đã chuyển đổi:")
-        st.write(st.session_state.mapping_dicts)
+        st.write("Danh sách các cột đã chuyển đổi:")
+        for col_info in st.session_state.mapping_dicts:
+            st.write(f"Cột: `{col_info['column_name']}`")
+            st.write(f"Mapping Dict: {col_info['mapping_dict']}")
     
     return df
+
 
 
 
