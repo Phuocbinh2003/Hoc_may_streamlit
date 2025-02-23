@@ -17,13 +17,14 @@ from sklearn.datasets import make_classification
 # mlflow.set_experiment("MNIST Classification")
 
 # Load dữ liệu MNIST
-digits = datasets.load_digits()
-X, y = digits.data, digits.target
 
-# Chia tập train/test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 def Classification():
+    digits = datasets.load_digits()
+    X, y = digits.data, digits.target
+
+    # Chia tập train/test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     st.title("🖊️ MNIST Classification App")
 
     ### **Phần 1: Hiển thị dữ liệu MNIST**
