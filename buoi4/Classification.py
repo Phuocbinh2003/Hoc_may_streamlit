@@ -131,8 +131,8 @@ def Classification():
     → Mọi điểm dữ liệu **phải nằm đúng phía** của siêu phẳng, đảm bảo phân loại chính xác.  
 
     **Trong đó:**  
-    - \( x_i \) : điểm dữ liệu đầu vào.  
-    - \( y_i \) : nhãn của điểm dữ liệu (\(+1\) hoặc \(-1\)).  
+    - \( $$xi_i$$ \) : điểm dữ liệu đầu vào.  
+    - \( $$yi_i$$ \) : nhãn của điểm dữ liệu (\(+1\) hoặc \(-1\)).  
 
     - **Khoảng cách từ một điểm đến siêu phẳng**:  
     $$d = \frac{|w \cdot x + b|}{||w||}$$  
