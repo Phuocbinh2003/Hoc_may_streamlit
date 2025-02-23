@@ -582,16 +582,23 @@ def test():
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
     st.write(X_train_input)
-    if np.all(np.isin(X_train_input, [0, 1])):
-    # Nếu tất cả giá trị là 0 hoặc 1 thì không cần chuẩn hó
-        X_train_input_final = X_train_input
-    else:
-        # Nếu có giá trị khác 0 và 1, chuẩn hó
-        scaler = StandardScaler()
-        # X_train_input_final = scaler.fit_transform(X_train_input.reshape(-1, 1)).flatten()
-        X_train_input_final = scaler.fit_transform(X_train_input.T).T 
+    
+    X_train_input_final = X_train_input.copy()  # Sao chép X_train_input để thay đổi giá trị không làm ảnh hưởng đến dữ liệu gốc
 
-    # Hiển thị kết quả
+    # Tạo mảng chỉ số của các phần tử khác 0 và 1
+    non_binary_indices = ~np.isin(X_train_input, [0, 1])
+    # if np.all(np.isin(X_train_input, [0, 1])):
+    # # Nếu tất cả giá trị là 0 hoặc 1 thì không cần chuẩn hó
+    #     X_train_input_final = X_train_input
+    # else:
+    #     # Nếu có giá trị khác 0 và 1, chuẩn hó
+    #     scaler = StandardScaler()
+        # X_train_input_final = scaler.fit_transform(X_train_input.reshape(-1, 1)).flatten()
+     # Chuẩn hóa các giá trị khác 0 và 1
+    scaler = StandardScaler()
+    X_train_input_final[:, non_binary_indices] = scaler.fit_transform(X_train_input[:, non_binary_indices].T).T
+
+        # Hiển thị kết quả
     st.write("Dữ liệu sau khi xử lý:")
     st.write(X_train_input_final)
     
