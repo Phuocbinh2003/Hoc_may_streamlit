@@ -150,67 +150,32 @@ def ly_thuyet_SVM():
     """)
 
 
-# def train():
-#     digits = datasets.load_digits()
-#     X, y = digits.data, digits.target
+def data():
+    X = np.load("buoi4/X.npy")
+    y = np.load("buoi4/y.npy")
+    # Lọc các ảnh với nhãn 0 và 1
+    idx_label_0 = np.where(y == 0)[0][:10]  # Lấy 10 ảnh với nhãn 0
+    idx_label_1 = np.where(y == 1)[0][:10]  # Lấy 10 ảnh với nhãn 1
 
-#     # Chia tập train/test
-#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
-#     y_train = np.ravel(y_train)
-#     y_test = np.ravel(y_test)  # Đảm bảo y_test cũng có đúng dạng
-#     ### **Phần 3: Chọn mô hình & Train**
-    
-    
-    
-    
-#     st.header("⚙️ Chọn mô hình & Huấn luyện")
+    # Lấy 10 ảnh với nhãn 0 và 10 ảnh với nhãn 1
+    X_label_0 = X[idx_label_0]
+    X_label_1 = X[idx_label_1]
 
-#     # Lựa chọn mô hình
-#     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
+    # Kết hợp cả 20 ảnh vào một danh sách
+    X_combined = np.vstack((X_label_0, X_label_1))
 
-#     if model_choice == "Decision Tree":
-#         st.markdown("""
-#         - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
-#         - **Tham số cần chọn:**  
-#             - **max_depth**: Giới hạn độ sâu tối đa của cây.  
-#                 - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
-#                 - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
-#         """)
+    # Vẽ ảnh
+    fig, axes = plt.subplots(10, 10, figsize=(10, 10))  # Tạo lưới 10x10
+    axes = axes.flatten()
 
-#         max_depth = st.slider("max_depth", 1, 20, 5)
-#         model = DecisionTreeClassifier(max_depth=max_depth)
+    for i, ax in enumerate(axes):
+        ax.imshow(X_combined[i].reshape(28, 28), cmap="gray")  # Hiển thị ảnh, giả sử ảnh là 28x28
+        ax.axis("off")  # Tắt trục
+        label = 0 if i < 10 else 1  # Gán nhãn (0 cho 10 ảnh đầu tiên, 1 cho 10 ảnh tiếp theo)
+        ax.set_title(f"Label: {label}", fontsize=8)
 
-
-
-#     elif model_choice == "SVM":
-#         st.markdown("""
-#         - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
-#         - **Tham số cần chọn:**  
-#             - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
-#                 - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
-#                 - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
-#             - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
-#                 - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
-#                 - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
-#                 - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
-#                 - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
-#         """)
-
-#         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
-#         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
-#         model = SVC(C=C, kernel=kernel)
-
-
-
-#     if st.button("Huấn luyện mô hình"):
-#         model.fit(X_train, y_train)
-#         y_pred = model.predict(X_test)
-#         acc = accuracy_score(y_test, y_pred)
-#         st.success(f"✅ Độ chính xác: {acc:.4f}")
-#         st.session_state["model"] = model
-        
-    
+    plt.tight_layout()
+    st.pyplot(fig)
 
 
 
@@ -453,7 +418,7 @@ def Classification2():
 
     with tab2:
         ly_thuyet_SVM()
-
+        data()
     with tab3:
         split_data()
         train()
