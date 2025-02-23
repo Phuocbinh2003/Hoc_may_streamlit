@@ -322,25 +322,52 @@ def train():
         
         
 import joblib
+import cv2
 def preprocess_canvas_image(canvas_result):
-    """Chuyển ảnh từ canvas về dạng 28x28 chuẩn MNIST"""
+    """Tìm và cắt số lớn nhất từ ảnh để chuẩn bị cho model MNIST"""
     if canvas_result.image_data is not None:
-        # Chuyển ảnh thành mảng numpy, lấy kênh đầu tiên (gray)
-        img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
+        # Chuyển ảnh thành numpy array, lấy kênh đầu tiên (grayscale)
+        img = np.array(canvas_result.image_data[:, :, 0]).astype(np.uint8)
 
-        # Resize về 28x28 và chuyển thành ảnh xám
-        img = img.resize((28, 28)).convert("L")
+        # Chuyển sang nền trắng, chữ đen (chuẩn MNIST)
+        _, img = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY_INV)
 
-        # Đảo màu (MNIST là chữ đen trên nền trắng)
-        #img = ImageOps.invert(img)
+        # Tìm contours để phát hiện số
+        contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Chuyển thành mảng numpy và chuẩn hóa về [0, 1]
-        img = np.array(img, dtype=np.float32) / 255.0
+        if contours:
+            # Chọn số có diện tích lớn nhất (tránh nhiễu)
+            largest_contour = max(contours, key=cv2.contourArea)
+            x, y, w, h = cv2.boundingRect(largest_contour)
+            digit = img[y:y+h, x:x+w]  # Cắt số lớn nhất
 
-        # Reshape thành vector 1D để đưa vào mô hình
-        img = img.reshape(1, -1)
-        return img
-    return None
+            # Tạo ảnh vuông 28x28 giữ tỷ lệ
+            square_digit = np.full((28, 28), 0, dtype=np.uint8)  # Nền đen
+
+            # Tính toán kích thước để giữ tỷ lệ số
+            aspect_ratio = w / h
+            if aspect_ratio > 1:  # Nếu số rộng hơn cao
+                new_w = 20
+                new_h = int(20 / aspect_ratio)
+            else:  # Nếu số cao hơn rộng
+                new_h = 20
+                new_w = int(20 * aspect_ratio)
+
+            # Resize số về kích thước tính toán
+            resized_digit = cv2.resize(digit, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
+            # Chèn số vào chính giữa ảnh 28x28
+            x_offset = (28 - new_w) // 2
+            y_offset = (28 - new_h) // 2
+            square_digit[y_offset:y_offset+new_h, x_offset:x_offset+new_w] = resized_digit
+
+            # Chuẩn hóa về [0,1]
+            square_digit = square_digit.astype(np.float32) / 255.0
+
+            return square_digit.reshape(1, -1), img
+
+    return None, None
+
 
 def load_model(path):
     """Tải mô hình từ file `.joblib`"""
