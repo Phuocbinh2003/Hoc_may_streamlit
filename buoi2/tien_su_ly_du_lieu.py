@@ -165,7 +165,7 @@ def chuyen_doi_kieu_du_lieu(df):
 
         # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
         if st.button("🚀 Chuyển đổi dữ liệu"):
-            # Lưu tên cột và giá trị trước khi chuyển đổi vào session_state
+            # Lưu tên cột và giá trị trước khi chuyển đổi vào session_stat
             if "column_names_before" not in st.session_state:
                 st.session_state.column_names_before = {}
 
