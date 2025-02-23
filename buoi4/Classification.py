@@ -231,7 +231,7 @@ def load_data():
     X = np.load("buoi4/X.npy")
     y = np.load("buoi4/y.npy")
     return X, y
-def train_test_split():
+def split_data():
     
     st.title("📌 Chia dữ liệu Train/Test")
 
@@ -398,7 +398,7 @@ def Classification():
         ly_thuyet_SVM()
 
     with tab3:
-        train_test_split()
+        split_data()
         train()
 
     with tab4:
