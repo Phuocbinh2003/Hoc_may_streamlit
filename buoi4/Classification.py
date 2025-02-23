@@ -322,6 +322,7 @@ def train():
         
         
 import joblib
+import cv2
 def preprocess_canvas_image(canvas_result):
     """Chuyển ảnh từ canvas về danh sách các số được cắt riêng lẻ"""
     if canvas_result.image_data is not None:
