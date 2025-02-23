@@ -114,7 +114,9 @@ def Classification():
         - **Thêm soft margin** để chấp nhận một số điểm bị phân loại sai.
     """)
 
-    # 📌 2️⃣ Công thức toán học
+
+
+
     st.subheader("📌 Công thức toán học")
 
     st.write("### 1️⃣ Hàm mục tiêu cần tối ưu")
@@ -161,24 +163,6 @@ def Classification():
     - **SVM tìm một siêu phẳng tối ưu** để phân loại dữ liệu với khoảng cách lớn nhất đến các điểm gần nhất.
     - **Nếu dữ liệu không tuyến tính**, ta có thể dùng **kernel trick** để ánh xạ lên không gian cao hơn.
     - **Tham số \( C \)** giúp điều chỉnh giữa độ chính xác và khả năng tổng quát.
-    """)
-
-    st.write("""
-    💡 **Ý nghĩa của công thức:**
-    - SVM tối ưu hóa khoảng cách giữa hai lớp dữ liệu (margin).
-    - Nếu dữ liệu không tuyến tính, kernel trick giúp ánh xạ dữ liệu lên không gian cao hơn.
-    - \( C \) là hệ số điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
-    """)
-
-    # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
-    
-    st.write("""
-    ### 🔥 **Tóm tắt**
-    - SVM tìm siêu phẳng tối ưu để phân loại dữ liệu.
-    - Nếu dữ liệu không tuyến tính, có thể dùng **kernel trick**.
-    - Cần chọn tham số **C, kernel** phù hợp để tránh overfitting.
-
-    🚀 **Bạn có muốn thử nghiệm với dữ liệu thực tế?**
     """)
     
     
