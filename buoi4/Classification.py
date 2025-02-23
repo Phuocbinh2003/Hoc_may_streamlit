@@ -339,7 +339,7 @@ def Classification():
         ax.axis("off")
     st.pyplot(fig)
 
-    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM**
+    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
     
     # 1️⃣ Phần giới thiệu
     
