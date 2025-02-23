@@ -267,7 +267,15 @@ def split_data():
     
 def train():
     # 📥 **Tải dữ liệu MNIST**
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    if "X_train" in st.session_state:
+        X_train = st.session_state["X_train"]
+        y_train = st.session_state["y_train"]
+        X_test = st.session_state["X_test"]
+        y_test = st.session_state["y_test"]
+    else:
+        st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
+        return
+
 
     # 🌟 Chuẩn hóa dữ liệu
     X_train = X_train.reshape(-1, 28 * 28) / 255.0  # Chuyển về vector 1D và chuẩn hóa
@@ -294,24 +302,9 @@ def train():
         st.success(f"✅ Độ chính xác: {acc:.4f}")
         st.session_state["model"] = model
 
-        # 📸 **1. Hiển thị một số ảnh trong tập train**
-        st.subheader("📸 Một số ảnh từ tập train:")
-        fig, axes = plt.subplots(1, 5, figsize=(10, 2))
-        for i, ax in enumerate(axes):
-            ax.imshow(X_train[i].reshape(28, 28), cmap="gray")  # Chuyển về 28x28
-            ax.set_title(f"Label: {y_train[i]}")
-            ax.axis("off")
-        st.pyplot(fig)
+    
 
-        # 📊 **2. Hiển thị số lượng mẫu của từng nhãn**
-        st.subheader("📊 Phân bố dữ liệu theo nhãn:")
-        label_counts = pd.Series(y_train).value_counts().sort_index()
-        fig, ax = plt.subplots(figsize=(8, 4))
-        sns.barplot(x=label_counts.index, y=label_counts.values, palette="viridis", ax=ax)
-        ax.set_xlabel("Nhãn (Số từ 0-9)")
-        ax.set_ylabel("Số lượng mẫu")
-        ax.set_title("Số lượng mẫu trong tập train")
-        st.pyplot(fig)
+      
 
   
         
