@@ -590,13 +590,14 @@ def test():
 
     # Kết hợp lại cột nhị phân và các cột đã chuẩn hóa
     X_train_input_final = np.hstack([X_train_input_normalized, X_train_input[:, binary_columns]])
-
+    st.write(model)
     # Dự đoán khi nhấn nút
     if st.button("Dự đoán"):
         # Thêm cột 1 cho intercept (nếu cần)
         X_input_b = np.c_[np.ones((X_train_input_final.shape[0], 1)), X_train_input_final]
         
         # Dự đoán với mô hình đã lưu
+        
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
         
         # Hiển thị kết quả dự đoán
