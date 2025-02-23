@@ -187,7 +187,7 @@ def data():
       - **Convolutional Neural Networks (CNNs)**
     """)
 
-    st.subheader("Kết quả của một số mô hình trên MNIST")
+    st.subheader("Kết quả của một số mô hình trên MNIST ")
     st.write("""
       Để đánh giá hiệu quả của các mô hình học máy với MNIST, người ta thường sử dụng độ chính xác (accuracy) trên tập test:
       
@@ -205,6 +205,38 @@ def data():
 
 
 
+def plot_tree_metrics():
+    # Dữ liệu bạn đã cung cấp
+    max_depths = list(range(3, 21))  # Các giá trị max_depth từ 3 đến 20
+    accuracies = [
+        0.4759, 0.5759, 0.6593, 0.7741, 0.8241, 0.8259, 0.8481, 0.8574, 0.8537, 0.8463,
+        0.8463, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426
+    ]
+    tree_depths = [
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 14, 14, 14, 14, 14, 14
+    ]
+    
+    # Vẽ biểu đồ Accuracy theo max_depth
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    ax1.plot(max_depths, accuracies, color='blue', label='Accuracy', marker='o')
+    ax1.set_xlabel('max_depth')
+    ax1.set_ylabel('Accuracy', color='blue')
+    ax1.tick_params(axis='y', labelcolor='blue')
+
+    # Vẽ biểu đồ Tree Depth theo max_depth (ở trục y phụ)
+    ax2 = ax1.twinx()
+    ax2.plot(max_depths, tree_depths, color='red', label='Tree Depth', marker='o')
+    ax2.set_ylabel('Tree Depth', color='red')
+    ax2.tick_params(axis='y', labelcolor='red')
+
+    # Tiêu đề và hiển thị biểu đồ
+    plt.title('Accuracy và Tree Depth theo max_depth')
+    fig.tight_layout()
+    
+    # Hiển thị trong Streamlit
+    st.pyplot(fig)
+
+# Gọi hàm vẽ biểu đồ trong Streamlit
 
 def split_data():
     
@@ -449,6 +481,7 @@ def Classification2():
         data()
         
     with tab4:
+        plot_tree_metrics()
         split_data()
         train()
         
