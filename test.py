@@ -469,8 +469,11 @@ def Classification2():
     
     with tab3:
         data()
-        plot_tree_metrics()
+        
     with tab4:
+        plot_tree_metrics()
+        
+        
         
         split_data()
         train()
