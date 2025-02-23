@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import mlflow.sklearn
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -9,13 +8,9 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
-
 import joblib
 
 
-from tensorflow.keras.datasets import mnist
-
-from sklearn.metrics import accuracy_score
 
 # Khởi tạo MLflow
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
