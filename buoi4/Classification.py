@@ -381,7 +381,7 @@ def du_doan():
         stroke_color="white",
         background_color="black",
         height=150,
-        width=150,
+        width=400,
         drawing_mode="freedraw",
         key="canvas"
     )
