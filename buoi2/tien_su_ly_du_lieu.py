@@ -502,7 +502,8 @@ def test():
         return
 
     # Nhập các giá trị cho các cột của X_train
-    X_train = st.session_state.X_train # Đảm bảo bạn dùng session_state
+    X_train = st.session_state.X_train 
+    st.write(X_train.head()) # Đảm bảo bạn dùng session_state
     num_columns = len(X_train.columns)  # Sửa lại số lượng cột
     column_names = X_train.columns.tolist()
     
