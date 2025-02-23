@@ -392,7 +392,7 @@ def Classification2():
     with tab3:
         split_data()
         train()
-        du_doan()
+        
     with tab4:
         du_doan()
         
