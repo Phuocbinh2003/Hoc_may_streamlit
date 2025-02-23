@@ -332,7 +332,7 @@ def preprocess_canvas_image(canvas_result):
         img = img.resize((28, 28)).convert("L")
 
         # Đảo màu (MNIST là chữ đen trên nền trắng)
-        img = ImageOps.invert(img)
+        #img = ImageOps.invert(img)
 
         # Chuyển thành mảng numpy và chuẩn hóa về [0, 1]
         img = np.array(img, dtype=np.float32) / 255.0
@@ -392,6 +392,8 @@ def du_doan():
         if img is not None:
             # Hiển thị ảnh sau khi xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
+
+
 
             # Dự đoán với mô hình đã chọn
             prediction = model.predict(img)
