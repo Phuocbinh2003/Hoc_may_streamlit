@@ -143,7 +143,7 @@ def Classification():
     → Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( \xi_i \)**.  
 
     **Trong đó:**  
-    - $$\xi_i$$ : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
+    - $$C$$ : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
     - \( \xi_i \) : biến slack cho phép một số điểm bị phân loại sai.  
     """)
 
