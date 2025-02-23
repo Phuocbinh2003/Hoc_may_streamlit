@@ -149,42 +149,8 @@ def ly_thuyet_SVM():
     - \( C \) là hệ số điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
     """)
 
-def Classification():
-    digits = datasets.load_digits()
-    X, y = digits.data, digits.target
 
-    # Chia tập train/test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    st.title("🖊️ MNIST Classification App")
-
-    ### **Phần 1: Hiển thị dữ liệu MNIST**
-    st.header("📊 Một số hình ảnh trong tập MNIST")
-    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
-    for i, ax in enumerate(axes.flatten()):
-        ax.imshow(X[i].reshape(8, 8), cmap="gray")
-        ax.set_title(f"Số {y[i]}")
-        ax.axis("off")
-    st.pyplot(fig)
-
-    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM**
-    st.header("📖 Lý thuyết về mô hình")
-    # 1️⃣ Phần giới thiệu
-    
-    ly_thuye_Decision_tree()
-
-    ly_thuyet_SVM()
-
-
-
-
-
-
-
-    
-
-    # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
-    
-    
+def train(X_train, y_train,X_test, y_test):
     ### **Phần 3: Chọn mô hình & Train**
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
@@ -228,17 +194,19 @@ def Classification():
         st.success(f"✅ Độ chính xác: {acc:.4f}")
 
         # Lưu kết quả vào MLflow
-        with mlflow.start_run():
-            mlflow.log_param("model", model_choice)
-            if model_choice == "Decision Tree":
-                mlflow.log_param("max_depth", max_depth)
-            else:
-                mlflow.log_param("C", C)
-                mlflow.log_param("kernel", kernel)
-            mlflow.log_metric("accuracy", acc)
-            mlflow.sklearn.log_model(model, model_choice)
-
-    ### **Phần 4: Vẽ số & Dự đoán**
+        # with mlflow.start_run():
+        #     mlflow.log_param("model", model_choice)
+        #     if model_choice == "Decision Tree":
+        #         mlflow.log_param("max_depth", max_depth)
+        #     else:
+        #         mlflow.log_param("C", C)
+        #         mlflow.log_param("kernel", kernel)
+        #     mlflow.log_metric("accuracy", acc)
+        #     mlflow.sklearn.log_model(model, model_choice)
+    return model   
+            
+def du_doan(model):
+        ### **Phần 4: Vẽ số & Dự đoán**
     st.header("✍️ Vẽ số để dự đoán")
 
     canvas_result = st_canvas(
@@ -261,7 +229,48 @@ def Classification():
 
             # Dự đoán
             prediction = model.predict(img)
-            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
+            st.subheader(f"🔢 Dự đoán: {prediction[0]}") 
+            
+            
+def Classification():
+    digits = datasets.load_digits()
+    X, y = digits.data, digits.target
+
+    # Chia tập train/test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    st.title("🖊️ MNIST Classification App")
+
+    ### **Phần 1: Hiển thị dữ liệu MNIST**
+    st.header("📊 Một số hình ảnh trong tập MNIST")
+    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+    for i, ax in enumerate(axes.flatten()):
+        ax.imshow(X[i].reshape(8, 8), cmap="gray")
+        ax.set_title(f"Số {y[i]}")
+        ax.axis("off")
+    st.pyplot(fig)
+
+    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM**
+    
+    # 1️⃣ Phần giới thiệu
+    
+    ly_thuye_Decision_tree()
+
+    ly_thuyet_SVM()
+    model=train(X_train, X_test, y_train, y_test)
+    du_doan(model)
+    
+
+
+
+
+
+    
+
+    # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
+    
+
+
+
             
 if __name__ == "__main__":
     Classification()
