@@ -333,7 +333,7 @@ def du_doan():
         "SVM RBF": "buoi4/svm_mnist_rbf.pkl",
     }
 
-    # 🔹 Kiểm tra nếu có mô hình train thêm trong session_state
+    # 🔹 Kiểm tra nếu có mô hình train thêm trong session_stat
     trained_models = st.session_state.get("trained_models", {})
 
     # 🔹 Gộp danh sách mô hình
