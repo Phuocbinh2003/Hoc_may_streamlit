@@ -53,7 +53,7 @@ def choose_label(df):
     return X, y
 
 def train_test_size():
-    st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
+    # st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
     
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
@@ -165,7 +165,7 @@ def chuyen_doi_kieu_du_lieu(df):
     st.dataframe(df.head())
     return df
 def chuan_hoa_du_lieu(df):
-    st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
+    # st.subheader("📊 Chuẩn hóa dữ liệu với StandardScaler")
 
     # Lọc tất cả các cột số
     numerical_cols = df.select_dtypes(include=['number']).columns.tolist()
@@ -291,7 +291,7 @@ def hien_thi_ly_thuyet(df):
     df=chuan_hoa_du_lieu(df)
     
 def chia():
-    st.subheader("5️⃣ Chia dữ liệu thành tập Train, Validation, và Test")
+    st.subheader("Chia dữ liệu thành tập Train, Validation, và Test")
     st.write("""
     ### 📌 Chia tập dữ liệu
     Dữ liệu được chia thành ba phần để đảm bảo mô hình tổng quát tốt:
