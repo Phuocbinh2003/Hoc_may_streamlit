@@ -65,7 +65,7 @@ def Classification():
     # 2️⃣ Công thức toán học
     st.subheader("2️⃣ Các bước tính toán trong Decision Tree")
 
-    st.markdown("""
+    st.markdown(r"""
     ### 📌 **Công thức chính**
     - **Entropy (Độ hỗn loạn của dữ liệu)**:
     $$
