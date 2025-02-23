@@ -150,55 +150,57 @@ def ly_thuyet_SVM():
     """)
 
 
-def train(X_train, y_train,X_test, y_test):
-    st.write(X_train.shape)
-    ### **Phần 3: Chọn mô hình & Train**
-    st.header("⚙️ Chọn mô hình & Huấn luyện")
+# def train(X_train, y_train,X_test, y_test):
+#     st.write(X_train.shape)
+#     ### **Phần 3: Chọn mô hình & Train**
+#     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
-    # Lựa chọn mô hình
-    model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
+#     # Lựa chọn mô hình
+#     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
 
-    if model_choice == "Decision Tree":
-        st.markdown("""
-        - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
-        - **Tham số cần chọn:**  
-            - **max_depth**: Giới hạn độ sâu tối đa của cây.  
-                - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
-                - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
-        """)
+#     if model_choice == "Decision Tree":
+#         st.markdown("""
+#         - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
+#         - **Tham số cần chọn:**  
+#             - **max_depth**: Giới hạn độ sâu tối đa của cây.  
+#                 - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
+#                 - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
+#         """)
 
-        max_depth = st.slider("max_depth", 1, 20, 5)
-        model = DecisionTreeClassifier(max_depth=max_depth)
+#         max_depth = st.slider("max_depth", 1, 20, 5)
+#         model = DecisionTreeClassifier(max_depth=max_depth)
+
+
+
+#     elif model_choice == "SVM":
+#         st.markdown("""
+#         - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
+#         - **Tham số cần chọn:**  
+#             - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
+#                 - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
+#                 - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
+#             - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
+#                 - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
+#                 - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
+#                 - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
+#                 - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
+#         """)
+
+#         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
+#         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
+#         model = SVC(C=C, kernel=kernel)
+
+
+
+#     if st.button("Huấn luyện mô hình"):
+#         model.fit(X_train, y_train)
+#         y_pred = model.predict(X_test)
+#         acc = accuracy_score(y_test, y_pred)
+#         st.success(f"✅ Độ chính xác: {acc:.4f}")
+
         
-
-
-    elif model_choice == "SVM":
-        st.markdown("""
-        - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
-        - **Tham số cần chọn:**  
-            - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
-                - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
-                - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
-            - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
-                - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
-                - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
-                - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
-                - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
-        """)
-
-        C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
-        kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
-        model = SVC(C=C, kernel=kernel)
-
-
-
-    if st.button("Huấn luyện mô hình"):
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        st.success(f"✅ Độ chính xác: {acc:.4f}")
-
-        # Lưu kết quả vào MLflow
+#     return model   
+ # Lưu kết quả vào MLflow
         # with mlflow.start_run():
         #     mlflow.log_param("model", model_choice)
         #     if model_choice == "Decision Tree":
@@ -207,9 +209,36 @@ def train(X_train, y_train,X_test, y_test):
         #         mlflow.log_param("C", C)
         #         mlflow.log_param("kernel", kernel)
         #     mlflow.log_metric("accuracy", acc)
-        #     mlflow.sklearn.log_model(model, model_choice)
-    return model   
-            
+        #     mlflow.sklearn.log_model(model, model_choice)       
+        
+        
+def train(X_train, y_train, X_test, y_test):
+    # Kiểm tra kích thước dữ liệu
+    st.write(f"🔍 X_train shape: {X_train.shape}")
+    st.write(f"🔍 y_train shape: {y_train.shape}")
+
+    # Đảm bảo y_train có đúng kích thước
+    y_train = np.ravel(y_train)
+
+    st.header("⚙️ Chọn mô hình & Huấn luyện")
+    model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
+
+    if model_choice == "Decision Tree":
+        max_depth = st.slider("max_depth", 1, 20, 5)
+        model = DecisionTreeClassifier(max_depth=max_depth)
+
+    elif model_choice == "SVM":
+        C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
+        kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
+        model = SVC(C=C, kernel=kernel)
+
+    if st.button("Huấn luyện mô hình"):
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+        st.success(f"✅ Độ chính xác: {acc:.4f}")
+
+    return model    
 def du_doan(model):
         ### **Phần 4: Vẽ số & Dự đoán**
     st.header("✍️ Vẽ số để dự đoán")
