@@ -578,7 +578,7 @@ def test():
             value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
             
         X_train_input.append(value)
-
+    st.write(model)
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
     st.write(X_train_input[0].dtype)
