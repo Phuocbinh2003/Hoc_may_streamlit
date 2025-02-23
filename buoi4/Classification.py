@@ -322,6 +322,34 @@ def train():
         
         
 import joblib
+def preprocess_canvas_image(canvas_result):
+    """Chuyển ảnh từ canvas về dạng 28x28 chuẩn MNIST"""
+    if canvas_result.image_data is not None:
+        # Chuyển ảnh thành mảng numpy, lấy kênh đầu tiên (gray)
+        img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
+
+        # Resize về 28x28 và chuyển thành ảnh xám
+        img = img.resize((28, 28)).convert("L")
+
+        # Đảo màu (MNIST là chữ đen trên nền trắng)
+        img = ImageOps.invert(img)
+
+        # Chuyển thành mảng numpy và chuẩn hóa về [0, 1]
+        img = np.array(img, dtype=np.float32) / 255.0
+
+        # Reshape thành vector 1D để đưa vào mô hình
+        img = img.reshape(1, -1)
+        return img
+    return None
+
+def load_model(path):
+    """Tải mô hình từ file `.joblib`"""
+    try:
+        return joblib.load(path)
+    except FileNotFoundError:
+        st.error(f"⚠️ Không tìm thấy mô hình tại `{path}`")
+        st.stop()
+
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
@@ -333,7 +361,7 @@ def du_doan():
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
 
-    # 🔹 Kiểm tra nếu có mô hình train thêm trong session_stat
+    # 🔹 Kiểm tra nếu có mô hình train thêm trong session_state
     trained_models = st.session_state.get("trained_models", {})
 
     # 🔹 Gộp danh sách mô hình
@@ -343,17 +371,8 @@ def du_doan():
     model_option = st.selectbox("🔍 Chọn mô hình để dự đoán:", list(all_models.keys()))
 
     # 📌 Tải mô hình đã chọn
-    def load_model(path):
-        """Tải mô hình từ file `.joblib`"""
-        return joblib.load(path)
-
-    try:
-        # Nếu mô hình có sẵn trong session_state thì dùng luôn, nếu không thì tải từ file
-        model = trained_models.get(model_option, load_model(all_models[model_option]))
-        st.success(f"✅ Đã tải mô hình: {model_option}")
-    except FileNotFoundError:
-        st.error(f"⚠️ Không tìm thấy mô hình `{all_models[model_option]}`")
-        st.stop()
+    model = trained_models.get(model_option, load_model(all_models[model_option]))
+    st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # ✍️ Vẽ số để dự đoán
     canvas_result = st_canvas(
@@ -368,19 +387,17 @@ def du_doan():
     )
 
     if st.button("Dự đoán số"):
-        if canvas_result.image_data is not None:
-            img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
-            img = img.resize((28, 28)).convert("L")
-            img = ImageOps.invert(img)
-            img = np.array(img, dtype=np.float32) / 255.0
-            img = img.reshape(1, -1)
+        img = preprocess_canvas_image(canvas_result)
 
+        if img is not None:
             # Hiển thị ảnh sau khi xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
 
             # Dự đoán với mô hình đã chọn
             prediction = model.predict(img)
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
+        else:
+            st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
             
             
 def Classification():
