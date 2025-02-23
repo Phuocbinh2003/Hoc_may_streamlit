@@ -588,7 +588,7 @@ def test():
     # Tạo mảng chỉ số của các phần tử khác 0 và 1
     for i in range(X_train_input.shape[1]):
         st.write(X_train_input[0,i])
-        if X_train_input[0, i] != 0 and X_train_input[0, i] != 1:  # Nếu giá trị không phải 0 hoặc 1
+        if X_train_input[0, i] != "0" and X_train_input[0, i] != 1:  # Nếu giá trị không phải 0 hoặc 1
             # Chuẩn hóa giá trị
             st.write("0 hoặc 1",X_train_input[0,i])
             X_train_input_final[0, i] = scaler.fit_transform(X_train_input[:, i].reshape(-1, 1)).flatten()
