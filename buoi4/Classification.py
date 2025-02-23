@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import mlflow
 import mlflow.sklearn
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
@@ -13,7 +12,6 @@ from PIL import Image, ImageOps
 
 import joblib
 
-import seaborn as sns
 
 from tensorflow.keras.datasets import mnist
 
