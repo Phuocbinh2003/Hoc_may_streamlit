@@ -17,28 +17,7 @@ from PIL import Image, ImageOps
 # mlflow.set_experiment("MNIST Classification")
 
 # Load dữ liệu MNIST
-
-
-def Classification():
-    digits = datasets.load_digits()
-    X, y = digits.data, digits.target
-
-    # Chia tập train/test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    st.title("🖊️ MNIST Classification App")
-
-    ### **Phần 1: Hiển thị dữ liệu MNIST**
-    st.header("📊 Một số hình ảnh trong tập MNIST")
-    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
-    for i, ax in enumerate(axes.flatten()):
-        ax.imshow(X[i].reshape(8, 8), cmap="gray")
-        ax.set_title(f"Số {y[i]}")
-        ax.axis("off")
-    st.pyplot(fig)
-
-    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM**
-    st.header("📖 Lý thuyết về mô hình")
-    # 1️⃣ Phần giới thiệu
+def ly_thuye_Decision_tree():
     st.header("📖 Lý thuyết về Decision Tree")
 
     # 1️⃣ Giới thiệu về Decision Tree
@@ -100,16 +79,10 @@ def Classification():
     4️⃣ **Chọn thuộc tính có Information Gain cao nhất để chia nhánh**.  
     5️⃣ **Lặp lại quy trình trên cho đến khi dữ liệu được phân loại hoàn toàn**.  
     """)
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+def ly_thuyet_SVM():
     st.subheader("2️⃣ Support Vector Machine (SVM)")
 
     st.write("""
@@ -175,6 +148,39 @@ def Classification():
     - Nếu dữ liệu không tuyến tính, kernel trick giúp ánh xạ dữ liệu lên không gian cao hơn.
     - \( C \) là hệ số điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
     """)
+
+def Classification():
+    digits = datasets.load_digits()
+    X, y = digits.data, digits.target
+
+    # Chia tập train/test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    st.title("🖊️ MNIST Classification App")
+
+    ### **Phần 1: Hiển thị dữ liệu MNIST**
+    st.header("📊 Một số hình ảnh trong tập MNIST")
+    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+    for i, ax in enumerate(axes.flatten()):
+        ax.imshow(X[i].reshape(8, 8), cmap="gray")
+        ax.set_title(f"Số {y[i]}")
+        ax.axis("off")
+    st.pyplot(fig)
+
+    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM**
+    st.header("📖 Lý thuyết về mô hình")
+    # 1️⃣ Phần giới thiệu
+    
+    ly_thuye_Decision_tree()
+
+    ly_thuyet_SVM()
+
+
+
+
+
+
+
+    
 
     # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
     
