@@ -151,39 +151,44 @@ def ly_thuyet_SVM():
 
 
 def data():
-    X = np.load("buoi4/X.npy")
-    y = np.load("buoi4/y.npy")
-    # Lọc các ảnh với nhãn 0 và 1
-    idx_label_0 = np.where(y == 0)[0][:10]  # Lấy 10 ảnh với nhãn 0
-    idx_label_1 = np.where(y == 1)[0][:10]  # Lấy 10 ảnh với nhãn 1
-
-    # Lấy 10 ảnh với nhãn 0 và 10 ảnh với nhãn 1
-    X_label_0 = X[idx_label_0]
-    X_label_1 = X[idx_label_1]
-
-    # Kết hợp cả 20 ảnh vào một danh sách
-    X_combined = np.vstack((X_label_0, X_label_1))
-
-    # Vẽ ảnh
-    fig, axes = plt.subplots(10, 10, figsize=(10, 10))  # Tạo lưới 10x10
-    axes = axes.flatten()
-
-    for i, ax in enumerate(axes):
-        ax.imshow(X_combined[i].reshape(28, 28), cmap="gray")  # Hiển thị ảnh, giả sử ảnh là 28x28
-        ax.axis("off")  # Tắt trục
-        label = 0 if i < 10 else 1  # Gán nhãn (0 cho 10 ảnh đầu tiên, 1 cho 10 ảnh tiếp theo)
-        ax.set_title(f"Label: {label}", fontsize=8)
-
-    plt.tight_layout()
-    st.pyplot(fig)
+   pass
 
 
 
 
 def split_data():
     
-    
-       pass
+    st.title("📌 Chia dữ liệu Train/Test")
+
+    # Đọc dữ liệu
+    X = np.load("buoi4/X.npy")
+    y = np.load("buoi4/y.npy")
+    total_samples = X.shape[0]
+
+    # Thanh kéo chọn số lượng ảnh để train
+    num_samples = st.slider("Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
+
+    # Thanh kéo chọn tỷ lệ Train/Test
+    test_size = st.slider("Chọn tỷ lệ test:", 0.1, 0.5, 0.2)
+
+    if st.button("✅ Xác nhận & Lưu"):
+        # Lấy số lượng ảnh mong muốn
+        X_selected, y_selected = X[:num_samples], y[:num_samples]
+
+        # Chia train/test theo tỷ lệ đã chọn
+        X_train, X_test, y_train, y_test = train_test_split(X_selected, y_selected, test_size=test_size, random_state=42)
+
+        # Lưu vào session_state để sử dụng sau
+        st.session_state["X_train"] = X_train
+        st.session_state["y_train"] = y_train
+        st.session_state["X_test"] = X_test
+        st.session_state["y_test"] = y_test
+
+        st.success(f"🔹 Dữ liệu đã được chia: Train ({len(X_train)}), Test ({len(X_test)})")
+
+    # Kiểm tra nếu đã lưu dữ liệu vào session_state
+    if "X_train" in st.session_state:
+        st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
         
     
     
