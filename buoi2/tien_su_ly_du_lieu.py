@@ -556,26 +556,15 @@ def test():
     # Tạo các trường nhập liệu cho từng cột
     X_train_input = []
     
-    # Kiểm tra nếu có dữ liệu mapping_dicts trong session_state
-    if "mapping_dicts" not in st.session_state:
-        st.session_state.mapping_dicts = []
-
-    # Duyệt qua các cột và kiểm tra nếu có thông tin chuyển đổi
     for i, column_name in enumerate(column_names):
-        # Kiểm tra xem cột có nằm trong mapping_dicts không
-        mapping_dict = None
-        for column_info in st.session_state.mapping_dicts:
-            if column_info["column_name"] == column_name:
-                mapping_dict = column_info["mapping_dict"]
-                break
-
-        if mapping_dict:  # Nếu có mapping_dict, hiển thị dropdown với các giá trị thay thế
-            value = st.selectbox(f"Giá trị cột {column_name}", options=list(mapping_dict.keys()), key=f"column_{i}")
-            value = mapping_dict[value]  # Lấy giá trị thay thế tương ứng
-        else:  # Nếu không có mapping_dict, yêu cầu người dùng nhập số
+        if column_name == "sex":  # Nếu là cột 'sex'
+            sex = st.selectbox("Chọn giới tính", ["Male", "Female"], key=f"sex_{i}")
+            # Chuyển đổi giá trị 'Male' = 0 và 'Female' = 1
+            sex_value = 0 if sex == "Male" else 1
+            X_train_input.append(sex_value)
+        else:
             value = st.number_input(f"Giá trị cột {column_name}", key=f"column_{i}")
-
-        X_train_input.append(value)
+            X_train_input.append(value)
 
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
