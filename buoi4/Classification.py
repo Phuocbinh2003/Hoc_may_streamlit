@@ -84,8 +84,7 @@ def Classification():
     → **Đo lường mức độ giảm Entropy khi chia tập dữ liệu** theo một thuộc tính nào đó.  
     - Nếu **IG cao**, nghĩa là thuộc tính đó giúp phân loại tốt hơn.  
     - Nếu **IG thấp**, nghĩa là thuộc tính đó không có nhiều ý nghĩa để phân tách dữ liệu.
-    """)
-    st.write("""
+
     **Trong đó:**  
     - \( S \) : tập dữ liệu ban đầu.  
     - \( S_j \) : tập con sau khi chia theo thuộc tính đang xét.  
