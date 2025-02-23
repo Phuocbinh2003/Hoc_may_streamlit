@@ -259,7 +259,7 @@ def train():
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
         X_train = st.session_state["X_train"]
-        st.write(X_train.dtype)
+        # st.write(X_train.dtype)
         y_train = st.session_state["y_train"]
         X_test = st.session_state["X_test"]
         y_test = st.session_state["y_test"]
@@ -269,10 +269,9 @@ def train():
 
 
     # 🌟 Chuẩn hóa dữ liệu
-    try:
-        X_train = X_train.to_numpy().reshape(-1, 28 * 28) / 255.0
-    except AttributeError:
-        X_train = X_train.reshape(-1, 28 * 28) / 255.0  # Nếu lỗi thì chạy cái này
+    
+    X_train = X_train.reshape(-1, 28 * 28) / 255.0
+    
     X_test = X_test.reshape(-1, 28 * 28) / 255.0
 
 
