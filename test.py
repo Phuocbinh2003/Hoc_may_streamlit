@@ -236,7 +236,7 @@ def plot_tree_metrics():
     # Hiển thị trong Streamlit
     st.pyplot(fig)
 
-# Gọi hàm vẽ biểu đồ trong Streamlit
+
 
 def split_data():
     
@@ -479,9 +479,9 @@ def Classification2():
     
     with tab3:
         data()
-        
-    with tab4:
         plot_tree_metrics()
+    with tab4:
+        
         split_data()
         train()
         
