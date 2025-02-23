@@ -151,6 +151,7 @@ def ly_thuyet_SVM():
 
 
 def train(X_train, y_train,X_test, y_test):
+    st.write(X_train.shape)
     ### **Phần 3: Chọn mô hình & Train**
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
@@ -168,6 +169,8 @@ def train(X_train, y_train,X_test, y_test):
 
         max_depth = st.slider("max_depth", 1, 20, 5)
         model = DecisionTreeClassifier(max_depth=max_depth)
+        
+
 
     elif model_choice == "SVM":
         st.markdown("""
@@ -186,6 +189,8 @@ def train(X_train, y_train,X_test, y_test):
         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
         model = SVC(C=C, kernel=kernel)
+
+
 
     if st.button("Huấn luyện mô hình"):
         model.fit(X_train, y_train)
@@ -261,13 +266,6 @@ def Classification():
     
 
 
-
-
-
-    
-
-    # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
-    
 
 
 
