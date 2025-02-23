@@ -36,18 +36,169 @@ def Classification():
 
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM**
     st.header("📖 Lý thuyết về mô hình")
-    st.subheader("1️⃣ Decision Tree")
+    # 1️⃣ Phần giới thiệu
+    st.header("📖 Lý thuyết về Decision Tree")
+
+    # 1️⃣ Giới thiệu về Decision Tree
+    st.subheader("1️⃣ Giới thiệu về Decision Tree")
     st.write("""
-    - **Decision Tree** hoạt động bằng cách chia nhỏ dữ liệu theo các điều kiện để phân loại chính xác.  
-    - Mô hình có thể dễ hiểu nhưng dễ bị overfitting nếu không giới hạn độ sâu.
+    - **Decision Tree** hoạt động bằng cách chia nhỏ dữ liệu theo điều kiện để phân loại chính xác.
+    - Mỗi nhánh trong cây là một câu hỏi "Có/Không" dựa trên đặc trưng dữ liệu.
+    - Mô hình này dễ hiểu và trực quan nhưng có thể bị **overfitting** nếu không giới hạn độ sâu.
     """)
 
-    st.subheader("2️⃣ SVM (Support Vector Machine)")
+    # Hiển thị ảnh minh họa Decision Tree
+    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_column_width=True)
+
     st.write("""
-    - **SVM** tìm một siêu phẳng để phân tách dữ liệu một cách tối ưu.  
-    - SVM hiệu quả trên dữ liệu phức tạp nhưng có thể chậm trên dữ liệu lớn.
+    ### 🔍 Cách Decision Tree hoạt động với MNIST:
+    - Mỗi ảnh trong MNIST có kích thước **28×28 pixels**, mỗi pixel có thể xem là một **đặc trưng (feature)**.
+    - Mô hình sẽ quyết định phân tách dữ liệu bằng cách **chọn những pixels quan trọng nhất** để tạo nhánh.
+    - Ví dụ, để phân biệt chữ số **0** và **1**, Decision Tree có thể kiểm tra:
+        - Pixel ở giữa có sáng không?
+        - Pixel dọc hai bên có sáng không?
+    - Dựa trên câu trả lời, mô hình sẽ tiếp tục chia nhỏ tập dữ liệu.
     """)
 
+    # 2️⃣ Công thức toán học
+    st.subheader("2️⃣ Các bước tính toán trong Decision Tree")
+
+    st.markdown(r"""
+    ### 📌 **Công thức chính**
+    - **Entropy (Độ hỗn loạn của dữ liệu)**:
+    \[
+    H(S) = - \sum_{i=1}^{c} p_i \log_2 p_i
+    \]
+    Trong đó:
+    - \( c \) là số lượng lớp.
+    - \( p_i \) là xác suất xuất hiện của lớp \( i \).
+
+    - **Information Gain (Lợi ích thông tin sau khi chia tách)**:
+    \[
+    IG = H(S) - \sum_{j=1}^{k} \frac{|S_j|}{|S|} H(S_j)
+    \]
+
+    - **Gini Impurity (Thước đo thay thế Entropy)**:
+    \[
+    Gini(S) = 1 - \sum_{i=1}^{c} p_i^2
+    \]
+
+    💡 **Sau khi tính toán Entropy, mô hình chọn đặc trưng tốt nhất làm gốc, rồi tính Information Gain của các đặc trưng còn lại để tìm nhánh tiếp theo.**
+    """)
+
+
+
+
+    st.subheader("2️⃣ Support Vector Machine (SVM)")
+
+    st.write("""
+    - **Support Vector Machine (SVM)** là một thuật toán học máy mạnh mẽ để phân loại dữ liệu.
+    - **Mục tiêu chính**: Tìm một **siêu phẳng (hyperplane)** tối ưu để phân tách các lớp dữ liệu.
+    - **Ứng dụng**: Nhận diện khuôn mặt, phát hiện thư rác, phân loại văn bản, v.v.
+    - **Ưu điểm**:
+        - Hiệu quả trên dữ liệu có độ nhiễu thấp.
+        - Hỗ trợ dữ liệu không tuyến tính bằng **kernel trick**.
+    - **Nhược điểm**:
+        - Chậm trên tập dữ liệu lớn do tính toán phức tạp.
+        - Nhạy cảm với lựa chọn tham số (C, Kernel).
+    """)
+
+    # Hiển thị hình ảnh minh họa SVM
+    #st.image("buoi4/svm_example.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_column_width=True)
+
+    st.write("""
+    ### 🔍 **Cách hoạt động của SVM**
+    - Dữ liệu được biểu diễn trong không gian nhiều chiều.
+    - Mô hình tìm một siêu phẳng để phân tách dữ liệu sao cho khoảng cách từ siêu phẳng đến các điểm gần nhất (support vectors) là lớn nhất.
+    - Nếu dữ liệu **không thể phân tách tuyến tính**, ta có thể:
+        - **Dùng Kernel Trick** để ánh xạ dữ liệu sang không gian cao hơn.
+        - **Thêm soft margin** để chấp nhận một số điểm bị phân loại sai.
+    """)
+
+    # 📌 2️⃣ Công thức toán học
+    st.subheader("📌 Công thức toán học")
+
+    st.markdown(r"""
+    - **Hàm mục tiêu cần tối ưu**:
+    \[
+    \min_{w, b} \frac{1}{2} ||w||^2
+    \]
+    với ràng buộc:
+    \[
+    y_i (w \cdot x_i + b) \geq 1, \forall i
+    \]
+    Trong đó:
+    - \( w \) là vector trọng số.
+    - \( b \) là bias (độ dịch của siêu phẳng).
+    - \( x_i \) là điểm dữ liệu.
+    - \( y_i \) là nhãn của điểm dữ liệu (\(+1\) hoặc \(-1\)).
+
+    - **Khoảng cách từ một điểm đến siêu phẳng**:
+    \[
+    d = \frac{|w \cdot x + b|}{||w||}
+    \]
+    
+    - **Hàm mất mát với soft margin (SVM không tuyến tính)**:
+    \[
+    \min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i
+    \]
+    với \( \xi_i \) là biến slack cho phép phân loại sai một số điểm.
+    """)
+
+    st.write("""
+    💡 **Ý nghĩa của công thức:**
+    - SVM tối ưu hóa khoảng cách giữa hai lớp dữ liệu (margin).
+    - Nếu dữ liệu không tuyến tính, kernel trick giúp ánh xạ dữ liệu lên không gian cao hơn.
+    - \( C \) là hệ số điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
+    """)
+
+    # 📌 3️⃣ Ví dụ tính toán khoảng cách đến siêu phẳng
+    st.subheader("📌 Ví dụ tính toán")
+
+    # Mô phỏng dữ liệu đơn giản
+    w = np.array([2, -3])  # Trọng số w
+    b = 5  # Bias
+    x_sample = np.array([1, 2])  # Một điểm dữ liệu
+
+    # Tính khoảng cách đến siêu phẳng
+    distance = np.abs(np.dot(w, x_sample) + b) / np.linalg.norm(w)
+
+    st.write(f"📌 **Khoảng cách từ điểm {x_sample} đến siêu phẳng**: {distance:.4f}")
+
+    # 📌 4️⃣ Minh họa phân tách dữ liệu bằng SVM
+    st.subheader("📌 Minh họa phân tách dữ liệu")
+
+    # Tạo dữ liệu mô phỏng
+    X, y = make_classification(n_samples=100, n_features=2, n_classes=2, n_clusters_per_class=1, n_redundant=0, random_state=42)
+    svm_model = SVC(kernel="linear", C=1.0)
+    svm_model.fit(X, y)
+
+    # Vẽ siêu phẳng
+    fig, ax = plt.subplots(figsize=(6, 4))
+
+    # Vẽ dữ liệu
+    ax.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm", edgecolors="k")
+
+    # Vẽ siêu phẳng
+    xx = np.linspace(X[:, 0].min(), X[:, 0].max(), 50)
+    yy = - (svm_model.coef_[0][0] * xx + svm_model.intercept_[0]) / svm_model.coef_[0][1]
+    ax.plot(xx, yy, "k--", label="Siêu phẳng")
+
+    # Vẽ support vectors
+    ax.scatter(svm_model.support_vectors_[:, 0], svm_model.support_vectors_[:, 1], facecolors="none", edgecolors="k", s=100, label="Support Vectors")
+
+    ax.set_title("Minh họa SVM với dữ liệu đơn giản")
+    ax.legend()
+    st.pyplot(fig)
+
+    st.write("""
+    ### 🔥 **Tóm tắt**
+    - SVM tìm siêu phẳng tối ưu để phân loại dữ liệu.
+    - Nếu dữ liệu không tuyến tính, có thể dùng **kernel trick**.
+    - Cần chọn tham số **C, kernel** phù hợp để tránh overfitting.
+
+    🚀 **Bạn có muốn thử nghiệm với dữ liệu thực tế?**
+    """)
     ### **Phần 3: Chọn mô hình & Train**
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
