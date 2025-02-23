@@ -522,7 +522,7 @@ def chon_mo_hinh():
 
 
 def test():
-    chuyen_doi_kdl=st.session_state.column_value_counts[selected_col]
+    
     # Chọn mô hình linear hoặc polynomial
     model_type = st.selectbox("Chọn mô hình:", ["linear", "polynomial"])
 
