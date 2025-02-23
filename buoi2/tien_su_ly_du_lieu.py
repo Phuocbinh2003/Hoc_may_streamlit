@@ -587,7 +587,7 @@ def test():
     scaler = StandardScaler()
     # Tạo mảng chỉ số của các phần tử khác 0 và 1
     for i in range(X_train_input.shape[1]):
-        st.write(X_train_input[i])
+        st.write(X_train_input[0,i])
         if X_train_input[ i] != 0 and X_train_input[ i] != 1:  # Nếu giá trị không phải 0 hoặc 1
             # Chuẩn hóa giá trị
             X_train_input_final[i] = scaler.fit_transform(X_train_input[:, i].reshape(-1, 1)).flatten()
