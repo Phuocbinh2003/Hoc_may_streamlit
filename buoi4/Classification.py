@@ -322,41 +322,22 @@ def train():
         
         
 import joblib
-import cv2
 def preprocess_canvas_image(canvas_result):
-    """Tìm và cắt từng số, chuẩn bị ảnh cho model MNIST"""
+    """Chuyển ảnh từ canvas về dạng 28x28 chuẩn MNIST"""
     if canvas_result.image_data is not None:
-        # Chuyển ảnh thành numpy array, lấy kênh đầu tiên (grayscale)
-        img = np.array(canvas_result.image_data[:, :, 0]).astype(np.uint8)
-        
-        # Invert màu (vì OpenCV xử lý chữ đen trên nền trắng)
-        img = cv2.bitwise_not(img)
+        # Chuyển ảnh thành mảng numpy, lấy kênh đầu tiên (gray)
+        img = Image.fromarray((canvas_result.image_data[:, :, 0]).astype(np.uint8))
 
-        # Tìm contours để phát hiện số
-        contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Resize về 28x28 và chuyển thành ảnh xám
+        img = img.resize((28, 28)).convert("L")
 
-        # Danh sách ảnh số đã cắt
-        digit_images = []
+        # Chuyển thành mảng numpy và chuẩn hóa về [0, 1]
+        img = np.array(img, dtype=np.float32) / 255.0
 
-        for cnt in contours:
-            x, y, w, h = cv2.boundingRect(cnt)
-            digit = img[y:y+h, x:x+w]  # Cắt từng số
-
-            # Resize về 28x28 (giữ tỉ lệ, thêm padding nếu cần)
-            digit = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
-            digit = np.array(digit, dtype=np.float32) / 255.0  # Chuẩn hóa
-
-            # Reshape thành vector 1D
-            digit = digit.reshape(1, -1)
-            digit_images.append((x, digit))  # Lưu kèm tọa độ để sắp xếp
-
-        # Sắp xếp các số từ trái sang phải
-        digit_images.sort(key=lambda x: x[0])
-
-        # Trả về danh sách số đã cắt
-        return [d[1] for d in digit_images], [d[0] for d in digit_images]
-
-    return None, None
+        # Reshape thành vector 1D để đưa vào mô hình
+        img = img.reshape(1, -1)
+        return img
+    return None
 
 def load_model(path):
     """Tải mô hình từ file `.joblib`"""
@@ -397,36 +378,25 @@ def du_doan():
         stroke_color="white",
         background_color="black",
         height=150,
-        width=400,
+        width=150,
         drawing_mode="freedraw",
         key="canvas"
     )
 
     if st.button("Dự đoán số"):
-        digit_images, positions = preprocess_canvas_image(canvas_result)
+        img = preprocess_canvas_image(canvas_result)
 
-        if digit_images:
-            predictions = []
+        if img is not None:
+            # Hiển thị ảnh sau khi xử lý
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau khi xử lý", width=100)
 
-            st.subheader("📸 Các số được cắt ra:")
-            cols = st.columns(len(digit_images))  # Tạo cột để hiển thị từng số
 
-            for i, digit in enumerate(digit_images):
-                prediction = model.predict(digit)[0]
-                predictions.append(prediction)
 
-                # Hiển thị ảnh số đã cắt
-                with cols[i]:
-                    st.image((digit.reshape(28, 28) * 255).astype(np.uint8), caption=f"Số {prediction}", width=50)
-
-            st.subheader(f"🔢 Dự đoán chuỗi số: {''.join(map(str, predictions))}")
-
+            # Dự đoán với mô hình đã chọn
+            prediction = model.predict(img)
+            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
-            st.error("⚠️ Hãy vẽ ít nhất một số trước khi bấm Dự đoán!")
-            
-            
-            
-            
+            st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
             
             
 def Classification():
