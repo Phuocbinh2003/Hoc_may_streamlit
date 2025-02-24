@@ -265,7 +265,7 @@ import os
 import mlflow
 from mlflow.tracking import MlflowClient
 def mlflow_input():
-    st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
+    #st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
     st.session_state['mlflow_url']=DAGSHUB_MLFLOW_URI
@@ -418,7 +418,7 @@ def preprocess_canvas_image(canvas_result):
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
+    
     
     # 🔹 Danh sách mô hình có sẵn
     models = {
@@ -443,16 +443,17 @@ def du_doan():
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # ✍️ Vẽ số
-    canvas_result = st_canvas(
-        fill_color="black",
-        stroke_width=10,
-        stroke_color="white",
-        background_color="black",
-        height=150,
-        width=150,  
-        drawing_mode="freedraw",
-        key="canvas"
-    )
+    if st.button("vẽ"):
+        canvas_result = st_canvas(
+            fill_color="black",
+            stroke_width=10,
+            stroke_color="white",
+            background_color="black",
+            height=150,
+            width=150,  
+            drawing_mode="freedraw",
+            key="canvas"
+        )
 
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
