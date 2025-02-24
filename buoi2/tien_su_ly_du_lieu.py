@@ -581,45 +581,22 @@ def test():
     
     # Chuyển đổi list thành array
     X_train_input = np.array(X_train_input).reshape(1, -1)
-    st.write(X_train_input)
+    
     
     X_train_input_final = X_train_input.copy()  # Sao chép X_train_input để thay đổi giá trị không làm ảnh hưởng đến dữ liệu gốc
     scaler = StandardScaler()
     # Tạo mảng chỉ số của các phần tử khác 0 và 1
     for i in range(X_train_input.shape[1]):
-        st.write(X_train_input[0,i])
+        
         if X_train_input[0, i] != 0 and X_train_input[0, i] != 1:  # Nếu giá trị không phải 0 hoặc 1
             # Chuẩn hóa giá trị
-            st.write("0 hoặc 1",X_train_input[0,i])
+            
             X_train_input_final[0, i] = scaler.fit_transform(X_train_input[:, i].reshape(-1, 1)).flatten()
         
-
-    # if np.all(np.isin(X_train_input, [0, 1])):
-    # # Nếu tất cả giá trị là 0 hoặc 1 thì không cần chuẩn hó
-    #     X_train_input_final = X_train_input
-    # else:
-    #     # Nếu có giá trị khác 0 và 1, chuẩn hó
-    #     scaler = StandardScaler()
-        # X_train_input_final = scaler.fit_transform(X_train_input.reshape(-1, 1)).flatten()
-     # Chuẩn hóa các giá trị khác 0 và 1
-    #scaler = StandardScaler()
-    # X_train_input_final[:, non_binary_indices] = scaler.fit_transform(X_train_input[:, non_binary_indices].T).T
-
-        # Hiển thị kết quả
     st.write("Dữ liệu sau khi xử lý:")
-    st.write(X_train_input_final)
     
-    # X_train_input_without_binary = np.delete(X_train_input, binary_columns, axis=1)
-    # st.write(X_train_input_without_binary)
-    # # Chuẩn hóa các cột không phải nhị phân
-    # scaler = StandardScaler()
-    # X_train_input_normalized = scaler.fit_transform(X_train_input_without_binary)
-    # st.write(X_train_input_normalized)
-    # # Kết hợp lại cột nhị phân và các cột đã chuẩn hóa
-    # X_train_input_final = np.hstack([X_train_input_normalized, X_train_input[:, binary_columns]])
-    # st.write(model)
-    # st.write(X_train_input_final)
-    # Dự đoán khi nhấn nút
+    
+
     if st.button("Dự đoán"):
         # Thêm cột 1 cho intercept (nếu cần)
         X_input_b = np.c_[np.ones((X_train_input_final.shape[0], 1)), X_train_input_final]
@@ -630,7 +607,11 @@ def test():
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
         
         # Hiển thị kết quả dự đoán
-        st.write(f"Dự đoán: {y_pred[0]}")
+        if y_pred>=0.5 :
+
+            st.write(f"Dự đoán sống ")
+        else :
+            st.write(f"Dự đoán chết")
 
     
 def data():
