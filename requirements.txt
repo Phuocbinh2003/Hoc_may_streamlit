@@ -10,3 +10,4 @@ seaborn
 tensorflow
 opencv-python-headless
 langchain-openai
+dagshub
