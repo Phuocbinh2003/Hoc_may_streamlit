@@ -20,26 +20,15 @@ import os
 from mlflow.tracking import MlflowClient
 def mlflow_input():
     st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
-
-    # 🌟 Cấu hình DAGsHub MLflow Tracking URI
+    
     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
     mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
 
-    # Đăng nhập bằng username và token DAGsHub
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
-    # 📝 Kiểm tra danh sách các experiment có sẵn
-    client = MlflowClient()
-    experiments = client.search_experiments()
-    
-    st.subheader("📌 Danh sách Experiments:")
-    for exp in experiments:
-        st.write(f"- ID: {exp.experiment_id}, Name: {exp.name}")
-        
-    experiment_name = "Linear_replication"
-    experiment = mlflow.set_experiment(experiment_name)
-    
+    mlflow.set_experiment("Linear_replication")
+
 
 def drop(df):
     st.subheader("🗑️ Xóa cột dữ liệu")
