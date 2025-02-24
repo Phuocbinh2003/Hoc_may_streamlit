@@ -8,33 +8,40 @@ from sklearn.metrics import accuracy_score
 
 def appptest():
     
-    # Kết nối với MLflow local
-    mlflow.set_tracking_uri("http://localhost:5000")
 
-    # Dữ liệu mẫu
-    X, y = make_classification(n_samples=1000, n_features=5, random_state=42)
+
+    # Kết nối với MLflow Tracking Server
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+
+    # Tạo dữ liệu giả lập
+    X, y = make_classification(n_samples=500, n_features=5, random_state=42)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Model
-    model = LogisticRegression()
-
-    # Giao diện Streamlit
     st.title("MLflow + Streamlit Demo")
 
-    if st.button("Train Model & Log to MLflow"):
-        with mlflow.start_run():  # Bắt đầu tracking với MLflow
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-            acc = accuracy_score(y_test, y_pred)
-            
-            # Log các thông số
-            mlflow.log_param("model_type", "LogisticRegression")
-            mlflow.log_param("num_features", X.shape[1])
-            mlflow.log_metric("accuracy", acc)
-            
-            # Lưu model vào MLflow
-            mlflow.sklearn.log_model(model, "model")
+    # Người dùng chọn tham số mô hình
+    lr = st.slider("Learning Rate", 0.01, 1.0, 0.1)
+    max_iter = st.slider("Max Iterations", 100, 1000, 200)
 
-            st.success(f"Model trained with accuracy: {acc:.4f}")
-            st.write("Check MLflow at: [localhost:5000](http://localhost:5000)")
+    # Bắt đầu log với MLflow
+    with mlflow.start_run():
+        # Log tham số
+        mlflow.log_param("learning_rate", lr)
+        mlflow.log_param("max_iterations", max_iter)
+
+        # Train mô hình
+        model = LogisticRegression(C=lr, max_iter=max_iter)
+        model.fit(X_train, y_train)
+
+        # Dự đoán và tính accuracy
+        acc = model.score(X_test, y_test)
+        st.write(f"Test Accuracy: {acc:.4f}")
+
+        # Log metric
+        mlflow.log_metric("accuracy", acc)
+
+        # Log mô hình
+        mlflow.sklearn.log_model(model, "logistic_regression_model")
+
+    st.success("Mô hình đã được log lên MLflow!")
 
