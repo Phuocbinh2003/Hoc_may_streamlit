@@ -386,7 +386,7 @@ def train():
         # In tên các mô hình đã lưu
         st.write("📋 Danh sách các mô hình đã lưu:")
         model_names = [model["name"] for model in st.session_state["models"]]
-        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
+        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòn
         
         st.success("📌 Mô hình đã được lưu trên MLflow!")
         
