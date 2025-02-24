@@ -460,7 +460,7 @@ def du_doan():
         drawing_mode="freedraw",
         key="canvas"
     )
-    st.write("....")  # Khoảng trống phía dưới
+    st.write("....")  # Khoảng trống phía dướ
       
       
       
