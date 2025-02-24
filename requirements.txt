@@ -11,4 +11,3 @@ tensorflow
 opencv-python-headless
 langchain-openai
 dagshub
-streamlit_draw
