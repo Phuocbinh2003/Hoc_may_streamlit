@@ -269,12 +269,13 @@ def mlflow_input():
     st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    st.session_state['mlflow_url']=DAGSHUB_MLFLOW_URI
     mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
 
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
-    mlflow.set_experiment("Linear_replication")   
+    mlflow.set_experiment("Classification")   
     
     
     
