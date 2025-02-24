@@ -386,7 +386,7 @@ def train():
         # In tên các mô hình đã lưu
         st.write("📋 Danh sách các mô hình đã lưu:")
         model_names = [model["name"] for model in st.session_state["models"]]
-        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòn
+        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
         
         st.success("📌 Mô hình đã được lưu trên MLflow!")
         
@@ -449,7 +449,7 @@ def du_doan():
 
     # ✍️ Vẽ số
     st.subheader("🖌️ Vẽ số vào khung dưới đây:")
-
+    st.write("....")  # Khoảng trống phía trên
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -460,7 +460,7 @@ def du_doan():
         drawing_mode="freedraw",
         key="canvas"
     )
-
+    st.write("....")  # Khoảng trống phía dưới
       
       
       
