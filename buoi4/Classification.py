@@ -443,17 +443,17 @@ def du_doan():
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # ✍️ Vẽ số
-    if st.button("vẽ"):
-        canvas_result = st_canvas(
-            fill_color="black",
-            stroke_width=10,
-            stroke_color="white",
-            background_color="black",
-            height=150,
-            width=150,  
-            drawing_mode="freedraw",
-            key="canvas"
-        )
+    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    canvas_result = st_canvas(
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="canvas"
+    )
 
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
