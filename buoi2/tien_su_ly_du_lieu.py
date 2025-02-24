@@ -464,7 +464,7 @@ def chon_mo_hinh():
     
     n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
     learning_rate = st.slider("Chọn tốc độ học (learning rate):", 
-                          min_value=1e-6, max_value=0.1, value=0.01, step=1e-6, format="%.7f")
+                          min_value=1e-6, max_value=0.1, value=0.01, step=1e-6, format="%.6f")
 
     
     degree = 2
