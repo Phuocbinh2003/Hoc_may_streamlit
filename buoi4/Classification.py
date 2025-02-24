@@ -390,8 +390,7 @@ def preprocess_canvas_image(canvas_result):
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
+    
     
     # 🔹 Danh sách mô hình có sẵn
     models = {
