@@ -8,18 +8,19 @@ from langchain_openai import OpenAI
 from langchain_core.prompts import PromptTemplate
 
 def appptest():
-    # Cấu hình MLflow với thư mục lưu trữ phù hợp
+    # Đặt đường dẫn MLflow Tracking
     mlflow.set_tracking_uri("file:D:/Hoc_may/mlruns")
-    
-    # Experiment ID
-    experiment_id = "251068899510733485"
 
-    # Kiểm tra xem Experiment có tồn tại không
+    # Lấy danh sách Experiment
     client = MlflowClient()
-    experiment = client.get_experiment(experiment_id)
+    experiments = client.list_experiments()
 
-    if experiment is None:
-        st.error(f"Không tìm thấy experiment ID: {experiment_id}. Kiểm tra lại mlruns!")
+    # Kiểm tra xem ID có tồn tại không
+    experiment_id = "251068899510733485"
+    found_experiment = any(exp.experiment_id == experiment_id for exp in experiments)
+
+    if not found_experiment:
+        st.error(f"Experiment ID {experiment_id} không tồn tại. Hãy tạo lại hoặc kiểm tra ID!")
         return  # Dừng nếu không tìm thấy
 
     mlflow.set_experiment(experiment_id=experiment_id)
@@ -36,7 +37,6 @@ def appptest():
     # Chạy MLflow UI khi mở ứng dụng Streamlit
     start_mlflow_ui()
 
-    # Giao diện Streamlit
     st.title("MLflow LangChain Tracking với Streamlit")
 
     # Hiển thị link truy cập MLflow UI
