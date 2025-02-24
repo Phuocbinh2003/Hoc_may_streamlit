@@ -4,7 +4,7 @@ from buoi4.Classification import Classification
 # from test import appptest as ts
 option = st.sidebar.selectbox(
     'Chọn ứng dụng:',
-    ('Linear Regression','Classification') 
+    ('Linear Regression','Classification MNIST ') 
 )
 
 if option == 'Linear Regression':
