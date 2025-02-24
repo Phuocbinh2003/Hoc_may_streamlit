@@ -448,19 +448,19 @@ def du_doan():
 
 
     # ✍️ Vẽ số
-    col1, col2, col3 = st.columns([1, 2, 1])  # Cột giữa rộng hơn
-    with col2:
-        canvas_result = st_canvas(
-            fill_color="black",
-            stroke_width=5,
-            stroke_color="white",
-            background_color="black",
-            width=300,
-            height=300,
-            drawing_mode="freedraw",
-            key="canvas"
+    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    st.write("....")  # Khoảng trống phía trên
+    canvas_result = st_canvas(
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="canvas"
     )
-
+    st.write("....")  # Khoảng trống phía dưới
       
       
       
