@@ -443,7 +443,10 @@ def du_doan():
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # ✍️ Vẽ số
-    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    if "canvas_data" not in st.session_state:
+        st.session_state.canvas_data = None  # Ban đầu là None
+
+    # 🎨 **Vẽ trên canvas**
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -452,8 +455,13 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key="canvas"
+        key="canvas",  # Giữ nguyên key
+        initial_drawing=st.session_state.canvas_data  # Load lại dữ liệu cũ
     )
+
+    # **Lưu canvas vào session_state để giữ dữ liệu**
+    if canvas_result is not None and canvas_result.image_data is not None:
+        st.session_state.canvas_data = canvas_result.image_data  # Lưu ảnh vẽ
 
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
