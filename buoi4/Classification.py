@@ -262,17 +262,28 @@ def split_data():
     if "X_train" in st.session_state:
         st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
         
+import os
+import mlflow
+from mlflow.tracking import MlflowClient
+def mlflow_input():
+    st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
-    
+    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+
+    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+
+    mlflow.set_experiment("Linear_replication")   
     
     
     
     
 def train():
+    mlflow_input()
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
         X_train = st.session_state["X_train"]
-        # st.write(X_train.dtype)
         y_train = st.session_state["y_train"]
         X_test = st.session_state["X_test"]
         y_test = st.session_state["y_test"]
@@ -323,10 +334,23 @@ def train():
         model = SVC(C=C, kernel=kernel)
 
     if st.button("Huấn luyện mô hình"):
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        st.success(f"✅ Độ chính xác: {acc:.4f}")
+        with mlflow.start_run():
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+            acc = accuracy_score(y_test, y_pred)
+            st.success(f"✅ Độ chính xác: {acc:.4f}")
+            
+            mlflow.log_param("model", model_choice)
+            if model_choice == "Decision Tree":
+                mlflow.log_param("max_depth", max_depth)
+            elif model_choice == "SVM":
+                mlflow.log_param("C", C)
+                mlflow.log_param("kernel", kernel)
+
+            mlflow.log_metric("accuracy", acc)
+            mlflow.sklearn.log_model(model, model_choice.lower())
+
+            st.success("📌 Mô hình đã được lưu trên MLflow!")
 
         # Lưu mô hình vào session_state dưới dạng danh sách nếu chưa có
         if "models" not in st.session_state:
@@ -363,6 +387,10 @@ def train():
         st.write("📋 Danh sách các mô hình đã lưu:")
         model_names = [model["name"] for model in st.session_state["models"]]
         st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
+        
+        
+        
+        st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
         
 
       
