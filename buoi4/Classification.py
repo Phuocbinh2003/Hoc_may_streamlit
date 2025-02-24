@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
 import joblib
-
+import pandas as pd
 
 
 # Khởi tạo MLflow
@@ -150,68 +150,81 @@ def ly_thuyet_SVM():
     """)
 
 
-# def train():
-#     digits = datasets.load_digits()
-#     X, y = digits.data, digits.target
+def data():
+    st.header("MNIST Dataset")
+    st.write("""
+      **MNIST** là một trong những bộ dữ liệu nổi tiếng và phổ biến nhất trong cộng đồng học máy, 
+      đặc biệt là trong các nghiên cứu về nhận diện mẫu và phân loại hình ảnh.
+  
+      - Bộ dữ liệu bao gồm tổng cộng **70.000 ảnh chữ số viết tay** từ **0** đến **9**, 
+        mỗi ảnh có kích thước **28 x 28 pixel**.
+      - Chia thành:
+        - **Training set**: 60.000 ảnh để huấn luyện.
+        - **Test set**: 10.000 ảnh để kiểm tra.
+      - Mỗi hình ảnh là một chữ số viết tay, được chuẩn hóa và chuyển thành dạng grayscale (đen trắng).
+  
+      Dữ liệu này được sử dụng rộng rãi để xây dựng các mô hình nhận diện chữ số.
+      """)
 
-#     # Chia tập train/test
-#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
-#     y_train = np.ravel(y_train)
-#     y_test = np.ravel(y_test)  # Đảm bảo y_test cũng có đúng dạng
-#     ### **Phần 3: Chọn mô hình & Train**
-    
-    
-    
-    
-#     st.header("⚙️ Chọn mô hình & Huấn luyện")
+    st.subheader("Một số hình ảnh từ MNIST Dataset")
+    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
 
-#     # Lựa chọn mô hình
-#     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
+    st.subheader("Ứng dụng thực tế của MNIST")
+    st.write("""
+      Bộ dữ liệu MNIST đã được sử dụng trong nhiều ứng dụng nhận dạng chữ số viết tay, chẳng hạn như:
+      - Nhận diện số trên các hoá đơn thanh toán, biên lai cửa hàng.
+      - Xử lý chữ số trên các bưu kiện gửi qua bưu điện.
+      - Ứng dụng trong các hệ thống nhận diện tài liệu tự động.
+    """)
 
-#     if model_choice == "Decision Tree":
-#         st.markdown("""
-#         - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
-#         - **Tham số cần chọn:**  
-#             - **max_depth**: Giới hạn độ sâu tối đa của cây.  
-#                 - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
-#                 - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
-#         """)
+    st.subheader("Ví dụ về các mô hình học máy với MNIST")
+    st.write("""
+      Các mô hình học máy phổ biến đã được huấn luyện với bộ dữ liệu MNIST bao gồm:
+      - **Logistic Regression**
+      - **Decision Trees**
+      - **K-Nearest Neighbors (KNN)**
+      - **Support Vector Machines (SVM)**
+      - **Convolutional Neural Networks (CNNs)**
+    """)
 
-#         max_depth = st.slider("max_depth", 1, 20, 5)
-#         model = DecisionTreeClassifier(max_depth=max_depth)
-
-
-
-#     elif model_choice == "SVM":
-#         st.markdown("""
-#         - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
-#         - **Tham số cần chọn:**  
-#             - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
-#                 - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
-#                 - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
-#             - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
-#                 - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
-#                 - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
-#                 - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
-#                 - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
-#         """)
-
-#         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
-#         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
-#         model = SVC(C=C, kernel=kernel)
+    st.subheader("Kết quả của một số mô hình trên MNIST ")
+    st.write("""
+      Để đánh giá hiệu quả của các mô hình học máy với MNIST, người ta thường sử dụng độ chính xác (accuracy) trên tập test:
+      
+      - **Decision Tree**: 0.8574
+      - **SVM (Linear)**: 0.9253
+      - **SVM (poly)**: 0.9774
+      - **SVM (sigmoid)**: 0.7656
+      - **SVM (rbf)**: 0.9823
+      
+      
+      
+    """)
 
 
 
-#     if st.button("Huấn luyện mô hình"):
-#         model.fit(X_train, y_train)
-#         y_pred = model.predict(X_test)
-#         acc = accuracy_score(y_test, y_pred)
-#         st.success(f"✅ Độ chính xác: {acc:.4f}")
-#         st.session_state["model"] = model
-        
-    
 
+
+def plot_tree_metrics():
+    # Dữ liệu bạn đã cung cấp
+
+    accuracies = [
+        0.4759, 0.5759, 0.6593, 0.7741, 0.8241, 0.8259, 0.8481, 0.8574, 0.8537, 0.8463,
+        0.8463, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426, 0.8426
+    ]
+    tree_depths = [
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+    ]
+
+    # Tạo DataFrame từ dữ liệu
+    data = pd.DataFrame({
+        "Tree Depth": tree_depths,
+        "Accuracy": accuracies
+    })
+
+    # Vẽ biểu đồ với st.line_chart
+    st.subheader("Độ chính xác theo chiều sâu cây quyết định")
+    st.line_chart(data.set_index('Tree Depth'))
 
 
 
@@ -281,10 +294,30 @@ def train():
     model_choice = st.selectbox("Chọn mô hình:", ["Decision Tree", "SVM"])
 
     if model_choice == "Decision Tree":
+        st.markdown("""
+        - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
+        - **Tham số cần chọn:**  
+            - **max_depth**: Giới hạn độ sâu tối đa của cây.  
+                - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
+                - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
+        """)
+        
         max_depth = st.slider("max_depth", 1, 20, 5)
         model = DecisionTreeClassifier(max_depth=max_depth)
 
     elif model_choice == "SVM":
+        st.markdown("""
+        - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
+        - **Tham số cần chọn:**  
+            - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
+                - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
+                - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
+            - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
+                - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
+                - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
+                - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
+                - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
+        """)
         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
         model = SVC(C=C, kernel=kernel)
@@ -294,9 +327,43 @@ def train():
         y_pred = model.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         st.success(f"✅ Độ chính xác: {acc:.4f}")
-        st.session_state["model"] = model
 
-    
+        # Lưu mô hình vào session_state dưới dạng danh sách nếu chưa có
+        if "models" not in st.session_state:
+            st.session_state["models"] = []
+
+        # Tạo tên mô hình dựa trên lựa chọn mô hình và kernel
+        model_name = model_choice.lower().replace(" ", "_")
+        if model_choice == "SVM":
+            model_name += f"_{kernel}"
+
+        # Kiểm tra nếu tên mô hình đã tồn tại trong session_state
+        existing_model = next((item for item in st.session_state["models"] if item["name"] == model_name), None)
+        
+        if existing_model:
+            # Tạo tên mới với số đếm phía sau
+            count = 1
+            new_model_name = f"{model_name}_{count}"
+            
+            # Kiểm tra tên mới chưa tồn tại
+            while any(item["name"] == new_model_name for item in st.session_state["models"]):
+                count += 1
+                new_model_name = f"{model_name}_{count}"
+            
+            # Sử dụng tên mới đã tạo
+            model_name = new_model_name
+            st.warning(f"⚠️ Mô hình được lưu với tên là: {model_name}")
+
+        # Lưu mô hình vào danh sách với tên mô hình cụ thể
+        st.session_state["models"].append({"name": model_name, "model": model})
+        st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
+        st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
+
+        # In tên các mô hình đã lưu
+        st.write("📋 Danh sách các mô hình đã lưu:")
+        model_names = [model["name"] for model in st.session_state["models"]]
+        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
+        
 
       
 
@@ -323,19 +390,30 @@ def preprocess_canvas_image(canvas_result):
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-
-    # 🔹 Danh sách mô hình
+    st.header("✍️ Vẽ số để dự đoán")
+    st.header("✍️ Vẽ số để dự đoán")
+    st.header("✍️ Vẽ số để dự đoán")
+    # 🔹 Danh sách mô hình có sẵn
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
         "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
-
+    
+    # Lấy tên mô hình từ session_state
+    model_names = [model["name"] for model in st.session_state.get("models", [])]
+    
     # 📌 Chọn mô hình
-    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()))
-    model = load_model(models[model_option])
-    st.success(f"✅ Đã tải mô hình: {model_option}")
+    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()) + model_names)
+
+    # Nếu chọn mô hình đã được huấn luyện và lưu trong session_state
+    if model_option in model_names:
+        model = next(model for model in st.session_state["models"] if model["name"] == model_option)["model"]
+    else:
+        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file)
+        model = load_model(models[model_option])
+        st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # ✍️ Vẽ số
     canvas_result = st_canvas(
@@ -374,35 +452,35 @@ def Classification():
     st.title("🖊️ MNIST Classification App")
 
     ### **Phần 1: Hiển thị dữ liệu MNIST**
-    # st.header("📊 Một số hình ảnh trong tập MNIST")
-    # fig, axes = plt.subplots(2, 5, figsize=(10, 5))
-    # for i, ax in enumerate(axes.flatten()):
-    #     ax.imshow(X[i].reshape(8, 8), cmap="gray")
-    #     ax.set_title(f"Số {y[i]}")
-    #     ax.axis("off")
-    # st.pyplot(fig)
-
+    
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
     
     # 1️⃣ Phần giới thiệu
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
-    tab1, tab2, tab3, tab4 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "⚙️ Huấn luyện", "🔢 Dự đoán"])
+    tab1, tab2, tab3, tab4,tab5 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán"])
 
     with tab1:
         ly_thuyet_Decision_tree()
 
     with tab2:
         ly_thuyet_SVM()
-
+    
     with tab3:
+        data()
+        
+    with tab4:
+        plot_tree_metrics()
+        
+        
+        
         split_data()
         train()
-
-    with tab4:
-        du_doan()
         
+    
+    with tab5:
+        du_doan()   
 
 
 
