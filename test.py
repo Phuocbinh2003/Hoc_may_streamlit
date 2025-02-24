@@ -191,11 +191,11 @@ def data():
     st.write("""
       Để đánh giá hiệu quả của các mô hình học máy với MNIST, người ta thường sử dụng độ chính xác (accuracy) trên tập test:
       
-      - **Decision Tree**: 85%
-      - **SVM (Linear)**: 98%
-      - **SVM (Linear)**: 98%
-      - **SVM (Linear)**: 98%
-      - **SVM (Linear)**: 98%
+      - **Decision Tree**: 0.8574
+      - **SVM (Linear)**: 0.9253
+      - **SVM (poly)**: 0.9774
+      - **SVM (sigmoid)**: 0.7656
+      - **SVM (rbf)**: 0.9823
       
       
       
