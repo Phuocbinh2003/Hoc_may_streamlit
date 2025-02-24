@@ -462,6 +462,8 @@ def du_doan():
     # **Lưu canvas vào session_state để giữ dữ liệu**
     if canvas_result is not None and canvas_result.image_data is not None:
         st.session_state.canvas_data = canvas_result.image_data  # Lưu ảnh vẽ
+        
+        
 
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
