@@ -391,12 +391,7 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
     st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
-    st.header("✍️ Vẽ số để dự đoán")
+    
     # 🔹 Danh sách mô hình có sẵn
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
