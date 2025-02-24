@@ -14,6 +14,33 @@ import mlflow
 import io
 from sklearn.model_selection import KFold
 
+
+
+import os
+from mlflow.tracking import MlflowClient
+def mlflow_input():
+    st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
+
+    # 🌟 Cấu hình DAGsHub MLflow Tracking URI
+    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+
+    # Đăng nhập bằng username và token DAGsHub
+    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+
+    # 📝 Kiểm tra danh sách các experiment có sẵn
+    client = MlflowClient()
+    experiments = client.search_experiments()
+    
+    st.subheader("📌 Danh sách Experiments:")
+    for exp in experiments:
+        st.write(f"- ID: {exp.experiment_id}, Name: {exp.name}")
+        
+    experiment_name = "Linear_replication"
+    experiment = mlflow.set_experiment(experiment_name)
+    
+
 def drop(df):
     st.subheader("🗑️ Xóa cột dữ liệu")
     
@@ -442,88 +469,93 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
 
 def chon_mo_hinh():
     st.subheader("🔍 Chọn mô hình hồi quy")
-    model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     
-    # Xác định loại mô hình
+    model_type_V = st.radio("Chọn loại mô hình:", ["Multiple Linear Regression", "Polynomial Regression"])
     model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
     
-    
     n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
-
-    # Thanh trượt chọn tốc độ học (learning rate)
     learning_rate = st.slider("Chọn tốc độ học (learning rate):", min_value=0.0001, max_value=0.1, value=0.01, step=0.0001)
     
-    ddegree = 2
+    degree = 2
     if model_type == "polynomial":
         degree = st.slider("Chọn bậc đa thức:", min_value=2, max_value=5, value=2)
+
     fold_mse = []
     scaler = StandardScaler()
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
 
-    # Kiểm tra nếu dữ liệu có trong session_state
     if "X_train" not in st.session_state or st.session_state.X_train is None:
         st.warning("⚠️ Vui lòng chia dữ liệu trước khi huấn luyện mô hình!")
         return None, None, None
 
-    # Lấy dữ liệu từ session_state
-    X_train = st.session_state.X_train
-    X_test = st.session_state.X_test
-    y_train = st.session_state.y_train
-    y_test = st.session_state.y_test
-    # st.write(X_train.shape ,y_train.shape)
-    # st.dataframe(X_train)
-    
-    if st.button("Huấn luyện mô hình"):
-        st.write("⏳ Đang huấn luyện mô hình...")  # Giúp debug xem có chạy vào đây không
+    X_train, X_test = st.session_state.X_train, st.session_state.X_test
+    y_train, y_test = st.session_state.y_train, st.session_state.y_test
 
-        for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
-            X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
-            y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
+    if st.button("Huấn luyện mô hình"):
+        st.write("⏳ Đang huấn luyện mô hình...")  
+
+        # 🎯 **Tích hợp MLflow**
+        DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+        mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+
+        os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+
+        mlflow.set_experiment("Linear_replication")
+
+        with mlflow.start_run():
+            mlflow.log_param("model_type", model_type)
+            mlflow.log_param("n_folds", n_folds)
+            mlflow.log_param("learning_rate", learning_rate)
+            if model_type == "polynomial":
+                mlflow.log_param("degree", degree)
+
+            for fold, (train_idx, valid_idx) in enumerate(kf.split(X_train, y_train)):
+                X_train_fold, X_valid = X_train.iloc[train_idx], X_train.iloc[valid_idx]
+                y_train_fold, y_valid = y_train.iloc[train_idx], y_train.iloc[valid_idx]
+
+                if model_type == "linear":
+                    w = train_multiple_linear_regression(X_train_fold, y_train_fold, learning_rate=learning_rate)
+                    w = np.array(w).reshape(-1, 1)
+                    X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid.to_numpy()]
+                    y_valid_pred = X_valid_b.dot(w)
+                else:  
+                    X_train_fold = scaler.fit_transform(X_train_fold)
+                    w = train_polynomial_regression(X_train_fold, y_train_fold, degree, learning_rate=learning_rate)
+                    w = np.array(w).reshape(-1, 1)
+                    X_valid_scaled = scaler.transform(X_valid.to_numpy())
+                    X_valid_poly = np.hstack([X_valid_scaled] + [X_valid_scaled**d for d in range(2, degree + 1)])
+                    X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
+                    y_valid_pred = X_valid_b.dot(w)
+
+                mse = mean_squared_error(y_valid, y_valid_pred)
+                fold_mse.append(mse)
+                print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+
+            avg_mse = np.mean(fold_mse)
 
             if model_type == "linear":
-                w = train_multiple_linear_regression(X_train_fold, y_train_fold, learning_rate=learning_rate)
-                w = np.array(w).reshape(-1, 1)
-                X_valid_b = np.c_[np.ones((len(X_valid), 1)), X_valid.to_numpy()]
-                y_valid_pred = X_valid_b.dot(w)
-            else:  # Polynomial Regression
-                X_train_fold = scaler.fit_transform(X_train_fold)
-                w = train_polynomial_regression(X_train_fold, y_train_fold, degree,learning_rate=learning_rate)
-                w = np.array(w).reshape(-1, 1)
+                final_w = train_multiple_linear_regression(X_train, y_train, learning_rate=learning_rate)
+                st.session_state['linear_model'] = final_w
+                X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+                y_test_pred = X_test_b.dot(final_w)
+            else:
+                X_train_scaled = scaler.fit_transform(X_train)
+                final_w = train_polynomial_regression(X_train_scaled, y_train, degree, learning_rate=learning_rate)
+                st.session_state['polynomial_model'] = final_w
+                X_test_scaled = scaler.transform(X_test.to_numpy())
+                X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
+                X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
+                y_test_pred = X_test_b.dot(final_w)
 
-                X_valid_scaled = scaler.transform(X_valid.to_numpy())
-                X_valid_poly = np.hstack([X_valid_scaled] + [X_valid_scaled**d for d in range(2, degree + 1)])
-                X_valid_b = np.c_[np.ones((len(X_valid_poly), 1)), X_valid_poly]
-                y_valid_pred = X_valid_b.dot(w)
+            test_mse = mean_squared_error(y_test, y_test_pred)
 
-            mse = mean_squared_error(y_valid, y_valid_pred)
-            fold_mse.append(mse)
-            print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
+            # 📌 **Log các giá trị vào MLflow**
+            mlflow.log_metric("avg_mse", avg_mse)
+            mlflow.log_metric("test_mse", test_mse)
 
-        # Huấn luyện trên toàn bộ tập train
-        
-        if model_type == "linear":
-            final_w = train_multiple_linear_regression(X_train, y_train,learning_rate=learning_rate)
-            st.session_state['linear_model'] = final_w
-            X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
-            y_test_pred = X_test_b.dot(final_w)
-            
-            
-            
-        else:
-            X_train_scaled = scaler.fit_transform(X_train)
-            final_w = train_polynomial_regression(X_train_scaled, y_train, degree,learning_rate=learning_rate)
-            st.session_state['polynomial_model'] = final_w
-            
-            X_test_scaled = scaler.transform(X_test.to_numpy())
-            X_test_poly = np.hstack([X_test_scaled] + [X_test_scaled**d for d in range(2, degree + 1)])
-            X_test_b = np.c_[np.ones((len(X_test_poly), 1)), X_test_poly]
-            y_test_pred = X_test_b.dot(final_w)
-
-        test_mse = mean_squared_error(y_test, y_test_pred)
-        avg_mse = np.mean(fold_mse)
-
-        st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
-        st.success(f"MSE trên tập test: {test_mse:.4f}")
+            st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
+            st.success(f"MSE trên tập test: {test_mse:.4f}")
 
         return final_w, avg_mse, scaler
 
@@ -613,9 +645,8 @@ def test():
         else:
             st.write("Dự đoán chết 💀")
             st.image("buoi4/a-thi-ra-may-chon-cai-chet-750x750.png", width=300)
+            
 
-
-    
 def data():
     uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
     if uploaded_file is not None:
@@ -634,7 +665,7 @@ def chon():
     except Exception as e:
         st.error(f"Lỗi xảy ra: {e}")
 def main():
-    
+    # mlflow_input()
     tab1, tab2, tab3 = st.tabs(["📘 Tiền xử lý dữ liệu","⚙️ Huấn luyện", "🔢 Dự đoán"])
     with tab1:
         data()
