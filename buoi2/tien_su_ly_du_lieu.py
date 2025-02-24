@@ -553,10 +553,11 @@ def chon_mo_hinh():
             # 📌 **Log các giá trị vào MLflow**
             mlflow.log_metric("avg_mse", avg_mse)
             mlflow.log_metric("test_mse", test_mse)
-
+            
             st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
             st.success(f"MSE trên tập test: {test_mse:.4f}")
-
+            st.success("✅ Đã log dữ liệu vào MLflow DAGsHub!")
+            st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({DAGSHUB_MLFLOW_URI})")
         return final_w, avg_mse, scaler
 
     return None, None, None
