@@ -1,14 +1,10 @@
 import os
-import subprocess
-import time
 import mlflow
 import streamlit as st
 from mlflow.tracking import MlflowClient
-from langchain_openai import OpenAI
-from langchain_core.prompts import PromptTemplate
 
 def appptest():
-    # Đặt đường dẫn MLflow Tracking
+    st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
 
     # 🌟 Cấu hình DAGsHub MLflow Tracking URI
     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
@@ -18,29 +14,30 @@ def appptest():
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
-    # 🎯 Tạo hoặc kết nối với Experiment
-    experiment_name = "Streamlit-MLflow-Demo"
-    mlflow.set_experiment(experiment_name)
+    # 📝 Kiểm tra danh sách các experiment có sẵn
+    client = MlflowClient()
+    experiments = client.search_experiments()
 
-    # 🏆 Giao diện Streamlit
-    st.title("🚀 Streamlit + MLflow (DAGsHub)")
+    # Hiển thị danh sách experiment
+    st.subheader("📌 Danh sách Experiments:")
+    for exp in experiments:
+        st.write(f"- ID: {exp.experiment_id}, Name: {exp.name}")
 
-    # Nhập giá trị learning rate
-    learning_rate = st.slider("Chọn Learning Rate:", 0.001, 0.1, 0.01)
+    # Chọn hoặc tạo experiment
+    experiment_name = "My_Experiment"
+    experiment = mlflow.set_experiment(experiment_name)
 
-    # Nhập giá trị accuracy
-    accuracy = st.slider("Chọn Accuracy:", 0.80, 1.00, 0.95)
+    # Ghi log vào MLflow
+    with mlflow.start_run():
+        mlflow.log_param("model", "OpenAI GPT")
+        mlflow.log_param("task", "Streamlit DAGsHub MLflow")
+        mlflow.log_metric("accuracy", 0.95)
 
-    if st.button("Ghi log lên MLflow 🚀"):
-        with mlflow.start_run():
-            mlflow.log_param("learning_rate", learning_rate)
-            mlflow.log_metric("accuracy", accuracy)
+    st.success("✅ Đã log dữ liệu vào MLflow DAGsHub!")
 
-        st.success("✅ Đã ghi log lên DAGsHub MLflow!")
-        st.markdown(f"🔗 **Xem logs tại DAGsHub MLflow:** [Click here]({DAGSHUB_MLFLOW_URI}/experiments/)")
+    # Hiển thị link truy cập MLflow trên DAGsHub
+    st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({DAGSHUB_MLFLOW_URI})")
 
-
-
-# Gọi hàm khi chạy ứng dụng Streamlit
+# Chạy app Streamlit
 if __name__ == "__main__":
     appptest()
