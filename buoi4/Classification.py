@@ -448,28 +448,19 @@ def du_doan():
 
 
     # ✍️ Vẽ số
-    drawing_mode = st.sidebar.selectbox(
-    "Công cụ vẽ:", ("freedraw", "line", "rect", "circle", "transform")
-    )
-    stroke_width = st.sidebar.slider("Độ rộng nét vẽ: ", 1, 25, 3)
-    stroke_color = st.sidebar.color_picker("Màu nét vẽ: ")
-    bg_color = st.sidebar.color_picker("Màu nền: ", "#eee")
-    bg_image = st.sidebar.file_uploader("Hình ảnh nền:", type=["png", "jpg"])
-
-    # Hiển thị canvas
+    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    st.write("....")  # Khoảng trống phía trên
     canvas_result = st_canvas(
-        fill_color="rgba(255, 165, 0, 0.3)",  # Màu tô (ví dụ: cam nhạt)
-        stroke_width=stroke_width,
-        stroke_color=stroke_color,
-        background_color=bg_color,
-        background_image=Image.open(bg_image) if bg_image else None,
-        update_streamlit=True,
-        height=400,
-        width=600,
-        drawing_mode=drawing_mode,
-        key="canvas",
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="canvas"
     )
-
+    st.write("....")  # Khoảng trống phía dưới
       
       
       
