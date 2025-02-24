@@ -447,18 +447,18 @@ def du_doan():
 
 
     # ✍️ Vẽ số
-        st.subheader("🖌️ Vẽ số vào khung dưới đây:")
-        
-        canvas_result = st_canvas(
-            fill_color="black",
-            stroke_width=10,
-            stroke_color="white",
-            background_color="black",
-            height=150,
-            width=150,
-            drawing_mode="freedraw",
-            key="canvas"
-        )
+    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    
+    canvas_result = st_canvas(
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="canvas"
+    )
 
       
       
