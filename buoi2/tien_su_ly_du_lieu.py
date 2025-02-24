@@ -602,16 +602,18 @@ def test():
         X_input_b = np.c_[np.ones((X_train_input_final.shape[0], 1)), X_train_input_final]
         
         # Dự đoán với mô hình đã lưu
-        st.write(X_input_b)
+        
         
         y_pred = X_input_b.dot(model)  # Dự đoán với mô hình đã lưu
         
         # Hiển thị kết quả dự đoán
-        if y_pred>=0.5 :
+        if y_pred >= 0.5:
+            st.write("Dự đoán sống 🎈")
+            st.image("buoi4/60d1b82955e06b9127784f6c70245587song-di-roi-ai-choi.jpg", width=300)
+        else:
+            st.write("Dự đoán chết 💀")
+            st.image("buoi4/a-thi-ra-may-chon-cai-chet-750x750.png.jpg", width=300)
 
-            st.write(f"Dự đoán sống ")
-        else :
-            st.write(f"Dự đoán chết")
 
     
 def data():
