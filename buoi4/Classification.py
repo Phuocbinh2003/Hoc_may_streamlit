@@ -414,7 +414,8 @@ def preprocess_canvas_image(canvas_result):
         img = np.array(img, dtype=np.float32) / 255.0  # Chuẩn hóa về [0, 1]
         return img.reshape(1, -1)  # Chuyển thành vector 1D
     return None
-import draw
+
+from streamlit_sketch import sketch
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
@@ -448,7 +449,7 @@ def du_doan():
 
     # ✍️ Vẽ số
     st.subheader("🖌️ Vẽ số vào khung dưới đây:")
-    result = draw(size=(150, 150), color="white", bg_color="black", stroke_width=10)
+    image = sketch(width=150, height=150, stroke_width=10)
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
