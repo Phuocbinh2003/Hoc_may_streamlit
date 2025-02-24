@@ -20,7 +20,6 @@ import pandas as pd
 def ly_thuyet_Decision_tree():
     st.header("📖 Lý thuyết về Decision Tree")
 
-    # 1️⃣ Giới thiệu về Decision Tree
     st.subheader("1️⃣ Giới thiệu về Decision Tree")
     st.write("""
     - **Decision Tree** hoạt động bằng cách chia nhỏ dữ liệu theo điều kiện để phân loại chính xác.
@@ -83,7 +82,7 @@ def ly_thuyet_Decision_tree():
     
     
 def ly_thuyet_SVM():
-    st.subheader("2️⃣ Support Vector Machine (SVM)")
+    st.subheader(" Support Vector Machine (SVM)")
 
     st.write("""
     - **Support Vector Machine (SVM)** là một thuật toán học máy mạnh mẽ để phân loại dữ liệu.
@@ -351,7 +350,7 @@ def train():
             mlflow.log_metric("accuracy", acc)
             mlflow.sklearn.log_model(model, model_choice.lower())
 
-            st.success("📌 Mô hình đã được lưu trên MLflow!")
+            
 
         # Lưu mô hình vào session_state dưới dạng danh sách nếu chưa có
         if "models" not in st.session_state:
@@ -389,7 +388,7 @@ def train():
         model_names = [model["name"] for model in st.session_state["models"]]
         st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
         
-        
+        st.success("📌 Mô hình đã được lưu trên MLflow!")
         
         st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
         
@@ -499,7 +498,7 @@ def Classification():
         data()
         
     with tab4:
-        plot_tree_metrics()
+       # plot_tree_metrics()
         
         
         
