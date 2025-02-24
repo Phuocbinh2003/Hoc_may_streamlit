@@ -210,11 +210,11 @@ def chuyen_doi_kieu_du_lieu(df):
     st.dataframe(df.head())
     
     # Hiển thị mảng các mapping_dict đã lưu trong session_state
-    if "mapping_dicts" in st.session_state:
-        st.write("Danh sách các cột đã chuyển đổi:")
-        for col_info in st.session_state.mapping_dicts:
-            st.write(f"Cột: `{col_info['column_name']}`")
-            st.write(f"Mapping Dict: {col_info['mapping_dict']}")
+    # if "mapping_dicts" in st.session_state:
+    #     st.write("Danh sách các cột đã chuyển đổi:")
+    #     for col_info in st.session_state.mapping_dicts:
+    #         st.write(f"Cột: `{col_info['column_name']}`")
+    #         st.write(f"Mapping Dict: {col_info['mapping_dict']}")
     
     return df
 
@@ -463,7 +463,9 @@ def chon_mo_hinh():
     model_type = "linear" if model_type_V == "Multiple Linear Regression" else "polynomial"
     
     n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
-    learning_rate = st.slider("Chọn tốc độ học (learning rate):", min_value=0.0001, max_value=0.1, value=0.01, step=0.0001)
+    learning_rate = st.slider("Chọn tốc độ học (learning rate):", 
+                          min_value=1e-6, max_value=0.1, value=0.01, step=1e-6, format="%.7f")
+
     
     degree = 2
     if model_type == "polynomial":
