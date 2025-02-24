@@ -449,7 +449,7 @@ def du_doan():
 
     # ✍️ Vẽ số
     st.subheader("🖌️ Vẽ số vào khung dưới đây:")
-    st.write("....")  # Khoảng trống phía trên
+
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -460,7 +460,7 @@ def du_doan():
         drawing_mode="freedraw",
         key="canvas"
     )
-    st.write("....")  # Khoảng trống phía dưới
+
       
       
       
