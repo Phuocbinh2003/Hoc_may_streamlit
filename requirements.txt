@@ -3,7 +3,7 @@ scikit-learn
 pandas
 matplotlib
 mlflow
-streamlit-drawable-canvas
+streamlit-drawable-canvas==0.8.0
 pillow
 numpy 
 seaborn
