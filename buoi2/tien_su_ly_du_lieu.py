@@ -612,7 +612,7 @@ def test():
             st.image("buoi4/60d1b82955e06b9127784f6c70245587song-di-roi-ai-choi.jpg", width=300)
         else:
             st.write("Dự đoán chết 💀")
-            st.image("buoi4/a-thi-ra-may-chon-cai-chet-750x750.png.jpg", width=300)
+            st.image("buoi4/a-thi-ra-may-chon-cai-chet-750x750.png.png", width=300)
 
 
     
