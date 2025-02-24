@@ -442,7 +442,14 @@ def du_doan():
         model = load_model(models[model_option])
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
+
+
+
+
     # ✍️ Vẽ số
+    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+
+    # 🔥 **Khởi tạo session_state để giữ canvas**
     if "canvas_data" not in st.session_state:
         st.session_state.canvas_data = None  # Ban đầu là None
 
@@ -461,8 +468,11 @@ def du_doan():
 
     # **Lưu canvas vào session_state để giữ dữ liệu**
     if canvas_result is not None and canvas_result.image_data is not None:
-        st.session_state.canvas_data = canvas_result.image_data  # Lưu ảnh vẽ
+        st.session_state.canvas_data = canvas_result.image_data.copy()
         
+      
+      
+      
         
 
     if st.button("Dự đoán số"):
