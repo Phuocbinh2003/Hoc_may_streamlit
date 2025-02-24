@@ -1,47 +1,52 @@
-import streamlit as st
+import os
+import subprocess
+import time
 import mlflow
-import mlflow.sklearn
-from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+import streamlit as st
+from langchain_openai import OpenAI
+from langchain_core.prompts import PromptTemplate
 
-def appptest():
+# Đặt sẵn API Key của OpenAI (hoặc bạn có thể lấy từ biến môi trường)
+os.environ["OPENAI_API_KEY"] = "your_openai_api_key_here"
+
+# Khởi tạo MLflow với experiment ID
+experiment_id = "837146521988900596"
+mlflow.set_experiment(experiment_id=experiment_id)
+
+# Hàm khởi động MLflow UI trong nền
+def start_mlflow_ui():
+    try:
+        subprocess.Popen(["mlflow", "ui", "--port", "5000"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(3)  # Chờ vài giây để UI khởi động
+    except Exception as e:
+        st.error(f"Không thể khởi động MLflow UI: {e}")
+
+# Chạy MLflow UI khi mở ứng dụng Streamlit
+start_mlflow_ui()
+
+st.title("MLflow LangChain Tracking với Streamlit")
+
+# Hiển thị link truy cập MLflow UI
+st.markdown("### 🔗 [Truy cập MLflow UI](http://localhost:5000)")
+
+# Gọi LangChain để ghi log vào MLflow
+with mlflow.start_run():
+    llm = OpenAI()
+    prompt = PromptTemplate.from_template("Answer the following question: {question}")
+    chain = prompt | llm
+
+    # Câu hỏi demo
+    question = st.text_input("Nhập câu hỏi:", "What is MLflow?")
     
+    if st.button("Gửi câu hỏi"):
+        response = chain.invoke(question)
 
+        # Ghi log vào MLflow
+        mlflow.log_param("prompt", "Answer the following question: {question}")
+        mlflow.log_param("question", question)
+        mlflow.log_param("model", "OpenAI GPT")
+        mlflow.log_metric("response_length", len(response))
+        mlflow.log_text(response, "response.txt")
 
-    # Kết nối với MLflow Tracking Server
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
-
-    # Tạo dữ liệu giả lập
-    X, y = make_classification(n_samples=500, n_features=5, random_state=42)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    st.title("MLflow + Streamlit Demo")
-
-    # Người dùng chọn tham số mô hình
-    lr = st.slider("Learning Rate", 0.01, 1.0, 0.1)
-    max_iter = st.slider("Max Iterations", 100, 1000, 200)
-
-    # Bắt đầu log với MLflow
-    with mlflow.start_run():
-        # Log tham số
-        mlflow.log_param("learning_rate", lr)
-        mlflow.log_param("max_iterations", max_iter)
-
-        # Train mô hình
-        model = LogisticRegression(C=lr, max_iter=max_iter)
-        model.fit(X_train, y_train)
-
-        # Dự đoán và tính accuracy
-        acc = model.score(X_test, y_test)
-        st.write(f"Test Accuracy: {acc:.4f}")
-
-        # Log metric
-        mlflow.log_metric("accuracy", acc)
-
-        # Log mô hình
-        mlflow.sklearn.log_model(model, "logistic_regression_model")
-
-    st.success("Mô hình đã được log lên MLflow!")
-
+        st.write("### Phản hồi từ mô hình:")
+        st.write(response)
