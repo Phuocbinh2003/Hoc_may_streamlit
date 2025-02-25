@@ -137,14 +137,18 @@ def xu_ly_gia_tri_thieu(df):
 
     selected_col = st.selectbox("📌 Chọn cột chứa giá trị thiếu:", missing_cols)
     method = st.radio("🔧 Chọn phương pháp xử lý:", ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
+    
 
-    if df[selected_col].dtype == 'object':
+    if df[selected_col].dtype == 'object' and method in ["Thay thế bằng Mean"]:
         st.warning("⚠️ Cột chứa dữ liệu dạng chuỗi. Giá trị sẽ được mã hóa số thứ tự trước khi xử lý.")
-        if method == "Thay thế bằng Mean":
-            st.warning("⚠️ Mean có thể dễ bị ảnh hưởng bởi các giá trị ngoại lai (outliers), khiến kết quả không chính xác.")
-        elif method == "Thay thế bằng Median":
-            st.warning("⚠️ Median ít bị ảnh hưởng bởi các giá trị ngoại lai hơn so với Mean, vì nó lấy giá trị trung vị của tập dữ liệu.")
-
+        st.warning("⚠️ Mean có thể dễ bị ảnh hưởng bởi các giá trị ngoại lai (outliers), khiến kết quả không chính xác.")
+      
+    if df[selected_col].dtype == 'object' and method in ["Thay thế bằng Median"]:
+        st.warning("⚠️ Cột chứa dữ liệu dạng chuỗi. Giá trị sẽ được mã hóa số thứ tự trước khi xử lý.")
+        st.warning("⚠️ Median ít bị ảnh hưởng bởi các giá trị ngoại lai hơn so với Mean, vì nó lấy giá trị trung vị của tập dữ liệu.")
+        
+        
+        
     if st.button("🚀 Xử lý giá trị thiếu"):
         if df[selected_col].dtype == 'object':
             unique_values = df[selected_col].dropna().unique()
