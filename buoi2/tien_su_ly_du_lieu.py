@@ -136,32 +136,36 @@ def xu_ly_gia_tri_thieu(df):
         return df
 
     selected_col = st.selectbox("📌 Chọn cột chứa giá trị thiếu:", missing_cols)
-    col_dtype = df[selected_col].dtype
+    method = st.radio("🔧 Chọn phương pháp xử lý:", ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
+
+    if df[selected_col].dtype == 'object':
+        st.warning("⚠️ Cột chứa dữ liệu dạng chuỗi. Giá trị sẽ được mã hóa số thứ tự trước khi xử lý.")
+        if method in ["Thay thế bằng Mean", "Thay thế bằng Median"]:
+            st.warning("⚠️ Mean/Median sẽ thay thế giá trị thiếu bằng số thứ tự đã mã hóa.")
+
+    if st.button("🚀 Xử lý giá trị thiếu"):
+        if df[selected_col].dtype == 'object':
+            unique_values = df[selected_col].dropna().unique()
+            encoding_map = {val: idx for idx, val in enumerate(unique_values)}
+            df[selected_col] = df[selected_col].map(encoding_map)
+
+            if method == "Thay thế bằng Mean":
+                df[selected_col] = df[selected_col].fillna(df[selected_col].mean())
+            elif method == "Thay thế bằng Median":
+                df[selected_col] = df[selected_col].fillna(df[selected_col].median())
+            elif method == "Xóa giá trị thiếu":
+                df = df.dropna(subset=[selected_col])
+        else:
+            if method == "Thay thế bằng Mean":
+                df[selected_col] = df[selected_col].fillna(df[selected_col].mean())
+            elif method == "Thay thế bằng Median":
+                df[selected_col] = df[selected_col].fillna(df[selected_col].median())
+            elif method == "Xóa giá trị thiếu":
+                df = df.dropna(subset=[selected_col])
     
-    if col_dtype == 'object':  # Xử lý cột kiểu string
-        method = st.radio("🔧 Chọn phương pháp xử lý:", ["Mã hóa & Thay thế bằng Mean", "Xóa cột bị thiếu"])
-        
-        if method == "Mã hóa & Thay thế bằng Mean":
-            le = LabelEncoder()
-            df[selected_col] = le.fit_transform(df[selected_col].astype(str))
-            df[selected_col] = df[selected_col].fillna(df[selected_col].mean())
-            st.success(f"✅ Đã mã hóa và điền giá trị thiếu bằng Mean trong cột `{selected_col}`")
-        elif method == "Xóa cột bị thiếu":
-            df = df.drop(columns=[selected_col])
-            st.success(f"✅ Đã xóa cột `{selected_col}` chứa giá trị thiếu!")
-    else:  # Xử lý cột số
-        method = st.radio("🔧 Chọn phương pháp xử lý:", ["Thay thế bằng Mean", "Thay thế bằng Median", "Xóa giá trị thiếu"])
-
-        if method == "Thay thế bằng Mean":
-            df[selected_col] = df[selected_col].fillna(df[selected_col].mean())
-        elif method == "Thay thế bằng Median":
-            df[selected_col] = df[selected_col].fillna(df[selected_col].median())
-        elif method == "Xóa giá trị thiếu":
-            df = df.dropna(subset=[selected_col])
-
-        st.success(f"✅ Đã xử lý giá trị thiếu trong cột `{selected_col}`")
-
     st.session_state.df = df
+    st.success(f"✅ Đã xử lý giá trị thiếu trong cột `{selected_col}`")
+
     st.dataframe(df.head())
     return df
 
