@@ -140,8 +140,10 @@ def xu_ly_gia_tri_thieu(df):
 
     if df[selected_col].dtype == 'object':
         st.warning("⚠️ Cột chứa dữ liệu dạng chuỗi. Giá trị sẽ được mã hóa số thứ tự trước khi xử lý.")
-        if method in ["Thay thế bằng Mean", "Thay thế bằng Median"]:
-            st.warning("⚠️ Mean/Median sẽ thay thế giá trị thiếu bằng số thứ tự đã mã hóa.")
+        if method == "Thay thế bằng Mean":
+            st.warning("⚠️ Mean có thể dễ bị ảnh hưởng bởi các giá trị ngoại lai (outliers), khiến kết quả không chính xác.")
+        elif method == "Thay thế bằng Median":
+            st.warning("⚠️ Median ít bị ảnh hưởng bởi các giá trị ngoại lai hơn so với Mean, vì nó lấy giá trị trung vị của tập dữ liệu.")
 
     if st.button("🚀 Xử lý giá trị thiếu"):
         if df[selected_col].dtype == 'object':
