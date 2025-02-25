@@ -185,59 +185,63 @@ def xu_ly_gia_tri_thieu(df):
 
 
 
-import pandas as pd
-import streamlit as st
-
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
-    # Lấy danh sách cột dạng chuỗi
+    # Lấy các cột dạng chuỗi (categorical columns)
     categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
     
+    # Nếu không có cột dạng chuỗi, thông báo và trả lại DataFrame ban đầu
     if not categorical_cols:
         st.success("✅ Không có cột dạng chuỗi cần chuyển đổi!")
         return df
 
-    # Cho phép người dùng chọn nhiều cột
-    selected_cols = st.multiselect("📌 Chọn các cột để chuyển đổi:", categorical_cols)
-
-    if not selected_cols:
-        return df
-
-    # Dictionary lưu giá trị thay thế cho từng cột
-    all_mappings = {}
-
-    for col in selected_cols:
-        unique_values = df[col].unique()
-        mapping_dict = {}
-        used_numbers = set()  # Bộ số đã sử dụng trong cột
-
-        st.write(f"🔄 Nhập giá trị thay thế cho cột `{col}`:")
+    # Cho phép người dùng chọn cột cần chuyển đổi
+    selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
+    unique_values = df[selected_col].unique()
+    
+    # Tạo từ điển lưu trữ giá trị thay thế cho mỗi giá trị độc nhất
+    mapping_dict = {}
+    
+    # Nếu có ít hơn 5 giá trị độc nhất, yêu cầu người dùng nhập giá trị thay thế
+    if len(unique_values) < 5:
         for val in unique_values:
-            new_val = st.text_input(f"Nhập giá trị thay thế cho `{val}`:", key=f"{col}_{val}")
+            new_val = st.text_input(f"🔄 Nhập giá trị thay thế cho `{val}`:", key=f"{selected_col}_{val}")
+            st.write(new_val)
+            mapping_dict[val] = new_val
 
-            # Kiểm tra nếu new_val đã tồn tại trong danh sách số đã nhập
-            if new_val and new_val in used_numbers:
-                st.warning(f"⚠ Giá trị `{new_val}` đã được sử dụng trong cột `{col}`. Vui lòng chọn số khác!")
-            else:
-                mapping_dict[val] = new_val
-                used_numbers.add(new_val)  # Lưu lại số đã nhập
+        # Khi người dùng nhấn nút "Chuyển đổi dữ liệu"
+        if st.button("🚀 Chuyển đổi dữ liệu"):
+            # Kiểm tra xem session_state đã có mảng lưu các mapping_dict chưa
+            if "mapping_dicts" not in st.session_state:
+                st.session_state.mapping_dicts = []  # Tạo một mảng rỗng nếu chưa có
 
-        all_mappings[col] = mapping_dict
+            # Lưu thông tin cột (tên cột và mapping_dict) vào mảng
+            column_info = {
+                "column_name": selected_col,
+                "mapping_dict": mapping_dict
+            }
+            st.session_state.mapping_dicts.append(column_info)
 
-    if st.button("🚀 Chuyển đổi dữ liệu"):
-        for col, mapping_dict in all_mappings.items():
-            df[col] = df[col].map(lambda x: mapping_dict.get(x, x))
-            df[col] = pd.to_numeric(df[col], errors='coerce')  # Chuyển thành số
-        
-        st.session_state.df = df  # Lưu vào session_state
-        st.success("✅ Đã chuyển đổi dữ liệu thành công!")
+            # Chuyển đổi các giá trị trong cột
+            df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
+            df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')  # Chuyển thành số
+            
+            # Lưu lại DataFrame đã chuyển đổi trong session_state
+            st.session_state.df = df
+            st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
 
-    # Hiển thị DataFrame sau khi chuyển đổi
+    # Hiển thị DataFrame đã được chuyển đổi
     st.dataframe(df.head())
-
+    
+    # Hiển thị mảng các mapping_dict đã lưu trong session_state
+    # if "mapping_dicts" in st.session_state:
+    #     st.write("Danh sách các cột đã chuyển đổi:")
+    #     for col_info in st.session_state.mapping_dicts:
+    #         st.write(f"Cột: `{col_info['column_name']}`")
+    #         st.write(f"Mapping Dict: {col_info['mapping_dict']}")
+    
     return df
-
 
 
 
