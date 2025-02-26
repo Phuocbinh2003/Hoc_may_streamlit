@@ -169,8 +169,8 @@ def xu_ly_gia_tri_thieu(df):
             elif method == "Xóa giá trị thiếu":
                 df = df.dropna(subset=[selected_col])
     
-    st.session_state.df = df
-    st.success(f"✅ Đã xử lý giá trị thiếu trong cột `{selected_col}`")
+        st.session_state.df = df
+        st.success(f"✅ Đã xử lý giá trị thiếu trong cột `{selected_col}`")
 
     st.dataframe(df.head())
     return df
