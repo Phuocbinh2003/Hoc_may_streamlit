@@ -132,33 +132,34 @@ def ly_thuyet_K_means():
     st.title("🎯 Minh họa thuật toán K-Means từng bước")
 
     # Tham số điều chỉnh
-    num_samples = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10)
-    num_clusters = st.slider("Số cụm (K)", 2, 10, 3)
-    cluster_std = st.slider("Độ rời rạc của cụm", 0.5, 3.0, 1.0)
+    num_samples_kmeans = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_kmeans")
+    cluster_kmeans = st.slider("Số cụm", 2, 10, 3, key="clusters_kmeans")
+    spread_kmeans = st.slider("Độ rời rạc", 0.1, 2.0, 1.0, key="spread_kmeans")
+
 
     # Nút Reset để khởi động lại dữ liệu
     if st.button("🔄 Reset"):
-        st.session_state.X = generate_data(num_samples, num_clusters, cluster_std)
-        st.session_state.centroids = initialize_centroids(st.session_state.X, num_clusters)
+        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
+        st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
         st.session_state.iteration = 0  # Đếm số lần cập nhật
         st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
 
     # Kiểm tra nếu chưa có dữ liệu trong session_state
     if "X" not in st.session_state:
-        st.session_state.X = generate_data(num_samples, num_clusters, cluster_std)
+        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
 
     X = st.session_state.X  # Dữ liệu điểm
 
     # Khởi tạo hoặc cập nhật tâm cụm
     if "centroids" not in st.session_state:
-        st.session_state.centroids = initialize_centroids(X, num_clusters)
+        st.session_state.centroids = initialize_centroids(X, cluster_kmeans)
         st.session_state.iteration = 0
         st.session_state.labels = assign_clusters(X, st.session_state.centroids)
 
     # Nút cập nhật từng bước
     if st.button("🔄 Cập nhật vị trí tâm cụm"):
         st.session_state.labels = assign_clusters(X, st.session_state.centroids)
-        new_centroids = update_centroids(X, st.session_state.labels, num_clusters)
+        new_centroids = update_centroids(X, st.session_state.labels, cluster_kmeans)
         
         # Kiểm tra xem có thay đổi không, nếu không thì đã hội tụ
         if np.all(new_centroids == st.session_state.centroids):
@@ -173,7 +174,7 @@ def ly_thuyet_K_means():
     centroids = st.session_state.centroids
 
     # Vẽ điểm dữ liệu
-    for i in range(num_clusters):
+    for i in range(cluster_kmeans):
         ax.scatter(X[labels == i][:, 0], X[labels == i][:, 1], label=f"Cụm {i}", alpha=0.6, edgecolors="k")
 
     # Vẽ tâm cụm
