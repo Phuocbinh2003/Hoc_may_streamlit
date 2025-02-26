@@ -101,27 +101,33 @@ def ly_thuyet_K_means():
     - Nhạy cảm với giá trị outlier và cách chọn điểm ban đầu.  
     """)
 
-    # 🔹 Minh họa trực quan
-    st.markdown("### 📊 **Minh họa K-Means trên dữ liệu giả lập**")
-    n_samples = st.slider("Chọn số lượng điểm dữ liệu", 100, 1000, 300)
-    n_clusters = st.slider("Chọn số cụm (K)", 2, 10, 3)
+    st.title("🎯 Trực quan hóa K-Means Clustering")
 
-    # Tạo dữ liệu ngẫu nhiên
-    X, _ = make_blobs(n_samples=n_samples, centers=n_clusters, random_state=42)
+    # Tham số đầu vào
+    num_samples = st.slider("Số lượng điểm dữ liệu", 50, 500, 200, step=10)
+    num_clusters = st.slider("Số cụm (K)", 2, 10, 3)
+    cluster_std = st.slider("Độ rời rạc của cụm", 0.5, 3.0, 1.0)
 
-    # Áp dụng K-Means
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init="auto")
-    y_kmeans = kmeans.fit_predict(X)
+    # Sinh dữ liệu ngẫu nhiên
+    X, _ = make_blobs(n_samples=num_samples, centers=num_clusters, cluster_std=cluster_std, random_state=42)
+
+    # Khởi tạo mô hình K-Means
+    kmeans = KMeans(n_clusters=num_clusters, n_init=10, random_state=42)
+    kmeans.fit(X)
+
+    # Nút cập nhật vị trí tâm cụm
+    if st.button("🔄 Cập nhật vị trí tâm cụm"):
+        kmeans.fit(X)  # Chạy lại K-Means để cập nhật tâm cụm
 
     # Vẽ biểu đồ
-    fig, ax = plt.subplots()
-    ax.scatter(X[:, 0], X[:, 1], c=y_kmeans, cmap="viridis", alpha=0.6)
-    ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=200, c='red', marker='X', label="Centroids")
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.scatter(X[:, 0], X[:, 1], c=kmeans.labels_, cmap="viridis", alpha=0.6, edgecolors="k")
+    ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
+    ax.set_title("Minh họa K-Means Clustering")
     ax.legend()
-    ax.set_title(f"K-Means với {n_clusters} cụm")
 
+    # Hiển thị biểu đồ
     st.pyplot(fig)
-
 
 
 # Hàm vẽ biểu đồ
