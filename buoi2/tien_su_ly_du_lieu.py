@@ -84,8 +84,7 @@ def train_test_size():
 
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
-    run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")  # Tên run cho MLflow
-    st.session_state["run_name"] = run_name if run_name else "default_run"
+    
 
     if st.button("✅ Xác nhận Chia"):
         # st.write("⏳ Đang chia dữ liệu...")
@@ -111,7 +110,9 @@ def train_test_size():
         st.session_state.y_train = y_train
         st.session_state.y_test = y_test
         st.session_state.y = y
-
+        st.session_state.X_train_shape = X_train.shape[0]
+        st.session_state.X_val_shape = X_val.shape[0]
+        st.session_state.X_test_shape = X_test.shape[0]
         summary_df = pd.DataFrame({
             "Tập dữ liệu": ["Train", "Validation", "Test"],
             "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
@@ -119,24 +120,9 @@ def train_test_size():
         st.table(summary_df)
 
         # **Log dữ liệu vào MLflow**
-        mlflow_input()
+        
 
-        with mlflow.start_run(run_name=f"DataSplit_{run_name}"):
-            mlflow.log_param("dataset_shape", df.shape)
-            mlflow.log_param("target_column", y.name)
-            mlflow.log_param("test_size", test_size)
-            mlflow.log_param("validation_size", val_size)
-            mlflow.log_param("train_size", remaining_size - val_size)
-
-            # Lưu dataset tạm thời
-            dataset_path = "dataset.csv"
-            df.to_csv(dataset_path, index=False)
-
-            # Log dataset lên MLflow
-            mlflow.log_artifact(dataset_path)
-
-        st.success(f"✅ Dữ liệu đã được chia và log thành công vào MLflow **({run_name})**!")
-
+       
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
 
@@ -549,12 +535,28 @@ def chon_mo_hinh():
     
     
     # Lưu vào session_state để không bị mất khi cập nhật UI
+    run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")  # Tên run cho MLflow
+    st.session_state["run_name"] = run_name if run_name else "default_run"
     
     if st.button("Huấn luyện mô hình"):
         # 🎯 **Tích hợp MLflow**
         
 
-        with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}_{model_type}"):
+        with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}"):
+            df = st.session_state.df
+            mlflow.log_param("dataset_shape", df.shape)
+            mlflow.log_param("target_column", st.session_state.y.name)
+            mlflow.log_param("test_size", st.session_state.X_test_shape)
+            mlflow.log_param("validation_size", st.session_state.X_val_shape)
+            mlflow.log_param("train_size", st.session_state.X_train_shape)
+
+            # Lưu dataset tạm thời
+            dataset_path = "dataset.csv"
+            df.to_csv(dataset_path, index=False)
+
+            # Log dataset lên MLflow
+            mlflow.log_artifact(dataset_path)
+
 
             mlflow.log_param("model_type", model_type)
             mlflow.log_param("n_folds", n_folds)
