@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 
-# Tải dữ liệu MNIST từ OpenML
+# Tải dữ liệu MNIST từ OpenM
 def data():
     st.header("MNIST Dataset")
     st.write("""
