@@ -419,22 +419,20 @@ def du_doan():
         update_streamlit=True
     )
 
-    if st.button("Dự đoán cụm"):
-        img = preprocess_canvas_image(canvas_result)  # Xử lý ảnh thành dữ liệu đầu vào
+    if st.button("Dự đoán số"):
+        img = preprocess_canvas_image(canvas_result)
 
         if img is not None:
-            data = img.reshape(-1, 2)  # Chuyển đổi thành dạng dữ liệu 2D
+            # Hiển thị ảnh sau xử lý
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
-            labels = model.fit_predict(data)
+            # Dự đoán
+            prediction = model.predict(img)
+            predicted_label = np.argmax(prediction)
 
-            # Hiển thị kết quả
-            fig, ax = plt.subplots()
-            scatter = ax.scatter(data[:, 0], data[:, 1], c=labels, cmap="viridis")
-            ax.set_title(f"Kết quả phân cụm - {model_option}")
-            st.pyplot(fig)
-
+            st.subheader(f"🔢 Dự đoán: {predicted_label}")
         else:
-            st.error("⚠️ Hãy vẽ dữ liệu trước khi bấm Dự đoán!")
+            st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
 
 
 
