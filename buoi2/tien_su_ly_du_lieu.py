@@ -746,64 +746,73 @@ def show_experiment_selector():
     # Kết nối với DAGsHub MLflow Tracking
     
     # Lấy danh sách tất cả experiments
+    experiment_name = "Linear_replication"
+    
+    # Tìm experiment theo tên
     experiments = mlflow.search_experiments()
+    selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
 
-    if not experiments:
-        st.warning("⚠ Không tìm thấy experiment nào!")
+    if not selected_experiment:
+        st.error(f"❌ Experiment '{experiment_name}' không tồn tại!")
         return
 
-    # Chuyển danh sách experiments thành danh sách lựa chọn
-    experiment_names = [exp.name for exp in experiments]
-    selected_experiment_name = st.selectbox("🔍 Chọn một experiment:", experiment_names)
+    st.subheader(f"📌 Experiment: {experiment_name}")
+    st.write(f"**Experiment ID:** {selected_experiment.experiment_id}")
+    st.write(f"**Trạng thái:** {'Active' if selected_experiment.lifecycle_stage == 'active' else 'Deleted'}")
+    st.write(f"**Vị trí lưu trữ:** {selected_experiment.artifact_location}")
 
-    # Tìm experiment được chọn
-    selected_experiment = next(exp for exp in experiments if exp.name == selected_experiment_name)
+    # Lấy danh sách runs trong experiment
+    runs = mlflow.search_runs(experiment_ids=[selected_experiment.experiment_id])
 
-    if selected_experiment:
-        st.subheader(f"📌 Thông tin của Experiment: {selected_experiment.name}")
-        st.write(f"**Experiment ID:** {selected_experiment.experiment_id}")
-        st.write(f"**Tên:** {selected_experiment.name}")
-        st.write(f"**Trạng thái:** {'Active' if selected_experiment.lifecycle_stage == 'active' else 'Deleted'}")
-        st.write(f"**Vị trí lưu trữ:** {selected_experiment.artifact_location}")
+    if runs.empty:
+        st.warning("⚠ Không có runs nào trong experiment này.")
+        return
 
-        # Lấy danh sách runs trong experiment
-        runs = mlflow.search_runs(experiment_ids=[selected_experiment.experiment_id])
+    st.write("### 🏃‍♂️ Các Runs gần đây:")
 
-        if not runs.empty:
-            st.write("### 🏃‍♂️ Các Runs gần đây:")
-            runs_display = runs[["run_id", "start_time", "status"]].sort_values(by="start_time", ascending=False)
-            selected_run_id = st.selectbox("🔍 Chọn một run:", runs_display["run_id"].tolist())
+    # Lấy danh sách run_name từ params
+    run_info = []
+    for _, run in runs.iterrows():
+        run_id = run["run_id"]
+        run_params = mlflow.get_run(run_id).data.params
+        run_name = run_params.get("run_name", f"Run {run_id[:8]}")  # Nếu không có run_name thì lấy run_id
+        run_info.append((run_name, run_id))
 
-            # Hiển thị thông tin chi tiết của run được chọn
-            selected_run = runs[runs["run_id"] == selected_run_id]
+    # Tạo dictionary để map run_name -> run_id
+    run_name_to_id = dict(run_info)
+    run_names = list(run_name_to_id.keys())
 
-            if not selected_run.empty:
-                st.subheader(f"📌 Thông tin Run: {selected_run_id}")
-                st.write(f"**Trạng thái:** {selected_run['status'].values[0]}")
-                st.write(f"**Thời gian chạy:** {selected_run['start_time'].values[0]}")
+    # Chọn run theo run_name
+    selected_run_name = st.selectbox("🔍 Chọn một run:", run_names)
+    selected_run_id = run_name_to_id[selected_run_name]
 
-                # Hiển thị thông số đã log
-                params = mlflow.get_run(selected_run_id).data.params
-                metrics = mlflow.get_run(selected_run_id).data.metrics
+    # Hiển thị thông tin chi tiết của run được chọn
+    selected_run = mlflow.get_run(selected_run_id)
 
-                if params:
-                    st.write("### ⚙️ Parameters:")
-                    st.json(params)
+    if selected_run:
+        st.subheader(f"📌 Thông tin Run: {selected_run_name}")
+        st.write(f"**Run ID:** {selected_run_id}")
+        st.write(f"**Trạng thái:** {selected_run.info.status}")
+        st.write(f"**Thời gian chạy:** {selected_run.info.start_time}")
 
-                if metrics:
-                    st.write("### 📊 Metrics:")
-                    st.json(metrics)
+        # Hiển thị thông số đã log
+        params = selected_run.data.params
+        metrics = selected_run.data.metrics
 
-                # Kiểm tra và hiển thị dataset artifact
-                artifact_uri = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.csv"
-                st.write("### 📂 Dataset:")
-                st.write(f"📥 [Tải dataset]({artifact_uri})")
-            else:
-                st.warning("⚠ Không tìm thấy thông tin cho run này.")
-        else:
-            st.write("🔍 Không có runs nào trong experiment này.")
+        if params:
+            st.write("### ⚙️ Parameters:")
+            st.json(params)
+
+        if metrics:
+            st.write("### 📊 Metrics:")
+            st.json(metrics)
+
+        # Kiểm tra và hiển thị dataset artifact
+        dataset_path = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.csv"
+        st.write("### 📂 Dataset:")
+        st.write(f"📥 [Tải dataset]({dataset_path})")
     else:
-        st.warning("⚠ Experiment không tồn tại.")
+        st.warning("⚠ Không tìm thấy thông tin cho run này.")
 
 
           
