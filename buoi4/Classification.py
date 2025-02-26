@@ -133,12 +133,16 @@ def ly_thuyet_SVM():
     → Đo **khoảng cách vuông góc** từ một điểm đến siêu phẳng, khoảng cách càng lớn thì mô hình càng đáng tin cậy.  
 
     - **Hàm mất mát với soft margin (SVM không tuyến tính)**:  
-    $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n}$$ #\xi_i$$  
-    #→ Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( $$\xi_i$$ \)**.  
+    $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i$$  
+    → Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( $$\xi_i$$ \)**.  
 
     **Trong đó:**  
     - $$C$$ : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
     - $$\xi_i$$ : biến slack cho phép một số điểm bị phân loại sai.  
+    - $$\xi_i$$ = 0: khi điểm dữ liệu nằm ngoài hoặc trên lề, được phân loại đúng.
+    - 0< $$\xi_i$$<1 :  khi điểm dữ liệu nằm trong lề nhưng vẫn được phân loại đúng.
+    - $$\xi_i$$>1 : khi điểm dữ liệu bị phân loại sai.
+    → Biến slack giúp mô hình linh hoạt hơn bằng cách cho phép một số điểm vi phạm lề nhưng vẫn có tác động nhỏ đến hàm mục tiêu.
     """)
 
     st.write("""
