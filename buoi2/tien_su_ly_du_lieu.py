@@ -725,7 +725,7 @@ def show_experiment_selector():
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
-    # Lấy danh sách tất cả experiments
+    # Lấy danh sách tất cả experiment
     experiments = mlflow.search_experiments()
 
     if not experiments:
