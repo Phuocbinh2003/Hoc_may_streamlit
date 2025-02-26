@@ -86,6 +86,7 @@ def train_test_size():
 
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
     if st.button("✅ Xác nhận Chia"):
+        
         st.write(f"⏳ Đang chia dữ liệu...")  # Giúp debug xem có chạy vào đây không
         # Kiểm tra y có nhiều hơn 1 giá trị không trước khi stratify
         stratify_option = y if y.nunique() > 1 else None
@@ -502,6 +503,16 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     return w
 
+import mlflow
+import os
+import pandas as pd
+import streamlit as st
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
+from sklearn.metrics import mean_squared_error
+
+# Hàm chọn mô hình
 def chon_mo_hinh():
     st.subheader("🔍 Chọn mô hình hồi quy")
     
@@ -512,7 +523,6 @@ def chon_mo_hinh():
     learning_rate = st.slider("Chọn tốc độ học (learning rate):", 
                           min_value=1e-6, max_value=0.1, value=0.01, step=1e-6, format="%.6f")
 
-    
     degree = 2
     if model_type == "polynomial":
         degree = st.slider("Chọn bậc đa thức:", min_value=2, max_value=5, value=2)
@@ -527,10 +537,13 @@ def chon_mo_hinh():
 
     X_train, X_test = st.session_state.X_train, st.session_state.X_test
     y_train, y_test = st.session_state.y_train, st.session_state.y_test
+    
+    run_name = st.text_input("Nhập tên Run:", "default_run")
+    
+    # Lưu vào session_state để không bị mất khi cập nhật UI
+    st.session_state["run_name"] = run_name if run_name else "default_run"
 
     if st.button("Huấn luyện mô hình"):
-        st.write("⏳ Đang huấn luyện mô hình...")  
-
         # 🎯 **Tích hợp MLflow**
         DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
         mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
@@ -540,7 +553,8 @@ def chon_mo_hinh():
 
         mlflow.set_experiment("Linear_replication")
 
-        with mlflow.start_run():
+        with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}_{model_type}"):
+
             mlflow.log_param("model_type", model_type)
             mlflow.log_param("n_folds", n_folds)
             mlflow.log_param("learning_rate", learning_rate)
@@ -567,6 +581,7 @@ def chon_mo_hinh():
 
                 mse = mean_squared_error(y_valid, y_valid_pred)
                 fold_mse.append(mse)
+                mlflow.log_metric(f"mse_fold_{fold+1}", mse)
                 print(f"📌 Fold {fold + 1} - MSE: {mse:.4f}")
 
             avg_mse = np.mean(fold_mse)
@@ -574,7 +589,7 @@ def chon_mo_hinh():
             if model_type == "linear":
                 final_w = train_multiple_linear_regression(X_train, y_train, learning_rate=learning_rate)
                 st.session_state['linear_model'] = final_w
-                X_test_b = np.c_[np.ones((len(X_test), 1)), X_test]
+                X_test_b = np.c_[np.ones((len(X_test), 1)), X_test.to_numpy()]
                 y_test_pred = X_test_b.dot(final_w)
             else:
                 X_train_scaled = scaler.fit_transform(X_train)
@@ -590,14 +605,19 @@ def chon_mo_hinh():
             # 📌 **Log các giá trị vào MLflow**
             mlflow.log_metric("avg_mse", avg_mse)
             mlflow.log_metric("test_mse", test_mse)
+
+            # Kết thúc run
+            mlflow.end_run()
             
             st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
             st.success(f"MSE trên tập test: {test_mse:.4f}")
-            st.success("✅ Đã log dữ liệu vào MLflow DAGsHub!")
+            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}_{model_type}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({DAGSHUB_MLFLOW_URI})")
+
         return final_w, avg_mse, scaler
 
     return None, None, None
+
 
 
 import numpy as np
