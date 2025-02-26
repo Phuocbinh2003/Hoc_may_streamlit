@@ -199,9 +199,6 @@ import streamlit as st
 
 
 
-import pandas as pd
-import streamlit as st
-
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
@@ -643,6 +640,9 @@ def test():
     # Kiểm tra nếu có dữ liệu mapping_dicts trong session_state
     if "mapping_dicts" not in st.session_state:
         st.session_state.mapping_dicts = []
+    
+    
+    
 
     # Duyệt qua các cột và kiểm tra nếu có thông tin chuyển đổi
     for i, column_name in enumerate(column_names):
@@ -651,9 +651,13 @@ def test():
         for column_info in st.session_state.mapping_dicts:
             if column_info["column_name"] == column_name:
                 mapping_dict = column_info["mapping_dict"]
+                st.write(f"🔍 Kiểm tra mapping_dict của {column_name}: {mapping_dict}")
+
                 break
 
         if mapping_dict:  # Nếu có mapping_dict, hiển thị dropdown với các giá trị thay thế
+            
+            
             value = st.selectbox(f"Giá trị cột {column_name}", options=list(mapping_dict.keys()), key=f"column_{i}")
             
             value = int(mapping_dict[value])
