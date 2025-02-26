@@ -443,6 +443,7 @@ def du_doan():
         if img is not None:
             # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
+            pca = PCA(n_components=2)
             img_reduced = pca.transform(img)  
             # Dự đoán với K-Means hoặc DBSCAN
             if isinstance(model, KMeans):
