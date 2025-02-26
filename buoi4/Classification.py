@@ -399,17 +399,8 @@ def train():
 
       
 
-def display_st_canvas():
-    canvas_result = st_canvas(
-        fill_color="black",
-        stroke_width=10,
-        stroke_color="white",
-        background_color="black",
-        height=150,
-        width=150,
-        drawing_mode="freedraw",
-        key=f"canvas_{np.random.randint(1000)}"  # Key thay đổi để tránh cache
-    )
+
+ 
 
         
 
@@ -463,8 +454,16 @@ def du_doan():
 
     # ✍️ Vẽ số
 
-    display_st_canvas() 
-      
+    canvas_result = st_canvas(
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key=f"canvas_{np.random.randint(1000)}"  # Key thay đổi để tránh cache
+    )
       
         
 
