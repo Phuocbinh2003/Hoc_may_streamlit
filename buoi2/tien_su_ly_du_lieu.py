@@ -199,6 +199,9 @@ import streamlit as st
 
 
 
+import pandas as pd
+import streamlit as st
+
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
@@ -214,6 +217,9 @@ def chuyen_doi_kieu_du_lieu(df):
     # Khởi tạo session_state nếu chưa có
     if "text_inputs" not in st.session_state:
         st.session_state.text_inputs = {}
+
+    if "mapping_dicts" not in st.session_state:
+        st.session_state.mapping_dicts = []
 
     mapping_dict = {}
     input_values = []  # Danh sách để kiểm tra trùng lặp
@@ -233,28 +239,29 @@ def chuyen_doi_kieu_du_lieu(df):
             st.session_state.text_inputs[key] = new_val
             input_values.append(new_val)
 
+            # Lưu vào mapping_dict nếu không trùng lặp
+            mapping_dict[val] = new_val
+
         # Kiểm tra nếu có giá trị trùng nhau
         duplicate_values = [val for val in input_values if input_values.count(val) > 1 and val != ""]
         if duplicate_values:
             has_duplicate = True
             st.warning(f"⚠ Giá trị `{', '.join(set(duplicate_values))}` đã được sử dụng nhiều lần. Vui lòng chọn số khác!")
 
-        # Lưu mapping_dict nếu không có trùng lặp
-
         # Nút button bị mờ nếu có giá trị trùng lặp
-        btn_disabled = has_duplicate or len(mapping_dict) != len(unique_values)
+        btn_disabled = has_duplicate
 
         if st.button("🚀 Chuyển đổi dữ liệu", disabled=btn_disabled):
+            # Lưu vào session_state
             column_info = {
                 "column_name": selected_col,
                 "mapping_dict": mapping_dict
             }
             st.session_state.mapping_dicts.append(column_info)
-            
+
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
             df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
-            
-            
+
             # Reset text_inputs sau khi hoàn thành
             st.session_state.text_inputs.clear()
 
