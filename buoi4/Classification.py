@@ -449,12 +449,11 @@ def du_doan():
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
-        st.session_state.key_value = random.randint(0, 1000000)
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
 
     if st.button("🔄 Tải lại"):
-        st.session_state.key_value = random.randint(0, 1000000)
-        st.rerun()
-
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+        st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
 
     # ✍️ Vẽ số
     canvas_result = st_canvas(
@@ -465,7 +464,7 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key=st.session_state.key_value,  # KEY sẽ thay đổi khi bấm "Tải lại"
+        key=st.session_state.key_value,  # Đảm bảo key là string
         update_streamlit=True
     )
 
@@ -481,7 +480,6 @@ def du_doan():
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
-            
             
             
             
