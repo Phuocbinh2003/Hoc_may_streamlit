@@ -532,7 +532,7 @@ def chon_mo_hinh():
     X_train, X_test = st.session_state.X_train, st.session_state.X_test
     y_train, y_test = st.session_state.y_train, st.session_state.y_test
     
-    
+    mlflow_input()
     
     # Lưu vào session_state để không bị mất khi cập nhật UI
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")  # Tên run cho MLflow
@@ -744,12 +744,7 @@ def show_experiment_selector():
     st.title("📊 MLflow Experiments - DAGsHub")
 
     # Kết nối với DAGsHub MLflow Tracking
-    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-
-    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-
+    
     # Lấy danh sách tất cả experiments
     experiments = mlflow.search_experiments()
 
