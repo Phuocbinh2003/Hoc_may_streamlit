@@ -447,7 +447,7 @@ def ClusteringAlgorithms():
     
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
     
-    # 1️⃣ Phần giới thiệu
+    # 1️⃣ Phần giới thiệ
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
