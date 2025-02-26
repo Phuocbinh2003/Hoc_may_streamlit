@@ -420,7 +420,7 @@ def preprocess_canvas_image(canvas_result):
         return img.reshape(1, -1)  # Chuyển thành vector 1D
     return None
 
-
+import random
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
@@ -449,7 +449,9 @@ def du_doan():
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
 
-
+    if "key_value" not in st.session_state:
+        st.session_state.key_value = random.randint(0, 1000000)
+        
     
 
     # ✍️ Vẽ số
@@ -462,12 +464,13 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key="persistent_canvas",  # KEY CỐ ĐỊNH
+        key=st.session_state.key_value,  # KEY CỐ ĐỊNH
         update_streamlit=True     # BUỘC CẬP NHẬT TRẠNG THÁI
         )
       
         
-
+    if st.button("🔄 Tải lại"):
+        st.session_state.key_value = random.randint(0, 1000000)
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
 
