@@ -151,13 +151,20 @@ def xu_ly_gia_tri_thieu(df):
         
     if st.button("🚀 Xử lý giá trị thiếu"):
         if df[selected_col].dtype == 'object':
-            unique_values = df[selected_col].dropna().unique()
-            encoding_map = {val: idx for idx, val in enumerate(unique_values)}
-            df[selected_col] = df[selected_col].map(encoding_map)
+            
 
             if method == "Thay thế bằng Mean":
+                unique_values = df[selected_col].dropna().unique()
+                encoding_map = {val: idx for idx, val in enumerate(unique_values)}
+                df[selected_col] = df[selected_col].map(encoding_map)
+                
                 df[selected_col] = df[selected_col].fillna(df[selected_col].mean())
             elif method == "Thay thế bằng Median":
+                
+                unique_values = df[selected_col].dropna().unique()
+                encoding_map = {val: idx for idx, val in enumerate(unique_values)}
+                df[selected_col] = df[selected_col].map(encoding_map)
+            
                 df[selected_col] = df[selected_col].fillna(df[selected_col].median())
             elif method == "Xóa giá trị thiếu":
                 df = df.dropna(subset=[selected_col])
