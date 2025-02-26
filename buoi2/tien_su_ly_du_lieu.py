@@ -792,6 +792,7 @@ def show_experiment_selector():
     if selected_run:
         st.subheader(f"📌 Thông tin Run: {selected_run_name}")
         st.write(f"**Run ID:** {selected_run_id}")
+        st.write(f"**Trạng thái:** {selected_run.info.status}")
         start_time_ms = selected_run.info.start_time  # Thời gian lưu dưới dạng milliseconds
 
 # Chuyển sang định dạng ngày giờ dễ đọc
@@ -801,7 +802,6 @@ def show_experiment_selector():
             start_time = "Không có thông tin"
 
         st.write(f"**Thời gian chạy:** {start_time}")
-        st.write(f"**Thời gian chạy:** {selected_run.info.start_time}")
 
         # Hiển thị thông số đã log
         params = selected_run.data.params
