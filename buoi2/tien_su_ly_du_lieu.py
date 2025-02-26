@@ -186,14 +186,6 @@ def xu_ly_gia_tri_thieu(df):
 
 
 
-
-
-
-
-
-
-
-
 import pandas as pd
 import streamlit as st
 
@@ -640,7 +632,7 @@ def test():
     # Kiểm tra nếu có dữ liệu mapping_dicts trong session_state
     if "mapping_dicts" not in st.session_state:
         st.session_state.mapping_dicts = []
-        st.write(f"🔍 KO CÓ mapping_dict ")
+       
     
     
     
@@ -652,7 +644,7 @@ def test():
         for column_info in st.session_state.mapping_dicts:
             if column_info["column_name"] == column_name:
                 mapping_dict = column_info["mapping_dict"]
-                st.write(f"🔍 Kiểm tra mapping_dict của {column_name}: {mapping_dict}")
+                # st.write(f"🔍 Kiểm tra mapping_dict của {column_name}: {mapping_dict}")
 
                 break
 
@@ -715,6 +707,40 @@ def data():
             hien_thi_ly_thuyet(df)
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
+            
+def show_experiment_details():
+    st.title("📊 MLflow Experiments - Linear_replication")
+
+    # Kết nối với DAGsHub MLflow Tracking
+    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+
+    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+
+    # Lấy danh sách tất cả experiments
+    experiments = mlflow.search_experiments()
+
+    # Tìm experiment có tên "Linear_replication"
+    experiment = next((exp for exp in experiments if exp.name == "Linear_replication"), None)
+
+    if experiment:
+        st.write(f"**Experiment ID:** {experiment.experiment_id}")
+        st.write(f"**Tên:** {experiment.name}")
+        st.write(f"**Trạng thái:** {'Active' if experiment.lifecycle_stage == 'active' else 'Deleted'}")
+        st.write(f"**Vị trí lưu trữ:** {experiment.artifact_location}")
+
+        # Lấy danh sách runs trong experiment
+        runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id])
+        if not runs.empty:
+            st.write("### 🏃‍♂️ Các Runs gần đây:")
+            st.dataframe(runs[["run_id", "start_time", "status", "metrics.accuracy"]].sort_values(by="start_time", ascending=False))
+        else:
+            st.write("🔍 Không có runs nào trong experiment này.")
+    else:
+        st.warning("⚠ Experiment 'Linear_replication' không tồn tại.")
+
+          
 def chon():
     try:
                 
@@ -723,7 +749,7 @@ def chon():
         st.error(f"Lỗi xảy ra: {e}")
 def main():
     # mlflow_input()
-    tab1, tab2, tab3 = st.tabs(["📘 Tiền xử lý dữ liệu","⚙️ Huấn luyện", "🔢 Dự đoán"])
+    tab1, tab2, tab3 ,tab4= st.tabs(["📘 Tiền xử lý dữ liệu","⚙️ Huấn luyện", "🔢 Dự đoán"," Mlflow"])
     with tab1:
         data()
     with tab2:
@@ -731,7 +757,8 @@ def main():
         chon()
     with tab3:
         test()
-    
+    with tab4:
+        show_experiment_details()
     
             
             
