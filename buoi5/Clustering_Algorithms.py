@@ -138,7 +138,7 @@ def ly_thuyet_K_means():
 
 
     # Nút Reset để khởi động lại dữ liệu
-    if st.button("🔄 Reset"):
+    if st.button("🔄 Reset", key="reset_kmeans"):
         st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
         st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
         st.session_state.iteration = 0  # Đếm số lần cập nhật
@@ -222,7 +222,7 @@ def ly_thuyet_DBSCAN():
     min_samples_dbscan = st.slider("Số điểm tối thiểu để tạo cụm", 2, 20, 5, key="min_samples_dbscan")
 
     # Nút Reset để tạo lại dữ liệu
-    if st.button("🔄 Reset"):
+    if st.button("🔄 Reset", key="reset_dbscan"):
         st.session_state.X = generate_data(num_samples_dbscan, noise_dbscan, dataset_type)
         st.session_state.labels = np.full(num_samples_dbscan, -1)  # Chưa có cụm nào
 
