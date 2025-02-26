@@ -346,9 +346,10 @@ def train():
 
     if st.button("Huấn luyện mô hình"):
         with mlflow.start_run():
+            n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
             # 🏆 **Huấn luyện với Cross Validation**
             st.write("⏳ Đang chạy Cross-Validation...")
-            cv_scores = cross_val_score(model, X_train, y_train, cv=5)
+            cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
             mean_cv_score = cv_scores.mean()
             std_cv_score = cv_scores.std()
             
