@@ -23,7 +23,7 @@ def mlflow_input():
     
     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
     mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-
+    st.session_state['mlflow_url']=DAGSHUB_MLFLOW_URI
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
@@ -85,9 +85,10 @@ def train_test_size():
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")  # Tên run cho MLflow
+    st.session_state["run_name"] = run_name if run_name else "default_run"
 
     if st.button("✅ Xác nhận Chia"):
-        st.write("⏳ Đang chia dữ liệu...")
+        # st.write("⏳ Đang chia dữ liệu...")
 
         stratify_option = y if y.nunique() > 1 else None
         X_train_full, X_test, y_train_full, y_test = train_test_split(
@@ -100,9 +101,9 @@ def train_test_size():
             stratify=stratify_option, random_state=42
         )
 
-        st.write(f"📊 Kích thước tập Train: {X_train.shape[0]} mẫu")
-        st.write(f"📊 Kích thước tập Validation: {X_val.shape[0]} mẫu")
-        st.write(f"📊 Kích thước tập Test: {X_test.shape[0]} mẫu")
+        # st.write(f"📊 Kích thước tập Train: {X_train.shape[0]} mẫu")
+        # st.write(f"📊 Kích thước tập Validation: {X_val.shape[0]} mẫu")
+        # st.write(f"📊 Kích thước tập Test: {X_test.shape[0]} mẫu")
 
         # Lưu vào session_state
         st.session_state.X_train = X_train
@@ -118,13 +119,7 @@ def train_test_size():
         st.table(summary_df)
 
         # **Log dữ liệu vào MLflow**
-        DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-        mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-        
-        os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-        os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-        
-        mlflow.set_experiment("Data_Splitting")
+        mlflow_input()
 
         with mlflow.start_run(run_name=f"DataSplit_{run_name}"):
             mlflow.log_param("dataset_shape", df.shape)
@@ -551,20 +546,13 @@ def chon_mo_hinh():
     X_train, X_test = st.session_state.X_train, st.session_state.X_test
     y_train, y_test = st.session_state.y_train, st.session_state.y_test
     
-    run_name = st.text_input("Nhập tên Run:", "default_run")
+    
     
     # Lưu vào session_state để không bị mất khi cập nhật UI
-    st.session_state["run_name"] = run_name if run_name else "default_run"
-
+    
     if st.button("Huấn luyện mô hình"):
         # 🎯 **Tích hợp MLflow**
-        DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-        mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-
-        os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-        os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-
-        mlflow.set_experiment("Linear_replication")
+        
 
         with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}_{model_type}"):
 
@@ -625,7 +613,7 @@ def chon_mo_hinh():
             st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
             st.success(f"MSE trên tập test: {test_mse:.4f}")
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}_{model_type}**!")
-            st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({DAGSHUB_MLFLOW_URI})")
+            st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
 
         return final_w, avg_mse, scaler
 
