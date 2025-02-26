@@ -462,7 +462,7 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key=f"canvas"  # Key thay đổi để tránh cache
+        key="canvas"  # Key thay đổi để tránh cache
     )
       
         
