@@ -7,6 +7,12 @@ from sklearn.cluster import KMeans, DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+
 # Tải dữ liệu MNIST từ OpenML
 def data():
     st.header("MNIST Dataset")
@@ -58,6 +64,63 @@ def data():
       
       
     """)
+
+def ly_thuyet_K_means():
+    
+    st.title("📌 K-Means Clustering")
+
+    # 🔹 Giới thiệu về K-Means
+    st.markdown("""
+    **K-Means Clustering** là thuật toán phân cụm **không giám sát**, giúp chia dữ liệu thành **K cụm** sao cho các điểm trong cùng một cụm có đặc trưng giống nhau nhất.  
+    - 📌 **Ý tưởng chính**:  
+        1. Chọn ngẫu nhiên **K tâm cụm (centroids)**.  
+        2. Gán mỗi điểm dữ liệu vào cụm có tâm gần nhất.  
+        3. Cập nhật lại tâm cụm bằng cách lấy trung bình các điểm trong cụm.  
+        4. Lặp lại quá trình trên cho đến khi các tâm cụm không thay đổi hoặc số vòng lặp đạt giới hạn.  
+    """)
+
+    # 🔹 Công thức khoảng cách Euclidean
+    st.latex(r"""
+    d(p, q) = \sqrt{\sum_{i=1}^{n} (p_i - q_i)^2}
+    """)
+    st.markdown("""
+    Trong đó:
+    - \( p, q \) là hai điểm trong không gian \( n \) chiều.
+    - \( d(p, q) \) là khoảng cách giữa hai điểm.
+    """)
+
+    # 🔹 Ưu điểm và Nhược điểm
+    st.markdown("### ✅ **Ưu điểm & ❌ Nhược điểm**")
+    st.markdown("""
+    ✅ **Ưu điểm:**  
+    - Đơn giản, dễ hiểu và hiệu quả trên tập dữ liệu lớn.  
+    - Chạy nhanh vì thuật toán có độ phức tạp thấp.  
+
+    ❌ **Nhược điểm:**  
+    - Cần xác định số cụm \( K \) trước.  
+    - Nhạy cảm với giá trị outlier và cách chọn điểm ban đầu.  
+    """)
+
+    # 🔹 Minh họa trực quan
+    st.markdown("### 📊 **Minh họa K-Means trên dữ liệu giả lập**")
+    n_samples = st.slider("Chọn số lượng điểm dữ liệu", 100, 1000, 300)
+    n_clusters = st.slider("Chọn số cụm (K)", 2, 10, 3)
+
+    # Tạo dữ liệu ngẫu nhiên
+    X, _ = make_blobs(n_samples=n_samples, centers=n_clusters, random_state=42)
+
+    # Áp dụng K-Means
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init="auto")
+    y_kmeans = kmeans.fit_predict(X)
+
+    # Vẽ biểu đồ
+    fig, ax = plt.subplots()
+    ax.scatter(X[:, 0], X[:, 1], c=y_kmeans, cmap="viridis", alpha=0.6)
+    ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=200, c='red', marker='X', label="Centroids")
+    ax.legend()
+    ax.set_title(f"K-Means với {n_clusters} cụm")
+
+    st.pyplot(fig)
 
 
 
@@ -182,10 +245,10 @@ def ClusteringAlgorithms():
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
-    tab1, tab2, tab3, tab4,tab5 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán"])
+    tab1, tab2, tab3, tab4,tab5 = st.tabs(["📘 Lý thuyết K-means", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán"])
 
     with tab1:
-        pass
+        ly_thuyet_K_means()
 
     with tab2:
         pass
