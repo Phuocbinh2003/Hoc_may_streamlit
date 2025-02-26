@@ -455,14 +455,15 @@ def du_doan():
     # ✍️ Vẽ số
 
         canvas_result = st_canvas(
-            fill_color="black",
-            stroke_width=10,
-            stroke_color="white",
-            background_color="black",
-            height=150,
-            width=150,
-            drawing_mode="freedraw",
-            key=f"canvas"  # Key thay đổi để tránh cache
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="persistent_canvas",  # KEY CỐ ĐỊNH
+        update_streamlit=True     # BUỘC CẬP NHẬT TRẠNG THÁI
         )
       
         
