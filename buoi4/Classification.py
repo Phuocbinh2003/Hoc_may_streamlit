@@ -399,8 +399,22 @@ def train():
 
       
 
-  
-        
+def display_st_canvas():
+    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    st.write("....")  # Khoảng trống phía trê
+    canvas_result = st_canvas(
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="canvas",
+        update_streamlit=True  # Cập nhật giao diện
+    )
+
+    st.write("....")  # Khoảng trống phía dướ
         
 
 def load_model(path):
@@ -452,22 +466,8 @@ def du_doan():
 
 
     # ✍️ Vẽ số
-    st.subheader("🖌️ Vẽ số vào khung dưới đây:")
-    st.write("....")  # Khoảng trống phía trê
-    canvas_result = st_canvas(
-        fill_color="black",
-        stroke_width=10,
-        stroke_color="white",
-        background_color="black",
-        height=150,
-        width=150,
-        drawing_mode="freedraw",
-        key="canvas",
-        update_streamlit=True  # Cập nhật giao diện
-    )
 
-    st.write("....")  # Khoảng trống phía dướ
-      
+    display_st_canvas() 
       
       
         
