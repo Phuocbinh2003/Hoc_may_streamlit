@@ -303,14 +303,31 @@ from sklearn.decomposition import PCA
 # 🚀 **Load dữ liệu MNIST**
 
 
+import streamlit as st
+import numpy as np
+from tensorflow.keras.datasets import mnist
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.decomposition import PCA
+from scipy.stats import mode
+
+# 🚀 **Tải dữ liệu MNIST vào session_state nếu chưa có**
+if "X_train" not in st.session_state:
+    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    st.session_state["X_train"] = X_train
+    st.session_state["y_train"] = y_train
+    st.session_state["X_test"] = X_test
+    st.session_state["y_test"] = y_test
+else:
+    X_train = st.session_state["X_train"]
+    y_train = st.session_state["y_train"]
+    X_test = st.session_state["X_test"]
+    y_test = st.session_state["y_test"]
+
 def train():
     # 📥 **Tải dữ liệu MNIST từ session_state**
     if "X_train" in st.session_state:
         X_train = st.session_state["X_train"]
         y_train = st.session_state["y_train"]
-        
-        X_test=st.session_state["X_test"]
-        y_test=st.session_state["y_test"]
 
     # 🌟 **Chuẩn hóa dữ liệu**
     X_train = X_train.reshape(-1, 28 * 28) / 255.0
@@ -345,8 +362,26 @@ def train():
 
     if st.button("🚀 Huấn luyện mô hình"):
         model.fit(X_train_pca)
-
         st.success("✅ Huấn luyện thành công!")
+
+        # 📊 **Tính độ chính xác nếu là K-Means**
+        if model_choice == "K-Means":
+            labels = model.labels_
+            
+            # 🔄 Ánh xạ nhãn cụm với nhãn thực tế
+            label_mapping = {}
+            for i in range(n_clusters):
+                mask = labels == i
+                if np.sum(mask) > 0:
+                    most_common_label = mode(y_train[mask])[0][0]
+                    label_mapping[i] = most_common_label
+
+            # 🎯 Chuyển nhãn cụm thành nhãn thực
+            predicted_labels = np.array([label_mapping[label] for label in labels])
+
+            # ✅ Tính độ chính xác
+            accuracy = np.mean(predicted_labels == y_train)
+            st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
 
         # 🔍 Lưu mô hình vào session_state
         if "models" not in st.session_state:
@@ -365,6 +400,8 @@ def train():
 
         st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
         st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+
+
 
 
 import streamlit as st
