@@ -708,17 +708,9 @@ def data():
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
             
-
-
 import streamlit as st
 import mlflow
 import os
-import pandas as pd
-
-import streamlit as st
-import mlflow
-import os
-import pandas as pd
 
 def show_experiment_selector():
     st.title("📊 MLflow Experiments - DAGsHub")
@@ -737,7 +729,7 @@ def show_experiment_selector():
         st.warning("⚠ Không tìm thấy experiment nào!")
         return
 
-    # Chuyển danh sách experiments thành lựa chọn
+    # Chuyển danh sách experiments thành danh sách lựa chọn
     experiment_names = [exp.name for exp in experiments]
     selected_experiment_name = st.selectbox("🔍 Chọn một experiment:", experiment_names)
 
@@ -745,39 +737,22 @@ def show_experiment_selector():
     selected_experiment = next(exp for exp in experiments if exp.name == selected_experiment_name)
 
     if selected_experiment:
-        st.subheader(f"📌 Experiment: {selected_experiment.name}")
+        st.subheader(f"📌 Thông tin của Experiment: {selected_experiment.name}")
+        st.write(f"**Experiment ID:** {selected_experiment.experiment_id}")
+        st.write(f"**Tên:** {selected_experiment.name}")
+        st.write(f"**Trạng thái:** {'Active' if selected_experiment.lifecycle_stage == 'active' else 'Deleted'}")
+        st.write(f"**Vị trí lưu trữ:** {selected_experiment.artifact_location}")
 
         # Lấy danh sách runs trong experiment
         runs = mlflow.search_runs(experiment_ids=[selected_experiment.experiment_id])
 
         if not runs.empty:
-            # Chọn run gần đây
-            recent_runs = runs.sort_values(by="start_time", ascending=False).head(10)
-            run_options = recent_runs["run_id"].tolist()
-            selected_run = st.selectbox("🏃‍♂️ Chọn một Run:", run_options)
-
-            # Tải dataset từ artifact
-            local_dataset_path = None
-            try:
-                local_dataset_path = mlflow.artifacts.download_artifacts(
-                    run_id=selected_run,
-                    artifact_path="dataset.csv"
-                )
-                dataset = pd.read_csv(local_dataset_path)
-
-                st.write("### 📊 Dataset đã lưu:")
-                st.dataframe(dataset)
-            except Exception as e:
-                st.error(f"⚠ Không thể tải dataset. Lỗi: {e}")
+            st.write("### 🏃‍♂️ Các Runs gần đây:")
+            st.dataframe(runs[["run_id", "start_time", "status", "metrics.accuracy"]].sort_values(by="start_time", ascending=False))
         else:
             st.write("🔍 Không có runs nào trong experiment này.")
     else:
         st.warning("⚠ Experiment không tồn tại.")
-
-if __name__ == "__main__":
-    show_experiment_selector()
-
-
 
 
           
