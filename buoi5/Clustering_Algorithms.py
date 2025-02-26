@@ -136,7 +136,14 @@ def ly_thuyet_K_means():
     num_clusters = st.slider("Số cụm (K)", 2, 10, 3)
     cluster_std = st.slider("Độ rời rạc của cụm", 0.5, 3.0, 1.0)
 
-    # Tạo dữ liệu
+    # Nút Reset để khởi động lại dữ liệu
+    if st.button("🔄 Reset"):
+        st.session_state.X = generate_data(num_samples, num_clusters, cluster_std)
+        st.session_state.centroids = initialize_centroids(st.session_state.X, num_clusters)
+        st.session_state.iteration = 0  # Đếm số lần cập nhật
+        st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
+
+    # Kiểm tra nếu chưa có dữ liệu trong session_state
     if "X" not in st.session_state:
         st.session_state.X = generate_data(num_samples, num_clusters, cluster_std)
 
@@ -145,7 +152,7 @@ def ly_thuyet_K_means():
     # Khởi tạo hoặc cập nhật tâm cụm
     if "centroids" not in st.session_state:
         st.session_state.centroids = initialize_centroids(X, num_clusters)
-        st.session_state.iteration = 0  # Đếm số lần cập nhật
+        st.session_state.iteration = 0
         st.session_state.labels = assign_clusters(X, st.session_state.centroids)
 
     # Nút cập nhật từng bước
