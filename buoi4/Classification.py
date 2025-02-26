@@ -421,27 +421,10 @@ def preprocess_canvas_image(canvas_result):
 
 
 # ✅ Chạy dự đoán
-import streamlit as st
-import numpy as np
-import joblib
-from streamlit_drawable_canvas import st_canvas
-from PIL import Image
-import cv2
-
-def load_model(path):
-    return joblib.load(path)
-
-def preprocess_canvas_image(canvas_result):
-    if canvas_result.image_data is not None:
-        img = cv2.cvtColor(canvas_result.image_data, cv2.COLOR_RGBA2GRAY)  # Chuyển về ảnh grayscale
-        img = cv2.resize(img, (28, 28))  # Resize về 28x28 như dữ liệu MNIST
-        img = img / 255.0  # Chuẩn hóa về [0,1]
-        return img.reshape(1, -1)  # Chuyển về dạng phù hợp cho model
-    return None
-
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-
+    
+    
     # 🔹 Danh sách mô hình có sẵn
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
@@ -449,28 +432,28 @@ def du_doan():
         "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
-
+    
+    # Lấy tên mô hình từ session_state
+    model_names = [model["name"] for model in st.session_state.get("models", [])]
+    
     # 📌 Chọn mô hình
-    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()))
+    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()) + model_names)
 
-    # Load mô hình
-    model = load_model(models[model_option])
-    st.success(f"✅ Đã tải mô hình: {model_option}")
+    # Nếu chọn mô hình đã được huấn luyện và lưu trong session_state
+    if model_option in model_names:
+        model = next(model for model in st.session_state["models"] if model["name"] == model_option)["model"]
+    else:
+        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file)
+        model = load_model(models[model_option])
+        st.success(f"✅ Đã tải mô hình: {model_option}")
 
-    # 🖌️ Thêm HTML để cố định kích thước canvas
-    st.markdown("""
-        <style>
-        .stCanvas { 
-            border: 2px solid white; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+
+
+
 
     # ✍️ Vẽ số
     st.subheader("🖌️ Vẽ số vào khung dưới đây:")
+    st.write("....")  # Khoảng trống phía trên
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -479,8 +462,15 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key="canvas"
+        key="canvas",
+        update_streamlit=True  # Cập nhật giao diện
     )
+
+    st.write("....")  # Khoảng trống phía dướ
+      
+      
+      
+        
 
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
@@ -494,7 +484,7 @@ def du_doan():
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
-
+            
             
             
             
