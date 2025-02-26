@@ -614,7 +614,7 @@ def chon_mo_hinh():
             
             st.success(f"MSE trung bình qua các folds: {avg_mse:.4f}")
             st.success(f"MSE trên tập test: {test_mse:.4f}")
-            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}_{model_type}**!")
+            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
 
         return final_w, avg_mse, scaler
