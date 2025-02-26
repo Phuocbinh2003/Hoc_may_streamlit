@@ -353,7 +353,7 @@ def train():
             mean_cv_score = cv_scores.mean()
             std_cv_score = cv_scores.std()
             
-            st.write(f"📊 **Cross-Validation Accuracy**: {mean_cv_score:.4f} ± {std_cv_score:.4f}")
+            st.success(f"📊 **Cross-Validation Accuracy**: {mean_cv_score:.4f}")
 
             # Huấn luyện mô hình trên tập train chính
             model.fit(X_train, y_train)
