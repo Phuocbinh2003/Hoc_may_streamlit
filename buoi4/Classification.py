@@ -232,7 +232,6 @@ def plot_tree_metrics():
 
 
 def split_data():
-    
     st.title("📌 Chia dữ liệu Train/Test")
 
     # Đọc dữ liệu
@@ -241,29 +240,49 @@ def split_data():
     total_samples = X.shape[0]
 
     # Thanh kéo chọn số lượng ảnh để train
-    num_samples = st.slider("Chọn số lượng ảnh để train(⚠️ Nếu số lượng lớn thời gian train sẽ lâu):", 1000, total_samples, 10000)
+    num_samples = st.slider("Chọn số lượng ảnh để train (⚠️ Số lượng lớn sẽ lâu hơn):", 1000, total_samples, 10000)
 
     # Thanh kéo chọn tỷ lệ Train/Test
-    test_size = st.slider("Chọn tỷ lệ test:", 0.1, 0.5, 0.2)
+    test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
+    remaining_size = 100 - test_size
+    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
+    st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
     if st.button("✅ Xác nhận & Lưu"):
-        # Lấy số lượng ảnh mong muốn
-        X_selected, y_selected = X[:num_samples], y[:num_samples]
+        # Lấy số lượng ảnh mong muốn và đảm bảo cân bằng giữa các lớp
+        X_selected, _, y_selected, _ = train_test_split(X, y, train_size=num_samples, stratify=y, random_state=42)
 
         # Chia train/test theo tỷ lệ đã chọn
-        X_train, X_test, y_train, y_test = train_test_split(X_selected, y_selected, test_size=test_size, random_state=42)
+        stratify_option = y_selected if len(np.unique(y_selected)) > 1 else None
+        X_train_full, X_test, y_train_full, y_test = train_test_split(
+            X_selected, y_selected, test_size=test_size/100, stratify=stratify_option, random_state=42
+        )
 
-        # Lưu vào session_state để sử dụng sau
-        st.session_state["X_train"] = X_train
-        st.session_state["y_train"] = y_train
-        st.session_state["X_test"] = X_test
-        st.session_state["y_test"] = y_test
+        # Chia train/val theo tỷ lệ đã chọn
+        stratify_option = y_train_full if len(np.unique(y_train_full)) > 1 else None
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_train_full, y_train_full, test_size=val_size / (100 - test_size),
+            stratify=stratify_option, random_state=42
+        )
 
-        st.success(f"🔹 Dữ liệu đã được chia: Train ({len(X_train)}), Test ({len(X_test)})")
+        # Lưu vào session_state
+        st.session_state.X_train = X_train
+        st.session_state.X_val = X_val
+        st.session_state.X_test = X_test
+        st.session_state.y_train = y_train
+        st.session_state.y_val = y_val
+        st.session_state.y_test = y_test
 
-    # Kiểm tra nếu đã lưu dữ liệu vào session_state
-    if "X_train" in st.session_state:
-        st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
+        # Hiển thị thông tin chia dữ liệu
+        summary_df = pd.DataFrame({
+            "Tập dữ liệu": ["Train", "Validation", "Test"],
+            "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
+        })
+        st.success("✅ Dữ liệu đã được chia thành công!")
+        st.table(summary_df)
+        
+        
+        
         
 import os
 import mlflow
@@ -283,25 +302,25 @@ def mlflow_input():
     
     
     
+from sklearn.model_selection import cross_val_score
+
 def train():
     mlflow_input()
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
-        X_train = st.session_state["X_train"]
-        y_train = st.session_state["y_train"]
-        X_test = st.session_state["X_test"]
-        y_test = st.session_state["y_test"]
+        X_train=st.session_state.X_train 
+        X_val=st.session_state.X_val 
+        X_test=st.session_state.X_test 
+        y_train=st.session_state.y_train 
+        y_val=st.session_state.y_val 
+        y_test=st.session_state.y_test 
     else:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
 
-
     # 🌟 Chuẩn hóa dữ liệu
-    
     X_train = X_train.reshape(-1, 28 * 28) / 255.0
-    
     X_test = X_test.reshape(-1, 28 * 28) / 255.0
-
 
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
@@ -313,25 +332,13 @@ def train():
         - **🌳 Decision Tree (Cây quyết định)** giúp chia dữ liệu thành các nhóm bằng cách đặt câu hỏi nhị phân dựa trên đặc trưng.
         - **Tham số cần chọn:**  
             - **max_depth**: Giới hạn độ sâu tối đa của cây.  
-                - **Giá trị nhỏ**: Tránh overfitting nhưng có thể underfitting.  
-                - **Giá trị lớn**: Cây có thể học tốt hơn nhưng dễ bị overfitting.  
         """)
-        
         max_depth = st.slider("max_depth", 1, 20, 5)
         model = DecisionTreeClassifier(max_depth=max_depth)
 
     elif model_choice == "SVM":
         st.markdown("""
         - **🛠️ SVM (Support Vector Machine)** là mô hình tìm siêu phẳng tốt nhất để phân tách dữ liệu.
-        - **Tham số cần chọn:**  
-            - **C (Regularization)**: Hệ số điều chỉnh độ phạt lỗi.  
-                - **C nhỏ**: Mô hình có thể bỏ qua một số lỗi nhưng tổng thể ổn định hơn.  
-                - **C lớn**: Mô hình cố gắng phân loại chính xác từng điểm nhưng dễ bị overfitting.  
-            - **Kernel**: Hàm ánh xạ dữ liệu lên không gian đặc trưng cao hơn.  
-                - `"linear"` → Mô hình dùng siêu phẳng tuyến tính để phân lớp.  
-                - `"rbf"` → Kernel Gaussian giúp phân tách dữ liệu phi tuyến tính tốt hơn.  
-                - `"poly"` → Sử dụng đa thức bậc cao để phân lớp.  
-                - `"sigmoid"` → Biến đổi giống như mạng nơ-ron nhân tạo.  
         """)
         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
@@ -339,11 +346,22 @@ def train():
 
     if st.button("Huấn luyện mô hình"):
         with mlflow.start_run():
+            # 🏆 **Huấn luyện với Cross Validation**
+            st.write("⏳ Đang chạy Cross-Validation...")
+            cv_scores = cross_val_score(model, X_train, y_train, cv=5)
+            mean_cv_score = cv_scores.mean()
+            std_cv_score = cv_scores.std()
+            
+            st.write(f"📊 **Cross-Validation Accuracy**: {mean_cv_score:.4f} ± {std_cv_score:.4f}")
+
+            # Huấn luyện mô hình trên tập train chính
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             acc = accuracy_score(y_test, y_pred)
-            st.success(f"✅ Độ chính xác: {acc:.4f}")
-            
+
+            st.success(f"✅ Độ chính xác trên test set: {acc:.4f}")
+
+            # 📝 Ghi log vào MLflow
             mlflow.log_param("model", model_choice)
             if model_choice == "Decision Tree":
                 mlflow.log_param("max_depth", max_depth)
@@ -351,51 +369,42 @@ def train():
                 mlflow.log_param("C", C)
                 mlflow.log_param("kernel", kernel)
 
-            mlflow.log_metric("accuracy", acc)
+            mlflow.log_metric("test_accuracy", acc)
+            mlflow.log_metric("cv_accuracy_mean", mean_cv_score)
+            mlflow.log_metric("cv_accuracy_std", std_cv_score)
             mlflow.sklearn.log_model(model, model_choice.lower())
 
-            
-
-        # Lưu mô hình vào session_state dưới dạng danh sách nếu chưa có
+        # Lưu mô hình vào session_state
         if "models" not in st.session_state:
             st.session_state["models"] = []
 
-        # Tạo tên mô hình dựa trên lựa chọn mô hình và kernel
         model_name = model_choice.lower().replace(" ", "_")
         if model_choice == "SVM":
             model_name += f"_{kernel}"
 
-        # Kiểm tra nếu tên mô hình đã tồn tại trong session_state
         existing_model = next((item for item in st.session_state["models"] if item["name"] == model_name), None)
-        
+
         if existing_model:
-            # Tạo tên mới với số đếm phía sau
             count = 1
             new_model_name = f"{model_name}_{count}"
-            
-            # Kiểm tra tên mới chưa tồn tại
             while any(item["name"] == new_model_name for item in st.session_state["models"]):
                 count += 1
                 new_model_name = f"{model_name}_{count}"
-            
-            # Sử dụng tên mới đã tạo
             model_name = new_model_name
-            st.warning(f"⚠️ Mô hình được lưu với tên là: {model_name}")
+            st.warning(f"⚠️ Mô hình được lưu với tên: {model_name}")
 
-        # Lưu mô hình vào danh sách với tên mô hình cụ thể
         st.session_state["models"].append({"name": model_name, "model": model})
         st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
         st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
 
-        # In tên các mô hình đã lưu
+        # Hiển thị danh sách mô hình
         st.write("📋 Danh sách các mô hình đã lưu:")
         model_names = [model["name"] for model in st.session_state["models"]]
-        st.write(", ".join(model_names))  # Hiển thị tên các mô hình trong một dòng
-        
+        st.write(", ".join(model_names))
+
         st.success("📌 Mô hình đã được lưu trên MLflow!")
-        
         st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
-        
+
 
       
 
@@ -481,7 +490,88 @@ def du_doan():
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
             
-            
+def show_experiment_selector():
+    st.title("📊 MLflow Experiments - DAGsHub")
+
+    # Kết nối với DAGsHub MLflow Tracking
+    
+    # Lấy danh sách tất cả experiments
+    experiment_name = "Linear_replication"
+    
+    # Tìm experiment theo tên
+    experiments = mlflow.search_experiments()
+    selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
+
+    if not selected_experiment:
+        st.error(f"❌ Experiment '{experiment_name}' không tồn tại!")
+        return
+
+    st.subheader(f"📌 Experiment: {experiment_name}")
+    st.write(f"**Experiment ID:** {selected_experiment.experiment_id}")
+    st.write(f"**Trạng thái:** {'Active' if selected_experiment.lifecycle_stage == 'active' else 'Deleted'}")
+    st.write(f"**Vị trí lưu trữ:** {selected_experiment.artifact_location}")
+
+    # Lấy danh sách runs trong experiment
+    runs = mlflow.search_runs(experiment_ids=[selected_experiment.experiment_id])
+
+    if runs.empty:
+        st.warning("⚠ Không có runs nào trong experiment này.")
+        return
+
+    st.write("### 🏃‍♂️ Các Runs gần đây:")
+
+    # Lấy danh sách run_name từ params
+    run_info = []
+    for _, run in runs.iterrows():
+        run_id = run["run_id"]
+        run_params = mlflow.get_run(run_id).data.params
+        run_name = run_params.get("run_name", f"Run {run_id[:8]}")  # Nếu không có run_name thì lấy run_id
+        run_info.append((run_name, run_id))
+
+    # Tạo dictionary để map run_name -> run_id
+    run_name_to_id = dict(run_info)
+    run_names = list(run_name_to_id.keys())
+
+    # Chọn run theo run_name
+    selected_run_name = st.selectbox("🔍 Chọn một run:", run_names)
+    selected_run_id = run_name_to_id[selected_run_name]
+
+    # Hiển thị thông tin chi tiết của run được chọn
+    selected_run = mlflow.get_run(selected_run_id)
+
+    if selected_run:
+        st.subheader(f"📌 Thông tin Run: {selected_run_name}")
+        st.write(f"**Run ID:** {selected_run_id}")
+        st.write(f"**Trạng thái:** {selected_run.info.status}")
+        start_time_ms = selected_run.info.start_time  # Thời gian lưu dưới dạng milliseconds
+
+# Chuyển sang định dạng ngày giờ dễ đọc
+        if start_time_ms:
+            start_time = datetime.fromtimestamp(start_time_ms / 1000).strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            start_time = "Không có thông tin"
+
+        st.write(f"**Thời gian chạy:** {start_time}")
+
+        # Hiển thị thông số đã log
+        params = selected_run.data.params
+        metrics = selected_run.data.metrics
+
+        if params:
+            st.write("### ⚙️ Parameters:")
+            st.json(params)
+
+        if metrics:
+            st.write("### 📊 Metrics:")
+            st.json(metrics)
+
+        # Kiểm tra và hiển thị dataset artifact
+        dataset_path = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.csv"
+        st.write("### 📂 Dataset:")
+        st.write(f"📥 [Tải dataset]({dataset_path})")
+    else:
+        st.warning("⚠ Không tìm thấy thông tin cho run này.")
+           
             
             
             
@@ -498,7 +588,7 @@ def Classification():
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
-    tab1, tab2, tab3, tab4,tab5 = st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán"])
+    tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","mlflow"])
     
     with tab1:
         ly_thuyet_Decision_tree()
@@ -521,7 +611,9 @@ def Classification():
     with tab5:
         
         du_doan()   
-
+    with tab6:
+        
+        show_experiment_selector()  
 
 
 
