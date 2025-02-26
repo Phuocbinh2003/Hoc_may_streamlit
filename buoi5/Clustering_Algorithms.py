@@ -497,7 +497,8 @@ def ClusteringAlgorithms():
         
     
     with tab5:
-        du_doan() 
+        pass
+        #du_doan() 
 
 
 
