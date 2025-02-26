@@ -443,7 +443,7 @@ def du_doan():
     if model_option in model_names:
         model = next(model for model in st.session_state["models"] if model["name"] == model_option)["model"]
     else:
-        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file)
+        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file
         model = load_model(models[model_option])
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
