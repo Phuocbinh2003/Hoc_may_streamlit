@@ -22,6 +22,6 @@ if option == 'Clustering Algorithms':
     # st.rerun()
     ClusteringAlgorithms() 
 # if option == 'test':
-#     ts() 
+
 else:
     st.write("Vui lòng chọn một ứng dụng từ thanh điều hướng.")
