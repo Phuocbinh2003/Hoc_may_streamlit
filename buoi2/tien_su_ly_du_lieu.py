@@ -754,8 +754,6 @@ def show_experiment_selector():
     else:
         st.warning("⚠ Experiment không tồn tại.")
 
-if __name__ == "__main__":
-    show_experiment_selector()
 
           
 def chon():
@@ -775,7 +773,8 @@ def main():
     with tab3:
         test()
     with tab4:
-        show_experiment_details()
+        show_experiment_selector()
+
     
             
             
