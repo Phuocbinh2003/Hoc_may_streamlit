@@ -343,10 +343,10 @@ def train():
         C = st.slider("C (Regularization)", 0.1, 10.0, 1.0)
         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
         model = SVC(C=C, kernel=kernel)
-
+    n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
     if st.button("Huấn luyện mô hình"):
         with mlflow.start_run():
-            n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
+            
             # 🏆 **Huấn luyện với Cross Validation**
             st.write("⏳ Đang chạy Cross-Validation...")
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
