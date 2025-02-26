@@ -133,8 +133,8 @@ def ly_thuyet_SVM():
     → Đo **khoảng cách vuông góc** từ một điểm đến siêu phẳng, khoảng cách càng lớn thì mô hình càng đáng tin cậy.  
 
     - **Hàm mất mát với soft margin (SVM không tuyến tính)**:  
-    $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i$$  
-    → Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( $$\xi_i$$ \)**.  
+    $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n}$$ #\xi_i$$  
+    #→ Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( $$\xi_i$$ \)**.  
 
     **Trong đó:**  
     - $$C$$ : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
