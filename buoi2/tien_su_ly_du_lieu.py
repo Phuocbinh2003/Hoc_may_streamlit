@@ -715,6 +715,11 @@ import mlflow
 import os
 import pandas as pd
 
+import streamlit as st
+import mlflow
+import os
+import pandas as pd
+
 def show_experiment_selector():
     st.title("📊 MLflow Experiments - DAGsHub")
 
@@ -725,7 +730,7 @@ def show_experiment_selector():
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
-    # Lấy danh sách tất cả experiment
+    # Lấy danh sách tất cả experiments
     experiments = mlflow.search_experiments()
 
     if not experiments:
@@ -751,26 +756,26 @@ def show_experiment_selector():
             run_options = recent_runs["run_id"].tolist()
             selected_run = st.selectbox("🏃‍♂️ Chọn một Run:", run_options)
 
-            # Lấy artifact URI của run được chọn
-            run_info = recent_runs[recent_runs["run_id"] == selected_run].iloc[0]
-            artifact_uri = run_info["artifact_uri"]
-
-            st.write(f"🔗 **Run ID:** {selected_run}")
-            st.write(f"📂 **Artifact URI:** {artifact_uri}")
-
-            # Hiển thị dataset đã lưu (giả sử lưu ở "dataset.csv"
-            dataset_path = f"{artifact_uri}/dataset.csv"
-
+            # Tải dataset từ artifact
+            local_dataset_path = None
             try:
-                dataset = pd.read_csv(dataset_path)
+                local_dataset_path = mlflow.artifacts.download_artifacts(
+                    run_id=selected_run,
+                    artifact_path="dataset.csv"
+                )
+                dataset = pd.read_csv(local_dataset_path)
+
                 st.write("### 📊 Dataset đã lưu:")
                 st.dataframe(dataset)
             except Exception as e:
-                st.error(f"⚠ Không thể tải dataset từ {dataset_path}. Lỗi: {e}")
+                st.error(f"⚠ Không thể tải dataset. Lỗi: {e}")
         else:
             st.write("🔍 Không có runs nào trong experiment này.")
     else:
         st.warning("⚠ Experiment không tồn tại.")
+
+if __name__ == "__main__":
+    show_experiment_selector()
 
 
 
