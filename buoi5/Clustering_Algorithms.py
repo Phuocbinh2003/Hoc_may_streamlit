@@ -210,11 +210,13 @@ def ly_thuyet_DBSCAN():
     st.title("🔍 Minh họa thuật toán DBSCAN")
 
     # Tùy chỉnh tham số
-    num_samples = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10)
-    noise = st.slider("Mức nhiễu", 0.05, 1.0, 0.2)
-    dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng (Moons)"])
-    eps = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.5, step=0.1)
-    min_samples = st.slider("Số điểm tối thiểu để tạo cụm (min_samples)", 2, 20, 5)
+    # Tùy chỉnh tham số với key để tránh lỗi trùng ID
+    num_samples = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples")
+    noise = st.slider("Mức nhiễu", 0.05, 1.0, 0.2, key="noise_level")
+    dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng (Moons)"], key="dataset_type")
+    eps = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.5, step=0.1, key="eps_value")
+    min_samples = st.slider("Số điểm tối thiểu để tạo cụm (min_samples)", 2, 20, 5, key="min_samples_value")
+
 
     # Nút Reset để tạo lại dữ liệu
     if st.button("🔄 Reset"):
