@@ -17,10 +17,10 @@ if option == 'Classification MNIST':
     st.rerun()
     Classification() 
     
-if option == 'Clustering Algorithms':
-    st.session_state.clear()
-    st.rerun()
-    ClusteringAlgorithms() 
+# if option == 'Clustering Algorithms':
+#     st.session_state.clear()
+#     st.rerun()
+#     ClusteringAlgorithms() 
 # if option == 'test':
 #     ts() 
 else:
