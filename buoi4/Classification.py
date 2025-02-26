@@ -453,7 +453,8 @@ def du_doan():
 
     if st.button("🔄 Tải lại"):
         st.session_state.key_value = random.randint(0, 1000000)
-        st.experimental_rerun()  # Cập nhật giao diện
+        st.rerun()
+
 
     # ✍️ Vẽ số
     canvas_result = st_canvas(
