@@ -448,12 +448,12 @@ def du_doan():
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
-    if "key_value" not in st.session_state:
-        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+    #if "key_value" not in st.session_state:
+        #st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
 
-    if st.button("🔄 Tải lại"):
-        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
-        st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
+    #if st.button("🔄 Tải lại"):
+        # st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+        # st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
 
     # ✍️ Vẽ số
     canvas_result = st_canvas(
@@ -519,6 +519,8 @@ def Classification():
         
     
     with tab5:
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+        st.rerun() 
         du_doan()   
 
 
