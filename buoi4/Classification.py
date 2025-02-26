@@ -424,15 +424,9 @@ def preprocess_canvas_image(canvas_result):
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-
-    # ===== [FIX 1] Khởi tạo session state cho canvas =====
-    if "canvas_key" not in st.session_state:
-        st.session_state.canvas_key = "mnist_canvas"
-
-    # ===== [FIX 2] Tách phần canvas ra khỏi luồng render phụ thuộc tab =====
-    canvas_placeholder = st.empty()  # Giữ chỗ trống cố định
-
-    # 🔹 Danh sách mô hình
+    
+    
+    # 🔹 Danh sách mô hình có sẵ
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
@@ -440,53 +434,52 @@ def du_doan():
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
     
+    # Lấy tên mô hình từ session_state
+    model_names = [model["name"] for model in st.session_state.get("models", [])]
+    
     # 📌 Chọn mô hình
-    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()))
+    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()) + model_names)
 
-    # ===== [FIX 3] Render canvas độc lập với các thao tác UI khác =====
-    with canvas_placeholder.container():
+    # Nếu chọn mô hình đã được huấn luyện và lưu trong session_state
+    if model_option in model_names:
+        model = next(model for model in st.session_state["models"] if model["name"] == model_option)["model"]
+    else:
+        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file)
+        model = load_model(models[model_option])
+        st.success(f"✅ Đã tải mô hình: {model_option}")
+
+
+
+    
+
+    # ✍️ Vẽ số
+
         canvas_result = st_canvas(
-            fill_color="black",
-            stroke_width=10,
-            stroke_color="white",
-            background_color="black",
-            height=150,
-            width=150,
-            drawing_mode="freedraw",
-            key=st.session_state.canvas_key,
-            update_streamlit=True
+        fill_color="black",
+        stroke_width=10,
+        stroke_color="white",
+        background_color="black",
+        height=150,
+        width=150,
+        drawing_mode="freedraw",
+        key="persistent_canvas",  # KEY CỐ ĐỊNH
+        update_streamlit=True     # BUỘC CẬP NHẬT TRẠNG THÁI
         )
+      
+        
 
-    # ===== [FIX 4] Thêm nút xóa canvas =====
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        if st.button("Xóa vẽ"):
-            st.session_state.canvas_key = f"mnist_canvas_{int(time.time())}"
-            canvas_placeholder.empty()
-            st.rerun()
+    if st.button("Dự đoán số"):
+        img = preprocess_canvas_image(canvas_result)
 
-    # ===== Xử lý dự đoán =====
-    with col2:
-        if st.button("Dự đoán số"):
-            img = preprocess_canvas_image(canvas_result)
-            if img is not None:
-                model = load_model(models[model_option])
-                prediction = model.predict(img)
-                st.subheader(f"🔢 Dự đoán: {prediction[0]}")
-            else:
-                st.error("Vui lòng vẽ số trước khi dự đoán!")
+        if img is not None:
+            # Hiển thị ảnh sau xử lý
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
-    # ===== [FIX 5] CSS fix layout =====
-    st.markdown("""
-    <style>
-        [data-testid="stVerticalBlock"] {
-            align-items: center;
-        }
-        canvas:focus {
-            outline: none !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+            # Dự đoán
+            prediction = model.predict(img)
+            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
+        else:
+            st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
             
             
             
