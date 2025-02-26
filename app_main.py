@@ -13,8 +13,8 @@ if option == 'Linear Regression':
 if option == 'Classification MNIST':
     Classification() 
     
-# if option == 'Clustering Algorithms':
-#     ClusteringAlgorithms() 
+if option == 'Clustering Algorithms':
+    ClusteringAlgorithms() 
 # if option == 'test':
 #     ts() 
 else:
