@@ -640,6 +640,7 @@ def test():
     # Kiểm tra nếu có dữ liệu mapping_dicts trong session_state
     if "mapping_dicts" not in st.session_state:
         st.session_state.mapping_dicts = []
+        st.write(f"🔍 KO CÓ mapping_dict ")
     
     
     
