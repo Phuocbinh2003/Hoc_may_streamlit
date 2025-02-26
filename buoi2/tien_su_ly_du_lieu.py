@@ -503,14 +503,7 @@ def train_polynomial_regression(X_train, y_train, degree=2, learning_rate=0.001,
     
     return w
 
-import mlflow
-import os
-import pandas as pd
-import streamlit as st
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import KFold
-from sklearn.metrics import mean_squared_error
+
 
 # Hàm chọn mô hình
 def chon_mo_hinh():
