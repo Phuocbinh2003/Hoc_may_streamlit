@@ -240,16 +240,21 @@ def chuyen_doi_kieu_du_lieu(df):
             st.warning(f"⚠ Giá trị `{', '.join(set(duplicate_values))}` đã được sử dụng nhiều lần. Vui lòng chọn số khác!")
 
         # Lưu mapping_dict nếu không có trùng lặp
-        if not has_duplicate:
-            mapping_dict = {val: new_val for val, new_val in zip(unique_values, input_values) if new_val}
 
         # Nút button bị mờ nếu có giá trị trùng lặp
         btn_disabled = has_duplicate or len(mapping_dict) != len(unique_values)
 
         if st.button("🚀 Chuyển đổi dữ liệu", disabled=btn_disabled):
+            column_info = {
+                "column_name": selected_col,
+                "mapping_dict": mapping_dict
+            }
+            st.session_state.mapping_dicts.append(column_info)
+            
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
             df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
-
+            
+            
             # Reset text_inputs sau khi hoàn thành
             st.session_state.text_inputs.clear()
 
@@ -616,7 +621,10 @@ def test():
 
     # Nhập các giá trị cho các cột của X_train
     X_train = st.session_state.X_train
-    st.write(X_train.head())  # Đảm bảo bạn dùng session_state
+    
+    st.write(X_train.head()) 
+    
+    # Đảm bảo bạn dùng session_state
     num_columns = len(X_train.columns)
     column_names = X_train.columns.tolist()
 
