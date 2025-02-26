@@ -69,39 +69,41 @@ def choose_label(df):
     return X, y
 
 def train_test_size():
-    
-    
     if "df" not in st.session_state:
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
-    df = st.session_state.df  # Lấy dữ liệu từ session_state
     
+    df = st.session_state.df  # Lấy dữ liệu từ session_state
     X, y = choose_label(df)
+    
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
-    df = st.session_state.df
+    
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
-
     remaining_size = 100 - test_size
     val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
 
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
+
+    run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")  # Tên run cho MLflow
+
     if st.button("✅ Xác nhận Chia"):
-        
-        st.write(f"⏳ Đang chia dữ liệu...")  # Giúp debug xem có chạy vào đây không
-        # Kiểm tra y có nhiều hơn 1 giá trị không trước khi stratify
+        st.write("⏳ Đang chia dữ liệu...")
+
         stratify_option = y if y.nunique() > 1 else None
-        
-        # Chia dữ liệu thành Test trước
-        X_train_full, X_test, y_train_full, y_test = train_test_split(X, y, test_size=test_size/100, stratify=stratify_option, random_state=42)
-        st.write(X_train_full.shape ,y_train_full.shape)
-        
-        
-        # Chia tiếp phần còn lại thành Train và Validation
+        X_train_full, X_test, y_train_full, y_test = train_test_split(
+            X, y, test_size=test_size/100, stratify=stratify_option, random_state=42
+        )
+
         stratify_option = y_train_full if y_train_full.nunique() > 1 else None
-        X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=val_size / (100 - test_size), stratify=stratify_option, random_state=42)
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_train_full, y_train_full, test_size=val_size / (100 - test_size),
+            stratify=stratify_option, random_state=42
+        )
+
         st.write(f"📊 Kích thước tập Train: {X_train.shape[0]} mẫu")
         st.write(f"📊 Kích thước tập Validation: {X_val.shape[0]} mẫu")
         st.write(f"📊 Kích thước tập Test: {X_test.shape[0]} mẫu")
+
         # Lưu vào session_state
         st.session_state.X_train = X_train
         st.session_state.X_test = X_test
@@ -109,18 +111,36 @@ def train_test_size():
         st.session_state.y_test = y_test
         st.session_state.y = y
 
-        # Hiển thị thông tin số lượng mẫu
         summary_df = pd.DataFrame({
             "Tập dữ liệu": ["Train", "Validation", "Test"],
             "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
         })
         st.table(summary_df)
 
-        st.success("✅ Dữ liệu đã được chia thành công!")
+        # **Log dữ liệu vào MLflow**
+        DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+        mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
         
-    # if "X_train" in st.session_state:
-    #     st.dataframe(st.session_state.X_train.head())
+        os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+        
+        mlflow.set_experiment("Data_Splitting")
 
+        with mlflow.start_run(run_name=f"DataSplit_{run_name}"):
+            mlflow.log_param("dataset_shape", df.shape)
+            mlflow.log_param("target_column", y.name)
+            mlflow.log_param("test_size", test_size)
+            mlflow.log_param("validation_size", val_size)
+            mlflow.log_param("train_size", remaining_size - val_size)
+
+            # Lưu dataset tạm thời
+            dataset_path = "dataset.csv"
+            df.to_csv(dataset_path, index=False)
+
+            # Log dataset lên MLflow
+            mlflow.log_artifact(dataset_path)
+
+        st.success(f"✅ Dữ liệu đã được chia và log thành công vào MLflow **({run_name})**!")
 
 def xu_ly_gia_tri_thieu(df):
     st.subheader("⚡ Xử lý giá trị thiếu")
