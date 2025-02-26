@@ -73,7 +73,7 @@ def train_test_size():
         st.error("❌ Dữ liệu chưa được tải lên!")
         st.stop()
     
-    df = st.session_state.df  # Lấy dữ liệu từ session_state
+    df = st.session_state.df  # Lấy dữ liệu từ session_stat
     X, y = choose_label(df)
     
     st.subheader("📊 Chia dữ liệu Train - Validation - Test")   
