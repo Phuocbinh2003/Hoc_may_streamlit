@@ -424,19 +424,18 @@ import random
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-    
-    
-    # 🔹 Danh sách mô hình có sẵ
+
+    # 🔹 Danh sách mô hình có sẵn
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
         "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
-    
+
     # Lấy tên mô hình từ session_state
     model_names = [model["name"] for model in st.session_state.get("models", [])]
-    
+
     # 📌 Chọn mô hình
     model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()) + model_names)
 
@@ -448,15 +447,16 @@ def du_doan():
         model = load_model(models[model_option])
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
-
+    # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
         st.session_state.key_value = random.randint(0, 1000000)
-        
-    
+
+    if st.button("🔄 Tải lại"):
+        st.session_state.key_value = random.randint(0, 1000000)
+        st.experimental_rerun()  # Cập nhật giao diện
 
     # ✍️ Vẽ số
-
-        canvas_result = st_canvas(
+    canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
         stroke_color="white",
@@ -464,13 +464,10 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key=st.session_state.key_value,  # KEY CỐ ĐỊNH
-        update_streamlit=True     # BUỘC CẬP NHẬT TRẠNG THÁI
-        )
-      
-        
-    if st.button("🔄 Tải lại"):
-        st.session_state.key_value = random.randint(0, 1000000)
+        key=st.session_state.key_value,  # KEY sẽ thay đổi khi bấm "Tải lại"
+        update_streamlit=True
+    )
+
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
 
@@ -483,7 +480,6 @@ def du_doan():
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
-            
             
             
             
