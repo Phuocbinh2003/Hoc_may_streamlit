@@ -9,11 +9,17 @@ option = st.sidebar.selectbox(
 )
 
 if option == 'Linear Regression':
+    st.session_state.clear()
+    st.rerun()
     main() 
 if option == 'Classification MNIST':
+    st.session_state.clear()
+    st.rerun()
     Classification() 
     
 if option == 'Clustering Algorithms':
+    st.session_state.clear()
+    st.rerun()
     ClusteringAlgorithms() 
 # if option == 'test':
 #     ts() 
