@@ -190,11 +190,13 @@ def xu_ly_gia_tri_thieu(df):
 import pandas as pd
 import streamlit as st
 
+
+
 def chuyen_doi_kieu_du_lieu(df):
     st.subheader("🔄 Chuyển đổi kiểu dữ liệu")
 
     categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
-    
+
     if not categorical_cols:
         st.success("✅ Không có cột dạng chuỗi cần chuyển đổi!")
         return df
@@ -208,6 +210,7 @@ def chuyen_doi_kieu_du_lieu(df):
 
     mapping_dict = {}
     input_values = []  # Danh sách để kiểm tra trùng lặp
+    has_duplicate = False  # Biến kiểm tra trùng lặp
 
     if len(unique_values) < 5:
         for val in unique_values:
@@ -222,36 +225,34 @@ def chuyen_doi_kieu_du_lieu(df):
             # Cập nhật session_state với giá trị nhập mới
             st.session_state.text_inputs[key] = new_val
             input_values.append(new_val)
-            duplicate_values = [val for val in input_values if input_values.count(val) > 1 and val != ""]
 
-            # Kiểm tra trùng với các giá trị đã nhập trước đó
-            if duplicate_values:
-            
-                if new_val in input_values and new_val != "":
-                    st.warning(f"⚠ Giá trị `{new_val}` đã được sử dụng. Vui lòng chọn số khác!")
-                else:
-                    input_values.append(new_val)  # Thêm vào danh sách để so sánh tiếp
+        # Kiểm tra nếu có giá trị trùng nhau
+        duplicate_values = [val for val in input_values if input_values.count(val) > 1 and val != ""]
+        if duplicate_values:
+            has_duplicate = True
+            st.warning(f"⚠ Giá trị `{', '.join(set(duplicate_values))}` đã được sử dụng nhiều lần. Vui lòng chọn số khác!")
 
-                # Chỉ thêm vào mapping nếu hợp lệ
-            else:
-                mapping_dict[val] = new_val
+        # Lưu mapping_dict nếu không có trùng lặp
+        if not has_duplicate:
+            mapping_dict = {val: new_val for val, new_val in zip(unique_values, input_values) if new_val}
 
-        if st.button("🚀 Chuyển đổi dữ liệu"):
-            if len(mapping_dict) != len(unique_values):
-                st.error("⚠ Vui lòng nhập đầy đủ giá trị thay thế trước khi chuyển đổi!")
-            else:
-                df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
-                df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
+        # Nút button bị mờ nếu có giá trị trùng lặp
+        btn_disabled = has_duplicate or len(mapping_dict) != len(unique_values)
 
-                # Reset text_inputs sau khi hoàn thành
-                st.session_state.text_inputs.clear()
+        if st.button("🚀 Chuyển đổi dữ liệu", disabled=btn_disabled):
+            df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
+            df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
 
-                st.session_state.df = df
-                st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
+            # Reset text_inputs sau khi hoàn thành
+            st.session_state.text_inputs.clear()
+
+            st.session_state.df = df
+            st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
 
     st.dataframe(df.head())
 
     return df
+
 
 
 
