@@ -305,8 +305,12 @@ from sklearn.decomposition import PCA
 
 def train():
     # 📥 **Tải dữ liệu MNIST từ session_state**
-    X_train = st.session_state["X_train"]
-    y_train = st.session_state["y_train"]
+    if "X_train" in st.session_state:
+        X_train = st.session_state["X_train"]
+        y_train = st.session_state["y_train"]
+        
+        X_test=st.session_state["X_test"]
+        y_test=st.session_state["y_test"]
 
     # 🌟 **Chuẩn hóa dữ liệu**
     X_train = X_train.reshape(-1, 28 * 28) / 255.0
