@@ -221,15 +221,19 @@ def chuyen_doi_kieu_du_lieu(df):
 
             # Cập nhật session_state với giá trị nhập mới
             st.session_state.text_inputs[key] = new_val
+            input_values.append(new_val)
+            duplicate_values = [val for val in input_values if input_values.count(val) > 1 and val != ""]
 
             # Kiểm tra trùng với các giá trị đã nhập trước đó
-            if new_val in input_values and new_val != "":
-                st.warning(f"⚠ Giá trị `{new_val}` đã được sử dụng. Vui lòng chọn số khác!")
-            else:
-                input_values.append(new_val)  # Thêm vào danh sách để so sánh tiếp
+            if duplicate_values:
+            
+                if new_val in input_values and new_val != "":
+                    st.warning(f"⚠ Giá trị `{new_val}` đã được sử dụng. Vui lòng chọn số khác!")
+                else:
+                    input_values.append(new_val)  # Thêm vào danh sách để so sánh tiếp
 
-            # Chỉ thêm vào mapping nếu hợp lệ
-            if new_val:  
+                # Chỉ thêm vào mapping nếu hợp lệ
+            else:
                 mapping_dict[val] = new_val
 
         if st.button("🚀 Chuyển đổi dữ liệu"):
