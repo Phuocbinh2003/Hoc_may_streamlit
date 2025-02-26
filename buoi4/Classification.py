@@ -425,8 +425,7 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
     
-    
-    # 🔹 Danh sách mô hình có sẵ
+    # 🔹 Danh sách mô hình có sẵn
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
@@ -440,20 +439,13 @@ def du_doan():
     # 📌 Chọn mô hình
     model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()) + model_names)
 
-    # Nếu chọn mô hình đã được huấn luyện và lưu trong session_state
+    # Load model
     if model_option in model_names:
         model = next(model for model in st.session_state["models"] if model["name"] == model_option)["model"]
     else:
-        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file)
         model = load_model(models[model_option])
-        st.success(f"✅ Đã tải mô hình: {model_option}")
 
-
-
-
-
-    # ✍️ Vẽ số
-
+    # ✍️ Vẽ số - FIXED CANVAS
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -462,19 +454,16 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key=f"canvas"  # Key thay đổi để tránh cache
+        key="unique_canvas_key"  # Key cố định duy nhất
     )
-      
-        
 
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
-
         if img is not None:
-            # Hiển thị ảnh sau xử lý
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
-
-            # Dự đoán
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), 
+                    caption="Ảnh sau xử lý", 
+                    width=100)
+            
             prediction = model.predict(img)
             st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
