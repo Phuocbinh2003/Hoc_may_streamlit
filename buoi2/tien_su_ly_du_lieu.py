@@ -708,8 +708,12 @@ def data():
         except Exception as e:
             st.error(f"❌ Lỗi : {e}")
             
-def show_experiment_details():
-    st.title("📊 MLflow Experiments - Linear_replication")
+import streamlit as st
+import mlflow
+import os
+
+def show_experiment_selector():
+    st.title("📊 MLflow Experiments - DAGsHub")
 
     # Kết nối với DAGsHub MLflow Tracking
     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
@@ -721,24 +725,37 @@ def show_experiment_details():
     # Lấy danh sách tất cả experiments
     experiments = mlflow.search_experiments()
 
-    # Tìm experiment có tên "Linear_replication"
-    experiment = next((exp for exp in experiments if exp.name == "Linear_replication"), None)
+    if not experiments:
+        st.warning("⚠ Không tìm thấy experiment nào!")
+        return
 
-    if experiment:
-        st.write(f"**Experiment ID:** {experiment.experiment_id}")
-        st.write(f"**Tên:** {experiment.name}")
-        st.write(f"**Trạng thái:** {'Active' if experiment.lifecycle_stage == 'active' else 'Deleted'}")
-        st.write(f"**Vị trí lưu trữ:** {experiment.artifact_location}")
+    # Chuyển danh sách experiments thành danh sách lựa chọn
+    experiment_names = [exp.name for exp in experiments]
+    selected_experiment_name = st.selectbox("🔍 Chọn một experiment:", experiment_names)
+
+    # Tìm experiment được chọn
+    selected_experiment = next(exp for exp in experiments if exp.name == selected_experiment_name)
+
+    if selected_experiment:
+        st.subheader(f"📌 Thông tin của Experiment: {selected_experiment.name}")
+        st.write(f"**Experiment ID:** {selected_experiment.experiment_id}")
+        st.write(f"**Tên:** {selected_experiment.name}")
+        st.write(f"**Trạng thái:** {'Active' if selected_experiment.lifecycle_stage == 'active' else 'Deleted'}")
+        st.write(f"**Vị trí lưu trữ:** {selected_experiment.artifact_location}")
 
         # Lấy danh sách runs trong experiment
-        runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id])
+        runs = mlflow.search_runs(experiment_ids=[selected_experiment.experiment_id])
+
         if not runs.empty:
             st.write("### 🏃‍♂️ Các Runs gần đây:")
             st.dataframe(runs[["run_id", "start_time", "status", "metrics.accuracy"]].sort_values(by="start_time", ascending=False))
         else:
             st.write("🔍 Không có runs nào trong experiment này.")
     else:
-        st.warning("⚠ Experiment 'Linear_replication' không tồn tại.")
+        st.warning("⚠ Experiment không tồn tại.")
+
+if __name__ == "__main__":
+    show_experiment_selector()
 
           
 def chon():
