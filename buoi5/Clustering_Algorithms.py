@@ -101,29 +101,77 @@ def ly_thuyet_K_means():
     - Nhạy cảm với giá trị outlier và cách chọn điểm ban đầu.  
     """)
 
-    st.title("🎯 Trực quan hóa K-Means Clustering")
+    def euclidean_distance(a, b):
+        return np.linalg.norm(a - b, axis=1)
 
-    # Tham số đầu vào
-    num_samples = st.slider("Số lượng điểm dữ liệu", 50, 500, 200, step=10)
+    # Tạo dữ liệu ngẫu nhiên
+    def generate_data(n_samples, n_clusters, cluster_std):
+        np.random.seed(42)
+        X = []
+        centers = np.random.uniform(-10, 10, size=(n_clusters, 2))  # Chọn tâm cụm ngẫu nhiên
+        for c in centers:
+            X.append(c + np.random.randn(n_samples // n_clusters, 2) * cluster_std)
+        return np.vstack(X)
+
+    # Hàm khởi tạo tâm cụm ngẫu nhiên
+    def initialize_centroids(X, k):
+        np.random.seed(None)  # Chọn ngẫu nhiên mỗi lần chạy
+        return X[np.random.choice(X.shape[0], k, replace=False)]
+
+    # Hàm gán điểm vào cụm gần nhất
+    def assign_clusters(X, centroids):
+        labels = np.array([np.argmin(euclidean_distance(x, centroids)) for x in X])
+        return labels
+
+    # Hàm cập nhật tâm cụm mới
+    def update_centroids(X, labels, k):
+        new_centroids = np.array([X[labels == i].mean(axis=0) if len(X[labels == i]) > 0 else np.random.uniform(-10, 10, 2) for i in range(k)])
+        return new_centroids
+
+    # Tạo giao diện Streamlit
+    st.title("🎯 Minh họa thuật toán K-Means từng bước")
+
+    # Tham số điều chỉnh
+    num_samples = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10)
     num_clusters = st.slider("Số cụm (K)", 2, 10, 3)
     cluster_std = st.slider("Độ rời rạc của cụm", 0.5, 3.0, 1.0)
 
-    # Sinh dữ liệu ngẫu nhiên
-    X, _ = make_blobs(n_samples=num_samples, centers=num_clusters, cluster_std=cluster_std, random_state=42)
+    # Tạo dữ liệu
+    if "X" not in st.session_state:
+        st.session_state.X = generate_data(num_samples, num_clusters, cluster_std)
 
-    # Khởi tạo mô hình K-Means
-    kmeans = KMeans(n_clusters=num_clusters, n_init=10, random_state=42)
-    kmeans.fit(X)
+    X = st.session_state.X  # Dữ liệu điểm
 
-    # Nút cập nhật vị trí tâm cụm
+    # Khởi tạo hoặc cập nhật tâm cụm
+    if "centroids" not in st.session_state:
+        st.session_state.centroids = initialize_centroids(X, num_clusters)
+        st.session_state.iteration = 0  # Đếm số lần cập nhật
+        st.session_state.labels = assign_clusters(X, st.session_state.centroids)
+
+    # Nút cập nhật từng bước
     if st.button("🔄 Cập nhật vị trí tâm cụm"):
-        kmeans.fit(X)  # Chạy lại K-Means để cập nhật tâm cụm
+        st.session_state.labels = assign_clusters(X, st.session_state.centroids)
+        new_centroids = update_centroids(X, st.session_state.labels, num_clusters)
+        
+        # Kiểm tra xem có thay đổi không, nếu không thì đã hội tụ
+        if np.all(new_centroids == st.session_state.centroids):
+            st.warning("⚠️ Tâm cụm không thay đổi, thuật toán đã hội tụ!")
+        else:
+            st.session_state.centroids = new_centroids
+            st.session_state.iteration += 1
 
     # Vẽ biểu đồ
     fig, ax = plt.subplots(figsize=(6, 6))
-    ax.scatter(X[:, 0], X[:, 1], c=kmeans.labels_, cmap="viridis", alpha=0.6, edgecolors="k")
-    ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
-    ax.set_title("Minh họa K-Means Clustering")
+    labels = st.session_state.labels
+    centroids = st.session_state.centroids
+
+    # Vẽ điểm dữ liệu
+    for i in range(num_clusters):
+        ax.scatter(X[labels == i][:, 0], X[labels == i][:, 1], label=f"Cụm {i}", alpha=0.6, edgecolors="k")
+
+    # Vẽ tâm cụm
+    ax.scatter(centroids[:, 0], centroids[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
+    ax.set_title(f"Minh họa K-Means (Lần cập nhật: {st.session_state.iteration})")
     ax.legend()
 
     # Hiển thị biểu đồ
