@@ -488,7 +488,7 @@ def ClusteringAlgorithms():
         data()
         
     with tab4:
-       # plot_tree_metrics()
+       
         
         
         
