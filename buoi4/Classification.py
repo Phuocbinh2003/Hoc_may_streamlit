@@ -241,13 +241,13 @@ def split_data():
 
     # Thanh kéo chọn số lượng ảnh để train
     num_samples = st.slider("Chọn số lượng ảnh để train (⚠️ Số lượng lớn sẽ lâu hơn):", 1000, total_samples, 10000)
-
+    st.session_state.total_samples =num_samples
     # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
     remaining_size = 100 - test_size
     val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
     st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
-
+    
     if st.button("✅ Xác nhận & Lưu"):
         # Lấy số lượng ảnh mong muốn và đảm bảo cân bằng giữa các lớp
         X_selected, _, y_selected, _ = train_test_split(X, y, train_size=num_samples, stratify=y, random_state=42)
@@ -272,7 +272,10 @@ def split_data():
         st.session_state.y_train = y_train
         st.session_state.y_val = y_val
         st.session_state.y_test = y_test
-
+        st.session_state.test_size = X_test.shape[0]
+        st.session_state.val_size = X_val.shape[0]
+        st.session_state.train_size = X_train.shape[0]
+    
         # Hiển thị thông tin chia dữ liệu
         summary_df = pd.DataFrame({
             "Tập dữ liệu": ["Train", "Validation", "Test"],
@@ -344,9 +347,16 @@ def train():
         kernel = st.selectbox("Kernel", ["linear", "rbf", "poly", "sigmoid"])
         model = SVC(C=C, kernel=kernel)
     n_folds = st.slider("Chọn số folds (KFold Cross-Validation):", min_value=2, max_value=10, value=5)
+    
+    run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")  # Tên run cho MLflow
+    st.session_state["run_name"] = run_name if run_name else "default_run"
+    
     if st.button("Huấn luyện mô hình"):
-        with mlflow.start_run():
-            
+        with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}"):
+            mlflow.log_param("test_size", st.session_state.test_size)
+            mlflow.log_param("val_size", st.session_state.val_size)
+            mlflow.log_param("train_size", st.session_state.train_size)
+            mlflow.log_param("num_samples", st.session_state.total_samples)
             # 🏆 **Huấn luyện với Cross Validation**
             st.write("⏳ Đang chạy Cross-Validation...")
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
@@ -403,7 +413,7 @@ def train():
         model_names = [model["name"] for model in st.session_state["models"]]
         st.write(", ".join(model_names))
 
-        st.success("📌 Mô hình đã được lưu trên MLflow!")
+        st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
         st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
 
