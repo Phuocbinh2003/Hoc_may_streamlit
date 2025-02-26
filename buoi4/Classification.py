@@ -451,11 +451,10 @@ def du_doan():
     #if "key_value" not in st.session_state:
         #st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
 
-    #if st.button("🔄 Tải lại"):
-        # st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
-        # st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
-    st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
-    st.rerun() 
+    if st.button("🔄 Tải lại"):
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+        st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
+    
     # ✍️ Vẽ số
     canvas_result = st_canvas(
         fill_color="black",
