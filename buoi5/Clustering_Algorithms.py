@@ -390,7 +390,7 @@ from sklearn.cluster import KMeans, DBSCAN
 import matplotlib.pyplot as plt
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
-
+from sklearn.decomposition import PCA
 
 def preprocess_canvas_image(canvas_result):
     if canvas_result.image_data is not None:
@@ -443,7 +443,7 @@ def du_doan():
         if img is not None:
             # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
-
+            img_reduced = PCA.transform(img)  
             # Dự đoán với K-Means hoặc DBSCAN
             if isinstance(model, KMeans):
                 predicted_cluster = model.predict(img)[0]
