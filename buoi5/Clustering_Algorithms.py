@@ -301,12 +301,7 @@ from sklearn.cluster import KMeans, DBSCAN
 from sklearn.decomposition import PCA
 
 # 🚀 **Load dữ liệu MNIST**
-if "X_train" not in st.session_state:
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    st.session_state["X_train"] = X_train
-    st.session_state["y_train"] = y_train
-    st.session_state["X_test"] = X_test
-    st.session_state["y_test"] = y_test
+
 
 def train():
     # 📥 **Tải dữ liệu MNIST từ session_state**
