@@ -439,7 +439,7 @@ def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
     
     
-    # 🔹 Danh sách mô hình có sẵn
+    # 🔹 Danh sách mô hình có sẵ
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
