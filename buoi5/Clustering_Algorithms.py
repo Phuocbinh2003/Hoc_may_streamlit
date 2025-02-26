@@ -294,20 +294,27 @@ def split_data():
     if "X_train" in st.session_state:
         st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
         
-def train():
-    # 📥 **Tải dữ liệu MNIST**
-    if "X_train" in st.session_state:
-        X_train = st.session_state["X_train"]
-        y_train = st.session_state["y_train"]
-        X_test = st.session_state["X_test"]
-        y_test = st.session_state["y_test"]
-    else:
-        st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
-        return
+import streamlit as st
+import numpy as np
+from tensorflow.keras.datasets import mnist
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.decomposition import PCA
 
-    # 🌟 Chuẩn hóa dữ liệu
+# 🚀 **Load dữ liệu MNIST**
+if "X_train" not in st.session_state:
+    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    st.session_state["X_train"] = X_train
+    st.session_state["y_train"] = y_train
+    st.session_state["X_test"] = X_test
+    st.session_state["y_test"] = y_test
+
+def train():
+    # 📥 **Tải dữ liệu MNIST từ session_state**
+    X_train = st.session_state["X_train"]
+    y_train = st.session_state["y_train"]
+
+    # 🌟 **Chuẩn hóa dữ liệu**
     X_train = X_train.reshape(-1, 28 * 28) / 255.0
-    X_test = X_test.reshape(-1, 28 * 28) / 255.0
 
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
@@ -315,56 +322,52 @@ def train():
     model_choice = st.selectbox("Chọn mô hình:", ["K-Means", "DBSCAN"])
 
     if model_choice == "K-Means":
-        st.markdown("""
-        - **🔹 K-Means** là thuật toán phân cụm phổ biến, chia dữ liệu thành K cụm dựa trên khoảng cách.
-        - **Tham số cần chọn:**  
-            - **n_clusters**: Số lượng cụm (k).  
-        """)
-        
-        n_clusters = st.slider("n_clusters", 2, 20, 10)
-        model = KMeans(n_clusters=n_clusters, random_state=42)
-    
+        st.markdown("""**🔹 K-Means**: Thuật toán phân cụm chia dữ liệu thành K nhóm dựa trên khoảng cách.""")
+
+        n_clusters = st.slider("🔢 Chọn số cụm (K):", 2, 20, 10)
+
+        # 📉 Giảm chiều dữ liệu bằng PCA trước khi huấn luyện
+        pca = PCA(n_components=2)
+        X_train_pca = pca.fit_transform(X_train)
+
+        model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+
     elif model_choice == "DBSCAN":
-        st.markdown("""
-        - **🛠️ DBSCAN (Density-Based Spatial Clustering of Applications with Noise)** là thuật toán phân cụm dựa trên mật độ.
-        - **Tham số cần chọn:**  
-            - **eps**: Bán kính lân cận.  
-            - **min_samples**: Số lượng điểm tối thiểu để tạo cụm.  
-        """)
-        eps = st.slider("eps", 0.1, 10.0, 0.5)
-        min_samples = st.slider("min_samples", 2, 20, 5)
+        st.markdown("""**🛠️ DBSCAN**: Thuật toán phân cụm dựa trên mật độ.""")
+
+        eps = st.slider("📏 Bán kính lân cận (eps):", 0.1, 10.0, 0.5)
+        min_samples = st.slider("👥 Số điểm tối thiểu trong cụm:", 2, 20, 5)
+
+        # 📉 Giảm chiều dữ liệu bằng PCA trước khi huấn luyện
+        pca = PCA(n_components=2)
+        X_train_pca = pca.fit_transform(X_train)
+
         model = DBSCAN(eps=eps, min_samples=min_samples)
 
-    if st.button("Huấn luyện mô hình"):
-        model.fit(X_train)
-        labels = model.labels_
+    if st.button("🚀 Huấn luyện mô hình"):
+        model.fit(X_train_pca)
+
         st.success("✅ Huấn luyện thành công!")
 
-        # Lưu mô hình vào session_state dưới dạng danh sách nếu chưa có
+        # 🔍 Lưu mô hình vào session_state
         if "models" not in st.session_state:
             st.session_state["models"] = []
 
         model_name = model_choice.lower().replace(" ", "_")
 
-        existing_model = next((item for item in st.session_state["models"] if item["name"] == model_name), None)
-        
-        if existing_model:
-            count = 1
+        # Kiểm tra tên để tránh trùng lặp
+        count = 1
+        new_model_name = model_name
+        while any(m["name"] == new_model_name for m in st.session_state["models"]):
             new_model_name = f"{model_name}_{count}"
-            while any(item["name"] == new_model_name for item in st.session_state["models"]):
-                count += 1
-                new_model_name = f"{model_name}_{count}"
-            model_name = new_model_name
-            st.warning(f"⚠️ Mô hình được lưu với tên là: {model_name}")
+            count += 1
 
-        st.session_state["models"].append({"name": model_name, "model": model})
-        st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
-        st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
+        st.session_state["models"].append({"name": new_model_name, "model": model})
 
-        st.write("📋 Danh sách các mô hình đã lưu:")
-        model_names = [model["name"] for model in st.session_state["models"]]
-        st.write(", ".join(model_names))
-        
+        st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
+        st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+
+
 import streamlit as st
 import numpy as np
 import random
