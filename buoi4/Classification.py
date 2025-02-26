@@ -468,8 +468,8 @@ def du_doan():
         st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
-    #if "key_value" not in st.session_state:
-        #st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+    if "key_value" not in st.session_state:
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
 
     if st.button("🔄 Tải lại"):
         st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
