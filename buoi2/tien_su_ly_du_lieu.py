@@ -735,6 +735,11 @@ import streamlit as st
 import mlflow
 import os
 
+import streamlit as st
+import mlflow
+import os
+import pandas as pd
+
 def show_experiment_selector():
     st.title("📊 MLflow Experiments - DAGsHub")
 
@@ -771,7 +776,35 @@ def show_experiment_selector():
 
         if not runs.empty:
             st.write("### 🏃‍♂️ Các Runs gần đây:")
-            st.dataframe(runs[["run_id", "start_time", "status", "metrics.accuracy"]].sort_values(by="start_time", ascending=False))
+            runs_display = runs[["run_id", "start_time", "status"]].sort_values(by="start_time", ascending=False)
+            selected_run_id = st.selectbox("🔍 Chọn một run:", runs_display["run_id"].tolist())
+
+            # Hiển thị thông tin chi tiết của run được chọn
+            selected_run = runs[runs["run_id"] == selected_run_id]
+
+            if not selected_run.empty:
+                st.subheader(f"📌 Thông tin Run: {selected_run_id}")
+                st.write(f"**Trạng thái:** {selected_run['status'].values[0]}")
+                st.write(f"**Thời gian chạy:** {selected_run['start_time'].values[0]}")
+
+                # Hiển thị thông số đã log
+                params = mlflow.get_run(selected_run_id).data.params
+                metrics = mlflow.get_run(selected_run_id).data.metrics
+
+                if params:
+                    st.write("### ⚙️ Parameters:")
+                    st.json(params)
+
+                if metrics:
+                    st.write("### 📊 Metrics:")
+                    st.json(metrics)
+
+                # Kiểm tra và hiển thị dataset artifact
+                artifact_uri = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.csv"
+                st.write("### 📂 Dataset:")
+                st.write(f"📥 [Tải dataset]({artifact_uri})")
+            else:
+                st.warning("⚠ Không tìm thấy thông tin cho run này.")
         else:
             st.write("🔍 Không có runs nào trong experiment này.")
     else:
