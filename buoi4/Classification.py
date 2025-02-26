@@ -471,7 +471,7 @@ def du_doan():
     if "key_value" not in st.session_state:
         st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
 
-    if st.button("🔄 Tải lại"):
+    if st.button("🔄 Tải lại nếu không thấy canvas"):
         st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
         st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
     
@@ -601,7 +601,7 @@ def Classification():
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
-    tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","mlflow"])
+    tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","🔥Mlflow"])
     
     with tab1:
         ly_thuyet_Decision_tree()
