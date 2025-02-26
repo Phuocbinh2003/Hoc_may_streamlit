@@ -260,8 +260,15 @@ def ly_thuyet_DBSCAN():
 
 
 # Hàm vẽ biểu đồ
+import streamlit as st
+import numpy as np
+from tensorflow.keras.datasets import mnist
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+from scipy.stats import mode  
+
 def split_data():
-    
     st.title("📌 Chia dữ liệu Train/Test")
 
     # Đọc dữ liệu
@@ -290,55 +297,28 @@ def split_data():
 
         st.success(f"🔹 Dữ liệu đã được chia: Train ({len(X_train)}), Test ({len(X_test)})")
 
-    # Kiểm tra nếu đã lưu dữ liệu vào session_state
     if "X_train" in st.session_state:
         st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
-        
-import streamlit as st
-import numpy as np
-from tensorflow.keras.datasets import mnist
-from sklearn.cluster import KMeans, DBSCAN
-from sklearn.decomposition import PCA
-
-# 🚀 **Load dữ liệu MNIST**
-
-
-import streamlit as st
-import numpy as np
-from tensorflow.keras.datasets import mnist
-from sklearn.cluster import KMeans, DBSCAN
-from sklearn.decomposition import PCA
-from scipy.stats import mode
-
-# 🚀 **Tải dữ liệu MNIST vào session_state nếu chưa có**
-if "X_train" not in st.session_state:
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    st.session_state["X_train"] = X_train
-    st.session_state["y_train"] = y_train
-    st.session_state["X_test"] = X_test
-    st.session_state["y_test"] = y_test
-else:
-    X_train = st.session_state["X_train"]
-    y_train = st.session_state["y_train"]
-    X_test = st.session_state["X_test"]
-    y_test = st.session_state["y_test"]
 
 def train():
-    # 📥 **Tải dữ liệu MNIST từ session_state**
-    if "X_train" in st.session_state:
-        X_train = st.session_state["X_train"]
-        y_train = st.session_state["y_train"]
+    st.header("⚙️ Chọn mô hình & Huấn luyện")
+
+    # Kiểm tra dữ liệu trước khi train
+    if "X_train" not in st.session_state:
+        st.warning("⚠️ Vui lòng chia dữ liệu trước khi train!")
+        return
+
+    X_train = st.session_state["X_train"]
+    y_train = st.session_state["y_train"]
 
     # 🌟 **Chuẩn hóa dữ liệu**
     X_train = X_train.reshape(-1, 28 * 28) / 255.0
-
-    st.header("⚙️ Chọn mô hình & Huấn luyện")
 
     # 📌 **Chọn mô hình**
     model_choice = st.selectbox("Chọn mô hình:", ["K-Means", "DBSCAN"])
 
     if model_choice == "K-Means":
-        st.markdown("""**🔹 K-Means**: Thuật toán phân cụm chia dữ liệu thành K nhóm dựa trên khoảng cách.""")
+        st.markdown("🔹 **K-Means**: Thuật toán phân cụm chia dữ liệu thành K nhóm dựa trên khoảng cách.")
 
         n_clusters = st.slider("🔢 Chọn số cụm (K):", 2, 20, 10)
 
@@ -349,7 +329,7 @@ def train():
         model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
     elif model_choice == "DBSCAN":
-        st.markdown("""**🛠️ DBSCAN**: Thuật toán phân cụm dựa trên mật độ.""")
+        st.markdown("🛠️ **DBSCAN**: Thuật toán phân cụm dựa trên mật độ.")
 
         eps = st.slider("📏 Bán kính lân cận (eps):", 0.1, 10.0, 0.5)
         min_samples = st.slider("👥 Số điểm tối thiểu trong cụm:", 2, 20, 5)
@@ -364,16 +344,15 @@ def train():
         model.fit(X_train_pca)
         st.success("✅ Huấn luyện thành công!")
 
-        # 📊 **Tính độ chính xác nếu là K-Means**
         if model_choice == "K-Means":
             labels = model.labels_
-            
+
             # 🔄 Ánh xạ nhãn cụm với nhãn thực tế
             label_mapping = {}
             for i in range(n_clusters):
                 mask = labels == i
                 if np.sum(mask) > 0:
-                    most_common_label = mode(y_train[mask])[0][0]
+                    most_common_label = mode(y_train[mask], keepdims=True).mode[0]  
                     label_mapping[i] = most_common_label
 
             # 🎯 Chuyển nhãn cụm thành nhãn thực
