@@ -444,16 +444,19 @@ def du_doan():
             X_train = st.session_state["X_train"]
             # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
+            
             pca = PCA(n_components=2)
             pca.fit(X_train)
-            img_reduced = pca.transform(img)  
+            img_reduced = pca.transform(img.squeeze().reshape(1, -1))  # Sửa lỗi
+
             # Dự đoán với K-Means hoặc DBSCAN
             if isinstance(model, KMeans):
-                predicted_cluster = model.predict(img)[0]
+                predicted_cluster = model.predict(img_reduced)[0]  # Dự đoán từ ảnh đã PCA
                 st.subheader(f"🔢 Cụm dự đoán: {predicted_cluster}")
 
             elif isinstance(model, DBSCAN):
-                predicted_cluster = model.fit_predict(img)[0]
+                model.fit(X_train)  # Fit trước với tập huấn luyện
+                predicted_cluster = model.fit_predict(img_reduced)[0]
                 if predicted_cluster == -1:
                     st.subheader("⚠️ Điểm này không thuộc cụm nào!")
                 else:
@@ -461,6 +464,7 @@ def du_doan():
 
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
+
 
 
 
