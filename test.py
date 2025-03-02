@@ -18,6 +18,9 @@ st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
 # Load dữ liệu
 X, y = load_mnist()
 
+
+st.write(X[0])
+
 # Tùy chọn thuật toán
 method = st.radio("Chọn phương pháp giảm chiều", ["PCA", "t-SNE"])
 n_components = st.slider("Số chiều giảm xuống", 2, 3, 2)
