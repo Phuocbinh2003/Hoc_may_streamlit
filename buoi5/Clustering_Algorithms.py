@@ -14,6 +14,10 @@ from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 
 # Tải dữ liệu MNIST từ OpenM
+
+
+
+
 def data():
     st.header("MNIST Dataset")
     st.write("""
@@ -66,7 +70,6 @@ def data():
     """)
 
 def ly_thuyet_K_means():
-    
     st.title("📌 K-Means Clustering")
 
     # 🔹 Giới thiệu về K-Means
@@ -76,19 +79,14 @@ def ly_thuyet_K_means():
         1. Chọn ngẫu nhiên **K tâm cụm (centroids)**.  
         2. Gán mỗi điểm dữ liệu vào cụm có tâm gần nhất.  
         3. Cập nhật lại tâm cụm bằng cách lấy trung bình các điểm trong cụm.  
-        4. Lặp lại quá trình trên cho đến khi các tâm cụm không thay đổi hoặc số vòng lặp đạt giới hạn.  
+        4. Lặp lại quá trình trên cho đến khi hội tụ.  
     """)
 
     # 🔹 Công thức khoảng cách Euclidean
     st.latex(r"""
     d(p, q) = \sqrt{\sum_{i=1}^{n} (p_i - q_i)^2}
     """)
-    st.markdown("""
-    Trong đó:
-    - \( p, q \) là hai điểm trong không gian \( n \) chiều.
-    - \( d(p, q) \) là khoảng cách giữa hai điểm.
-    """)
-
+    
     # 🔹 Ưu điểm và Nhược điểm
     st.markdown("### ✅ **Ưu điểm & ❌ Nhược điểm**")
     st.markdown("""
@@ -101,88 +99,76 @@ def ly_thuyet_K_means():
     - Nhạy cảm với giá trị outlier và cách chọn điểm ban đầu.  
     """)
 
+    # 🔹 Định nghĩa hàm tính toán
     def euclidean_distance(a, b):
         return np.linalg.norm(a - b, axis=1)
 
-    # Tạo dữ liệu ngẫu nhiên
     def generate_data(n_samples, n_clusters, cluster_std):
         np.random.seed(42)
         X = []
-        centers = np.random.uniform(-10, 10, size=(n_clusters, 2))  # Chọn tâm cụm ngẫu nhiên
+        centers = np.random.uniform(-10, 10, size=(n_clusters, 2))
         for c in centers:
             X.append(c + np.random.randn(n_samples // n_clusters, 2) * cluster_std)
         return np.vstack(X)
 
-    # Hàm khởi tạo tâm cụm ngẫu nhiên
     def initialize_centroids(X, k):
-        np.random.seed(None)  # Chọn ngẫu nhiên mỗi lần chạy
         return X[np.random.choice(X.shape[0], k, replace=False)]
 
-    # Hàm gán điểm vào cụm gần nhất
     def assign_clusters(X, centroids):
-        labels = np.array([np.argmin(euclidean_distance(x, centroids)) for x in X])
-        return labels
+        return np.array([np.argmin(euclidean_distance(x, centroids)) for x in X])
 
-    # Hàm cập nhật tâm cụm mới
     def update_centroids(X, labels, k):
-        new_centroids = np.array([X[labels == i].mean(axis=0) if len(X[labels == i]) > 0 else np.random.uniform(-10, 10, 2) for i in range(k)])
-        return new_centroids
+        return np.array([X[labels == i].mean(axis=0) if len(X[labels == i]) > 0 else np.random.uniform(-10, 10, 2) for i in range(k)])
 
-    # Tạo giao diện Streamlit
+    # Giao diện Streamlit
     st.title("🎯 Minh họa thuật toán K-Means từng bước")
 
-    # Tham số điều chỉnh
-    num_samples_kmeans = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_kmeans")
-    cluster_kmeans = st.slider("Số cụm", 2, 10, 3, key="clusters_kmeans")
-    spread_kmeans = st.slider("Độ rời rạc", 0.1, 2.0, 1.0, key="spread_kmeans")
+    num_samples_kmeans = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10)
+    cluster_kmeans = st.slider("Số cụm (K)", 2, 10, 3)
+    spread_kmeans = st.slider("Độ rời rạc", 0.1, 2.0, 1.0)
 
-
-    # Nút Reset để khởi động lại dữ liệu
-    if st.button("🔄 Reset", key="reset_kmeans"):
-        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
-        st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
-        st.session_state.iteration = 0  # Đếm số lần cập nhật
-        st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
-
-    # Kiểm tra nếu chưa có dữ liệu trong session_state
     if "X" not in st.session_state:
         st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
 
-    X = st.session_state.X  # Dữ liệu điểm
+    X = st.session_state.X
 
-    # Khởi tạo hoặc cập nhật tâm cụm
     if "centroids" not in st.session_state:
         st.session_state.centroids = initialize_centroids(X, cluster_kmeans)
         st.session_state.iteration = 0
         st.session_state.labels = assign_clusters(X, st.session_state.centroids)
 
-    # Nút cập nhật từng bước
+    if st.button("🔄 Reset"):
+        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
+        st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
+        st.session_state.iteration = 0
+        st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
+
     if st.button("🔄 Cập nhật vị trí tâm cụm"):
         st.session_state.labels = assign_clusters(X, st.session_state.centroids)
         new_centroids = update_centroids(X, st.session_state.labels, cluster_kmeans)
         
-        # Kiểm tra xem có thay đổi không, nếu không thì đã hội tụ
-        if np.all(new_centroids == st.session_state.centroids):
-            st.warning("⚠️ Tâm cụm không thay đổi, thuật toán đã hội tụ!")
+        # Kiểm tra hội tụ với sai số nhỏ
+        if np.allclose(new_centroids, st.session_state.centroids, atol=1e-3):
+            st.warning("⚠️ Tâm cụm không thay đổi đáng kể, thuật toán đã hội tụ!")
         else:
             st.session_state.centroids = new_centroids
             st.session_state.iteration += 1
+
+    # 🔥 Thêm thanh trạng thái hiển thị tiến trình
+    st.status(f"Lần cập nhật: {st.session_state.iteration} - Đang phân cụm...", state="running")
 
     # Vẽ biểu đồ
     fig, ax = plt.subplots(figsize=(6, 6))
     labels = st.session_state.labels
     centroids = st.session_state.centroids
 
-    # Vẽ điểm dữ liệu
     for i in range(cluster_kmeans):
         ax.scatter(X[labels == i][:, 0], X[labels == i][:, 1], label=f"Cụm {i}", alpha=0.6, edgecolors="k")
 
-    # Vẽ tâm cụm
     ax.scatter(centroids[:, 0], centroids[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
-    ax.set_title(f"Minh họa K-Means (Lần cập nhật: {st.session_state.iteration})")
+    ax.set_title(f"K-Means Clustering (Lần cập nhật: {st.session_state.iteration})")
     ax.legend()
 
-    # Hiển thị biểu đồ
     st.pyplot(fig)
 
 
