@@ -286,15 +286,14 @@ def split_data():
         )
 
         # Lưu dữ liệu vào session_state
-        st.session_state.X_train = X_train
-        st.session_state.X_val = X_val
-        st.session_state.X_test = X_test
-        st.session_state.y_train = y_train
-        st.session_state.y_val = y_val
-        st.session_state.y_test = y_test
-        st.session_state.test_size = X_test.shape[0]
-        st.session_state.val_size = X_val.shape[0]
-        st.session_state.train_size = X_train.shape[0]
+        st.session_state.data_info = {
+            "train_size": X_train.shape[0],
+            "val_size": X_val.shape[0],
+            "test_size": X_test.shape[0],
+            "test_ratio": test_size,
+            "val_ratio": val_size,
+        }
+
 
         # Hiển thị thông tin chia dữ liệu
         summary_df = pd.DataFrame({
@@ -304,6 +303,10 @@ def split_data():
         st.success("✅ Dữ liệu đã được chia thành công!")
         st.table(summary_df)
 
+        
+        
+        return X_train, X_val, X_test,y_train,y_val,y_test
+        
     elif st.session_state.data_split_done:
         st.info("✅ Dữ liệu đã được chia, không cần chạy lại.")
 
