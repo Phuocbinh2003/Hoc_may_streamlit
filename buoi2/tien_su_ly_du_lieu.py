@@ -216,7 +216,6 @@ def chuyen_doi_kieu_du_lieu(df):
     selected_col = st.selectbox("📌 Chọn cột để chuyển đổi:", categorical_cols)
     unique_values = df[selected_col].unique()
 
-    # Khởi tạo session_state nếu chưa có
     if "text_inputs" not in st.session_state:
         st.session_state.text_inputs = {}
 
@@ -224,8 +223,9 @@ def chuyen_doi_kieu_du_lieu(df):
         st.session_state.mapping_dicts = []
 
     mapping_dict = {}
-    input_values = []  # Danh sách để kiểm tra trùng lặp
-    has_duplicate = False  # Biến kiểm tra trùng lặp
+    input_values = []
+    has_duplicate = False
+    has_empty = False  # Kiểm tra nếu có ô trống
 
     if len(unique_values) < 5:
         for val in unique_values:
@@ -237,42 +237,38 @@ def chuyen_doi_kieu_du_lieu(df):
                                     key=key, 
                                     value=st.session_state.text_inputs[key])
 
-            # Cập nhật session_state với giá trị nhập mới
             st.session_state.text_inputs[key] = new_val
             input_values.append(new_val)
 
-            # Lưu vào mapping_dict nếu không trùng lặp
             mapping_dict[val] = new_val
 
-        # Kiểm tra nếu có giá trị trùng nhau
+        # Kiểm tra ô trống
+        if "" in input_values:
+            has_empty = True
+
+        # Kiểm tra trùng lặp
         duplicate_values = [val for val in input_values if input_values.count(val) > 1 and val != ""]
         if duplicate_values:
             has_duplicate = True
             st.warning(f"⚠ Giá trị `{', '.join(set(duplicate_values))}` đã được sử dụng nhiều lần. Vui lòng chọn số khác!")
 
-        # Nút button bị mờ nếu có giá trị trùng lặp
-        btn_disabled = has_duplicate
+        # Nút bị mờ nếu có trùng hoặc chưa nhập đủ giá trị
+        btn_disabled = has_duplicate or has_empty
 
         if st.button("🚀 Chuyển đổi dữ liệu", disabled=btn_disabled):
-            # Lưu vào session_state
-            column_info = {
-                "column_name": selected_col,
-                "mapping_dict": mapping_dict
-            }
+            column_info = {"column_name": selected_col, "mapping_dict": mapping_dict}
             st.session_state.mapping_dicts.append(column_info)
 
             df[selected_col] = df[selected_col].map(lambda x: mapping_dict.get(x, x))
             df[selected_col] = pd.to_numeric(df[selected_col], errors='coerce')
 
-            # Reset text_inputs sau khi hoàn thành
             st.session_state.text_inputs.clear()
-
             st.session_state.df = df
             st.success(f"✅ Đã chuyển đổi cột `{selected_col}`")
 
     st.dataframe(df.head())
-
     return df
+
 
 
 
