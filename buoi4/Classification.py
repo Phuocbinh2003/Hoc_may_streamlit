@@ -599,11 +599,11 @@ def Classification():
   
 
     st.title("🖊️ MNIST Classification App")
-
+    st.session_state.clear()
     ### **Phần 1: Hiển thị dữ liệu MNIST**
     
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
-    
+    list_session_state()
     # 1️⃣ Phần giới thiệu
     
     # === Sidebar để chọn trang ===
@@ -611,7 +611,7 @@ def Classification():
     tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","🔥Mlflow"])
     
     with tab1:
-        list_session_state()
+        
         ly_thuyet_Decision_tree()
 
     with tab2:
