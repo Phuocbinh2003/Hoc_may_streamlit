@@ -16,11 +16,13 @@ from sklearn.datasets import fetch_openml
 st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
 
 # Load dữ liệu
-X = np.load("buoi4/X.npy")
-y = np.load("buoi4/y.npy")
-X_flattened = X.reshape(X.shape[0], -1) 
+Xmt = np.load("buoi4/X.npy")
+ymt = np.load("buoi4/y.npy")
+X = Xmt.reshape(Xmt.shape[0], -1) 
+y = ymt.reshape(-1) 
 
-st.write(X_flattened[0])
+
+
 
 
 
