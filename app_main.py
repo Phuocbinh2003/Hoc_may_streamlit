@@ -1,18 +1,18 @@
 import streamlit as st
-from buoi2.tien_su_ly_du_lieu import main 
-from buoi4.Classification import Classification
-from buoi5.Clustering_Algorithms import ClusteringAlgorithms
+import subprocess
 
 # Lấy query parameter từ URL
 query_params = st.query_params
-app_option = query_params.get("app", "home")  # Mặc định là 'home'
+app_option = query_params.get("app", "home")
 
-if app_option == "linear_regression":
-    main()
-elif app_option == "classification":
-    Classification()
-elif app_option == "clustering":
-    ClusteringAlgorithms()
+app_mapping = {
+    "linear_regression": "buoi2.tien_su_ly_du_lieu.py",
+    "classification": "buoi4.Classification.py",
+    "clustering": "buoi5.Clustering_Algorithms.py"
+}
+
+if app_option in app_mapping:
+    subprocess.Popen(["streamlit", "run", app_mapping[app_option]])
 else:
     st.write("🔍 Vui lòng chọn một ứng dụng từ thanh điều hướng.")
     st.write("📝 Các lựa chọn:")
