@@ -15,6 +15,13 @@ import pandas as pd
 # Khởi tạo MLflow
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
 # mlflow.set_experiment("MNIST Classification")
+def list_session_state():
+    if st.session_state:
+        st.write("🔍 **Các biến trong st.session_state:**")
+        for key, value in st.session_state.items():
+            st.write(f"- `{key}`: {value}")
+    else:
+        st.write("⚠️ `st.session_state` đang rỗng!")
 
 # Load dữ liệu MNIST
 def ly_thuyet_Decision_tree():
@@ -312,7 +319,7 @@ def train():
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
         X_train=st.session_state.X_train 
-        X_val=st.session_state.X_val 
+        X_val=st.session_state.X_val
         X_test=st.session_state.X_test 
         y_train=st.session_state.y_train 
         y_val=st.session_state.y_val 
@@ -604,6 +611,7 @@ def Classification():
     tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","🔥Mlflow"])
     
     with tab1:
+        list_session_state()
         ly_thuyet_Decision_tree()
 
     with tab2:
