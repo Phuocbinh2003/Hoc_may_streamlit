@@ -193,7 +193,7 @@ def ly_thuyet_K_means():
 from sklearn.datasets import make_moons, make_blobs
 from sklearn.cluster import DBSCAN
 
-def ly_thuyet_DBSCAN_step_by_step():
+def ly_thuyet_DBSCAN():
     # Tạo dữ liệu ngẫu nhiên
     def generate_data(n_samples, noise, dataset_type):
         if dataset_type == "Cụm Gauss":
