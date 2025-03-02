@@ -12,7 +12,7 @@ import joblib
 import pandas as pd
 
 
-# Khởi tạo MLflow
+# Khởi tạo MLflo
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
 # mlflow.set_experiment("MNIST Classification")
 
