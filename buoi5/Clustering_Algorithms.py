@@ -157,8 +157,10 @@ def ly_thuyet_K_means():
     # 🔥 Thêm thanh trạng thái hiển thị tiến trình
     st.status(f"Lần cập nhật: {st.session_state.iteration} - Đang phân cụm...", state="running")
     st.markdown("### 📌 Tọa độ tâm cụm hiện tại:")
+    num_centroids = st.session_state.centroids.shape[0]  # Số lượng tâm cụm thực tế
     centroid_df = pd.DataFrame(st.session_state.centroids, columns=["X", "Y"])
-    centroid_df.index = [f"Tâm cụm {i}" for i in range(cluster_kmeans)]
+    centroid_df.index = [f"Tâm cụm {i}" for i in range(num_centroids)]  # Đảm bảo index khớp
+
     st.dataframe(centroid_df)
     # Vẽ biểu đồ
     fig, ax = plt.subplots(figsize=(6, 6))
