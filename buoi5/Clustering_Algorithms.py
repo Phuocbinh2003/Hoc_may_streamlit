@@ -156,7 +156,10 @@ def ly_thuyet_K_means():
 
     # 🔥 Thêm thanh trạng thái hiển thị tiến trình
     st.status(f"Lần cập nhật: {st.session_state.iteration} - Đang phân cụm...", state="running")
-
+    st.markdown("### 📌 Tọa độ tâm cụm hiện tại:")
+    centroid_df = pd.DataFrame(st.session_state.centroids, columns=["X", "Y"])
+    centroid_df.index = [f"Tâm cụm {i}" for i in range(cluster_kmeans)]
+    st.dataframe(centroid_df)
     # Vẽ biểu đồ
     fig, ax = plt.subplots(figsize=(6, 6))
     labels = st.session_state.labels
@@ -166,7 +169,7 @@ def ly_thuyet_K_means():
         ax.scatter(X[labels == i][:, 0], X[labels == i][:, 1], label=f"Cụm {i}", alpha=0.6, edgecolors="k")
 
     ax.scatter(centroids[:, 0], centroids[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
-    ax.set_title(f"K-Means Clustering (Lần cập nhật: {st.session_state.iteration})")
+    ax.set_title(f"K-Means Clustering")
     ax.legend()
 
     st.pyplot(fig)
