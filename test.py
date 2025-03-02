@@ -30,30 +30,42 @@ def explain_pca():
     ax.legend()
     st.pyplot(fig)
 
-    st.markdown("""
+    st.markdown(r"""
+    ## 📌 PCA - Giải thích Trực Quan
     Dữ liệu này có sự phân tán rõ ràng theo một hướng chính. PCA sẽ tìm ra hướng đó để biểu diễn dữ liệu một cách tối ưu.
 
-    ### 🔹 **Các bước thực hiện PCA một cách dễ hiểu**:
+    ### 🔹 **Các bước thực hiện PCA dễ hiểu**
     1️⃣ **Tìm điểm trung tâm (mean vector)**  
-       Tính giá trị trung bình của từng cột (từng chiều dữ liệu).  
-       
+    Tính giá trị trung bình của từng cột (từng chiều dữ liệu):  
+    $$ \mu = \frac{1}{n} \sum_{i=1}^{n} x_i $$
+
     2️⃣ **Dịch chuyển dữ liệu về gốc tọa độ**  
-       Trừ mỗi điểm dữ liệu đi giá trị trung bình để tập trung dữ liệu quanh gốc.  
+    Trừ mỗi điểm dữ liệu đi giá trị trung bình để tập trung dữ liệu quanh gốc:  
+    $$ X_{\text{norm}} = X - \mu $$
 
     3️⃣ **Tính ma trận hiệp phương sai**  
-       Hiểu đơn giản, ma trận này đo mức độ các biến thay đổi cùng nhau.  
+    Ma trận này đo mức độ các biến thay đổi cùng nhau:  
+    $$ C = \frac{1}{n} X_{\text{norm}}^T X_{\text{norm}} $$
 
     4️⃣ **Tìm các hướng quan trọng nhất**  
-       - Tính các trị riêng (eigenvalues) và vector riêng (eigenvectors).  
-       - Chúng cho ta biết đâu là hướng quan trọng nhất của dữ liệu.  
+    - Tính các trị riêng (eigenvalues) và vector riêng (eigenvectors).  
+    - Chúng cho ta biết đâu là hướng quan trọng nhất của dữ liệu:  
+    $$ C v = \lambda v $$
 
     5️⃣ **Chiếu dữ liệu lên không gian mới**  
-       - Chọn một số hướng chính (principal components).  
-       - Biểu diễn dữ liệu theo các trục này thay vì trục gốc.  
+    **Chọn $K$ vector riêng tương ứng với $K$ trị riêng lớn nhất để tạo ma trận $U_K$:**  
+    - Các vector riêng này tạo thành một hệ trực giao và được gọi là các thành phần chính.
 
+    6️⃣ **Chiếu dữ liệu ban đầu đã chuẩn hóa $X_{\text{norm}}$ xuống không gian con tìm được:**  
+    $$ X_{\text{new}} = X_{\text{norm}} U_K $$
+
+    7️⃣ **Dữ liệu mới chính là tọa độ của các điểm dữ liệu trên không gian mới.**  
+
+    ---
     ### 🔹 **Trực quan hóa quá trình PCA**
     Dưới đây là minh họa cách PCA tìm ra trục quan trọng nhất của dữ liệu:
     """)
+
 
     # PCA thủ công
     X_centered = X - np.mean(X, axis=0)
