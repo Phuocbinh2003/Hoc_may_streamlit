@@ -252,7 +252,7 @@ def split_data():
 
     # Thanh kéo chọn số lượng ảnh để train
     num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
-    
+    st.session_state.total_samples= num_samples
     # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
     remaining_size = 100 - test_size
@@ -364,6 +364,16 @@ def train():
             mlflow.log_param("val_size", st.session_state.val_size)
             mlflow.log_param("train_size", st.session_state.train_size)
             mlflow.log_param("num_samples", st.session_state.total_samples)
+            
+            os.makedirs("mlflow_artifacts", exist_ok=True)
+            np.save("mlflow_artifacts/X_train.npy", X_train)
+            np.save("mlflow_artifacts/X_test.npy", X_test)
+            np.save("mlflow_artifacts/y_train.npy", y_train)
+            np.save("mlflow_artifacts/y_test.npy", y_test)
+            mlflow.log_artifacts("mlflow_artifacts")
+            
+            
+            
             # 🏆 **Huấn luyện với Cross Validation**
             st.write("⏳ Đang chạy Cross-Validation...")
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
