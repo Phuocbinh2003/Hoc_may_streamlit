@@ -334,7 +334,7 @@ def mlflow_input():
     
 from sklearn.model_selection import cross_val_score
 
-def train(X_train, X_val, X_test, y_train, y_val, y_test):
+def train(X_train, X_val, X_test,y_train,y_val,y_test):
     mlflow_input()
     # 📥 **Tải dữ liệu MNIST*
     st.write(X_train[0])
@@ -640,8 +640,8 @@ def Classification():
         
         
         
-        X_train, X_val, X_test, y_train, y_val, y_test= split_data()
-        train(X_train, X_val, X_test, y_train, y_val, y_test)
+        X_train, X_val, X_test,y_train,y_val,y_test= split_data()
+        train(X_train, X_val, X_test,y_train,y_val,y_test)
         
     
     with tab5:
