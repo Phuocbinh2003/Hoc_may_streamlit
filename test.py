@@ -17,7 +17,7 @@ def explain_pca():
     Hãy tưởng tượng bạn có một tập dữ liệu gồm nhiều điểm phân bố theo một đường chéo trong không gian 2D:
     """)
 
-    # Vẽ dữ liệu ban đầu
+   
     np.random.seed(42)
     x = np.random.rand(100) * 10  
     y = x * 0.8 + np.random.randn(100) * 2  
