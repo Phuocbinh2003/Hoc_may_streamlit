@@ -361,6 +361,7 @@ def train():
     
     if st.button("Huấn luyện mô hình"):
         with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}"):
+            
             mlflow.log_param("test_size", st.session_state.test_size)
             mlflow.log_param("val_size", st.session_state.val_size)
             mlflow.log_param("train_size", st.session_state.train_size)
