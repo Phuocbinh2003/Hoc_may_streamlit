@@ -616,7 +616,7 @@ def Classification():
   
 
     st.title("🖊️ MNIST Classification App")
-    st.session_state.clear()
+    #st.session_state.clear()
     ### **Phần 1: Hiển thị dữ liệu MNIST**
     
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
