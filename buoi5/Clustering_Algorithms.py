@@ -215,7 +215,7 @@ def ly_thuyet_DBSCAN():
                 neighbors.append(i)
         return neighbors
 
-    # Giao diện Streamlit
+    # Giao diện Streamli
     st.title("🔍 Minh họa thuật toán DBSCAN từng bước")
 
     # Tùy chỉnh tham số
