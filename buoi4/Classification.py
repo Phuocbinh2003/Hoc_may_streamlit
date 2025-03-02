@@ -306,7 +306,7 @@ def split_data():
         
         
         return X_train, X_val, X_test,y_train,y_val,y_test
-        
+
     elif st.session_state.data_split_done:
         st.info("✅ Dữ liệu đã được chia, không cần chạy lại.")
 
@@ -334,19 +334,13 @@ def mlflow_input():
     
 from sklearn.model_selection import cross_val_score
 
-def train():
+def train(X_train, X_val, X_test, y_train, y_val, y_test):
     mlflow_input()
     # 📥 **Tải dữ liệu MNIST**
-    if "X_train" in st.session_state:
-        X_train=st.session_state.X_train 
-        X_val=st.session_state.X_val
-        X_test=st.session_state.X_test 
-        y_train=st.session_state.y_train 
-        y_val=st.session_state.y_val 
-        y_test=st.session_state.y_test 
-    else:
+    if X_train.size == 0:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
+
 
     # 🌟 Chuẩn hóa dữ liệu
     X_train = X_train.reshape(-1, 28 * 28) / 255.0
@@ -645,8 +639,8 @@ def Classification():
         
         
         
-        split_data()
-        train()
+        X_train, X_val, X_test, y_train, y_val, y_test= split_data()
+        train(X_train, X_val, X_test, y_train, y_val, y_test)
         
     
     with tab5:
