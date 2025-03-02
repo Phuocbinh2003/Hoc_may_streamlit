@@ -6,20 +6,22 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
 
-@st.cache_data
-def load_mnist():
-    """Tải dữ liệu MNIST từ OpenML"""
-    mnist = fetch_openml('mnist_784', version=1, as_frame=False)
-    X, y = mnist.data, mnist.target
-    return X, y.astype(int)
+# @st.cache_data
+# def load_mnist():
+#     """Tải dữ liệu MNIST từ OpenML"""
+#     mnist = fetch_openml('mnist_784', version=1, as_frame=False)
+#     X, y = mnist.data, mnist.target
+#     return X, y.astype(int)
 
 st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
 
 # Load dữ liệu
-X, y = load_mnist()
-
+X = np.load("buoi4/X.npy")
+y = np.load("buoi4/y.npy")
 
 st.write(X[0])
+
+
 
 # Tùy chọn thuật toán
 method = st.radio("Chọn phương pháp giảm chiều", ["PCA", "t-SNE"])
