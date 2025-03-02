@@ -241,7 +241,6 @@ def plot_tree_metrics():
 import streamlit as st
 import numpy as np
 import pandas as pd
-import joblib
 from sklearn.model_selection import train_test_split
 
 def split_data():
@@ -252,54 +251,50 @@ def split_data():
     y = np.load("buoi4/y.npy")
     total_samples = X.shape[0]
 
-    # Nếu chưa có cờ data_split_done, đặt mặc định là False
+    # Nếu chưa có cờ "data_split_done", đặt mặc định là False
     if "data_split_done" not in st.session_state:
         st.session_state.data_split_done = False  
 
-    # Form chọn số lượng mẫu train & tỷ lệ dữ liệu
-    with st.form(key="split_data_form"):
-        num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
-        test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
-        val_size = st.slider("📌 Chọn % dữ liệu Validation", 0, 50, 15)
-        submit_button = st.form_submit_button(label="✅ Xác nhận & Lưu")
+    # Thanh kéo chọn số lượng ảnh để train
+    num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
+    
+    # Thanh kéo chọn tỷ lệ Train/Test
+    test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
+    remaining_size = 100 - test_size
+    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
+    st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
 
-    if submit_button and not st.session_state.data_split_done:
-        # Đánh dấu đã chia dữ liệu, tránh rerun không cần thiết
-        st.session_state.data_split_done = True
-
-        # Lấy số lượng ảnh mong muốn và đảm bảo cân bằng giữa các lớp
+    if st.button("✅ Xác nhận & Lưu") and not st.session_state.data_split_done:
+        st.session_state.data_split_done = True  # Đánh dấu đã chia dữ liệu
+        
+        # Chia dữ liệu theo tỷ lệ đã chọn
         X_selected, _, y_selected, _ = train_test_split(
             X, y, train_size=num_samples, stratify=y, random_state=42
         )
 
-        # Chia train/test theo tỷ lệ đã chọn
+        # Chia train/test
         stratify_option = y_selected if len(np.unique(y_selected)) > 1 else None
         X_train_full, X_test, y_train_full, y_test = train_test_split(
             X_selected, y_selected, test_size=test_size/100, stratify=stratify_option, random_state=42
         )
 
-        # Chia train/val theo tỷ lệ đã chọn
+        # Chia train/val
         stratify_option = y_train_full if len(np.unique(y_train_full)) > 1 else None
         X_train, X_val, y_train, y_val = train_test_split(
             X_train_full, y_train_full, test_size=val_size / (100 - test_size),
             stratify=stratify_option, random_state=42
         )
 
-        # Lưu vào file tạm thay vì session_state
-        joblib.dump(X_train, "temp/X_train.pkl")
-        joblib.dump(X_val, "temp/X_val.pkl")
-        joblib.dump(X_test, "temp/X_test.pkl")
-        joblib.dump(y_train, "temp/y_train.pkl")
-        joblib.dump(y_val, "temp/y_val.pkl")
-        joblib.dump(y_test, "temp/y_test.pkl")
-
-        # Lưu đường dẫn file vào session_state
-        st.session_state.X_train_path = "temp/X_train.pkl"
-        st.session_state.X_val_path = "temp/X_val.pkl"
-        st.session_state.X_test_path = "temp/X_test.pkl"
-        st.session_state.y_train_path = "temp/y_train.pkl"
-        st.session_state.y_val_path = "temp/y_val.pkl"
-        st.session_state.y_test_path = "temp/y_test.pkl"
+        # Lưu dữ liệu vào session_state
+        st.session_state.X_train = X_train
+        st.session_state.X_val = X_val
+        st.session_state.X_test = X_test
+        st.session_state.y_train = y_train
+        st.session_state.y_val = y_val
+        st.session_state.y_test = y_test
+        st.session_state.test_size = X_test.shape[0]
+        st.session_state.val_size = X_val.shape[0]
+        st.session_state.train_size = X_train.shape[0]
 
         # Hiển thị thông tin chia dữ liệu
         summary_df = pd.DataFrame({
@@ -312,6 +307,8 @@ def split_data():
     elif st.session_state.data_split_done:
         st.info("✅ Dữ liệu đã được chia, không cần chạy lại.")
 
+        
+        
         
         
 import os
