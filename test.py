@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
@@ -22,20 +22,31 @@ X, y = load_mnist()
 method = st.radio("Chọn phương pháp giảm chiều", ["PCA", "t-SNE"])
 n_components = st.slider("Số chiều giảm xuống", 2, 3, 2)
 
+# Giới hạn số mẫu để tăng tốc (có thể chỉnh sửa)
+num_samples = 5000
+X_subset, y_subset = X[:num_samples], y[:num_samples]
+
 # Nút chạy thuật toán
 if st.button("🚀 Chạy giảm chiều"):
     with st.spinner("Đang xử lý..."):
         if method == "PCA":
             reducer = PCA(n_components=n_components)
         else:
-            reducer = TSNE(n_components=n_components, perplexity=30, random_state=42)
+            reducer = TSNE(n_components=n_components, perplexity=min(30, num_samples - 1), random_state=42)
 
-        X_reduced = reducer.fit_transform(X[:5000])  # Chỉ dùng 5000 ảnh để tăng tốc
+        X_reduced = reducer.fit_transform(X_subset)
 
         # Hiển thị kết quả
-        fig, ax = plt.subplots(figsize=(6, 6))
-        scatter = ax.scatter(X_reduced[:, 0], X_reduced[:, 1], c=y[:5000], cmap="jet", alpha=0.5)
-        ax.set_title(f"{method} giảm chiều xuống {n_components}D")
-        st.pyplot(fig)
+        if n_components == 2:
+            fig = px.scatter(x=X_reduced[:, 0], y=X_reduced[:, 1], color=y_subset.astype(str),
+                             title=f"{method} giảm chiều xuống {n_components}D",
+                             labels={'x': "Thành phần 1", 'y': "Thành phần 2"})
+        else:  # Biểu đồ 3D
+            fig = px.scatter_3d(x=X_reduced[:, 0], y=X_reduced[:, 1], z=X_reduced[:, 2],
+                                color=y_subset.astype(str),
+                                title=f"{method} giảm chiều xuống {n_components}D",
+                                labels={'x': "Thành phần 1", 'y': "Thành phần 2", 'z': "Thành phần 3"})
+
+        st.plotly_chart(fig)
 
 st.success("Hoàn thành!")
