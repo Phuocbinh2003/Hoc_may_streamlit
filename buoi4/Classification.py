@@ -15,13 +15,6 @@ import pandas as pd
 # Khởi tạo MLflow
 # mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
 # mlflow.set_experiment("MNIST Classification")
-def list_session_state():
-    if st.session_state:
-        st.write("🔍 **Các biến trong st.session_state:**")
-        for key, value in st.session_state.items():
-            st.write(f"- `{key}`: {value}")
-    else:
-        st.write("⚠️ `st.session_state` đang rỗng!")
 
 # Load dữ liệu MNIST
 def ly_thuyet_Decision_tree():
@@ -243,14 +236,19 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+
+def load_mnist_data():
+    X = np.load("buoi4/X.npy")
+    y = np.load("buoi4/y.npy")
+    return X, y
 def split_data():
     st.title("📌 Chia dữ liệu Train/Test")
 
     # Đọc dữ liệu
-    X = np.load("buoi4/X.npy")
-    y = np.load("buoi4/y.npy")
+    X, y = load_mnist_data() 
     total_samples = X.shape[0]
 
+    
     # Nếu chưa có cờ "data_split_done", đặt mặc định là False
     if "data_split_done" not in st.session_state:
         st.session_state.data_split_done = False  
@@ -314,25 +312,13 @@ def split_data():
 import os
 import mlflow
 from mlflow.tracking import MlflowClient
-def mlflow_input():
-    #st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
-    
-    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-    st.session_state['mlflow_url']=DAGSHUB_MLFLOW_URI
-    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
 
-    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-
-    mlflow.set_experiment("Classification")   
-    
-    
     
     
 from sklearn.model_selection import cross_val_score
 
 def train():
-    mlflow_input()
+    #mlflow_input()
     # 📥 **Tải dữ liệu MNIST**
     if "X_train" in st.session_state:
         X_train=st.session_state.X_train 
@@ -497,7 +483,7 @@ def du_doan():
 
     if st.button("🔄 Tải lại nếu không thấy canvas"):
         st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
-        st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
+        #st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
     
     # ✍️ Vẽ số
     canvas_result = st_canvas(
@@ -614,13 +600,22 @@ def show_experiment_selector():
             
 def Classification():
   
+    if "mlflow_initialized" not in st.session_state:   
+        DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+        st.session_state['mlflow_url']=DAGSHUB_MLFLOW_URI
+        mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
 
+        os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+        st.session_state.mlflow_initialized = True
+        mlflow.set_experiment("Classification")   
+        
     st.title("🖊️ MNIST Classification App")
     #st.session_state.clear()
     ### **Phần 1: Hiển thị dữ liệu MNIST**
     
     ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
-    list_session_state()
+    
     # 1️⃣ Phần giới thiệu
     
     # === Sidebar để chọn trang ==
