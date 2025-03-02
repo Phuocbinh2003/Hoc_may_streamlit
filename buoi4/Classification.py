@@ -623,7 +623,7 @@ def Classification():
     list_session_state()
     # 1️⃣ Phần giới thiệu
     
-    # === Sidebar để chọn trang ===
+    # === Sidebar để chọn trang ==
     # === Tạo Tabs ===
     tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết Decision Tree", "📘 Lý thuyết SVM", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","🔥Mlflow"])
     
