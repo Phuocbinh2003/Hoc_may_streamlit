@@ -194,10 +194,12 @@ from sklearn.datasets import make_moons, make_blobs
 from sklearn.cluster import DBSCAN
 
 def ly_thuyet_DBSCAN():
+    import numpy as np
+    from sklearn.datasets import make_blobs, make_moons
+    import matplotlib.pyplot as plt
+    import streamlit as st
 
-
-
-# Tạo dữ liệu ngẫu nhiên
+    # Tạo dữ liệu ngẫu nhiên
     def generate_data(n_samples, noise, dataset_type):
         if dataset_type == "Cụm Gauss":
             X, _ = make_blobs(n_samples=n_samples, centers=3, cluster_std=noise, random_state=42)
@@ -205,61 +207,154 @@ def ly_thuyet_DBSCAN():
             X, _ = make_moons(n_samples=n_samples, noise=noise, random_state=42)
         return X
 
-    # Hàm chạy DBSCAN
-    def run_dbscan(X, eps, min_samples):
-        dbscan = DBSCAN(eps=eps, min_samples=min_samples)
-        labels = dbscan.fit_predict(X)
-        return labels
+    # Hàm tính neighbors
+    def region_query(X, point_idx, eps):
+        neighbors = []
+        for i in range(X.shape[0]):
+            if np.linalg.norm(X[i] - X[point_idx]) <= eps:
+                neighbors.append(i)
+        return neighbors
 
     # Giao diện Streamlit
-    st.title("🔍 Minh họa thuật toán DBSCAN")
+    st.title("🔍 Minh họa thuật toán DBSCAN từng bước")
 
     # Tùy chỉnh tham số
-    # Tùy chỉnh tham số với key để tránh lỗi trùng ID
-    
     dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng (Moons)"], key="dataset_type")
-    
-
-    num_samples_dbscan = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_dbscan")
+    num_samples_dbscan = st.slider("Số điểm dữ liệu", 50, 500, 200, key="num_samples_dbscan")
     noise_dbscan = st.slider("Mức nhiễu", 0.05, 1.0, 0.2, key="noise_dbscan")
     eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.5, step=0.1, key="eps_dbscan")
-    min_samples_dbscan = st.slider("Số điểm tối thiểu để tạo cụm", 2, 20, 5, key="min_samples_dbscan")
+    min_samples_dbscan = st.slider("Số điểm tối thiểu", 2, 20, 5, key="min_samples_dbscan")
 
-    # Nút Reset để tạo lại dữ liệu
-    if st.button("🔄 Reset", key="reset_dbscan"):
+    # Khởi tạo trạng thái
+    if 'X' not in st.session_state:
         st.session_state.X = generate_data(num_samples_dbscan, noise_dbscan, dataset_type)
-        st.session_state.labels = np.full(num_samples_dbscan, -1)  # Chưa có cụm nào
+    if 'dbscan_step' not in st.session_state:
+        st.session_state.dbscan_step = {
+            'visited': np.zeros(num_samples_dbscan, dtype=bool),
+            'labels': np.full(num_samples_dbscan, -1),
+            'cluster_id': 0,
+            'queue': [],
+            'current_point': None,
+            'current_neighbors': [],
+            'processing': False
+        }
 
-    # Kiểm tra dữ liệu trong session_state
-    if "X" not in st.session_state:
+    # Nút Reset
+    if st.button("🔄 Reset"):
         st.session_state.X = generate_data(num_samples_dbscan, noise_dbscan, dataset_type)
-        st.session_state.labels = np.full(num_samples_dbscan, -1)
+        st.session_state.dbscan_step = {
+            'visited': np.zeros(num_samples_dbscan, dtype=bool),
+            'labels': np.full(num_samples_dbscan, -1),
+            'cluster_id': 0,
+            'queue': [],
+            'current_point': None,
+            'current_neighbors': [],
+            'processing': False
+        }
 
+    # Nút bắt đầu/xử lý tiếp
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("▶️ Bắt đầu DBSCAN") and not st.session_state.dbscan_step['processing']:
+            st.session_state.dbscan_step['processing'] = True
+
+    next_step = False
+    with col2:
+        if st.session_state.dbscan_step['processing']:
+            next_step = st.button("⏭️ Bước tiếp theo")
+
+    # Xử lý thuật toán
+    if next_step and st.session_state.dbscan_step['processing']:
+        step = st.session_state.dbscan_step
+        X = st.session_state.X
+
+        if not step['queue']:
+            # Tìm điểm chưa visited
+            unvisited = np.where(step['visited'] == False)[0]
+            if len(unvisited) == 0:
+                step['processing'] = False
+                st.success("Hoàn thành!")
+            else:
+                point_idx = unvisited[0]
+                step['visited'][point_idx] = True
+                step['current_point'] = point_idx
+                neighbors = region_query(X, point_idx, eps_dbscan)
+                step['current_neighbors'] = neighbors
+
+                if len(neighbors) < min_samples_dbscan:
+                    step['labels'][point_idx] = -1
+                else:
+                    step['cluster_id'] += 1
+                    step['labels'][point_idx] = step['cluster_id']
+                    for n in neighbors:
+                        if not step['visited'][n]:
+                            step['queue'].append(n)
+        else:
+            point_idx = step['queue'].pop(0)
+            if not step['visited'][point_idx]:
+                step['visited'][point_idx] = True
+                neighbors = region_query(X, point_idx, eps_dbscan)
+                step['current_point'] = point_idx
+                step['current_neighbors'] = neighbors
+
+                if len(neighbors) >= min_samples_dbscan:
+                    for n in neighbors:
+                        if not step['visited'][n] and n not in step['queue']:
+                            step['queue'].append(n)
+                
+                if step['labels'][point_idx] == -1:
+                    step['labels'][point_idx] = step['cluster_id']
+
+        st.session_state.dbscan_step = step
+
+    # Vẽ đồ thị
+    fig, ax = plt.subplots(figsize=(8, 6))
     X = st.session_state.X
+    step = st.session_state.dbscan_step
 
-    # Nút chạy DBSCAN
-    if st.button("➡️ Chạy DBSCAN"):
-        st.session_state.labels = run_dbscan(X, eps_dbscan, min_samples_dbscan)
+    # Vẽ tất cả điểm
+    ax.scatter(X[:, 0], X[:, 1], c='lightgrey', edgecolors='k', alpha=0.6, label='Chưa xử lý')
 
-    # Vẽ biểu đồ
-    fig, ax = plt.subplots(figsize=(6, 6))
-    labels = st.session_state.labels
-    unique_labels = set(labels)
+    # Vẽ điểm đang xử lý
+    if step['current_point'] is not None:
+        current_point = X[step['current_point']]
+        ax.scatter(current_point[0], current_point[1], c='red', s=100, 
+                   edgecolors='k', label='Điểm đang xét')
+        circle = plt.Circle((current_point[0], current_point[1]), eps_dbscan,
+                            color='red', fill=False, linestyle='--', alpha=0.3)
+        ax.add_artist(circle)
 
-    # Màu cho các cụm
-    colors = plt.cm.get_cmap("tab10", len(unique_labels))
+    # Vẽ lân cận
+    if step['current_neighbors']:
+        neighbors = X[step['current_neighbors']]
+        ax.scatter(neighbors[:, 0], neighbors[:, 1], c='blue', s=80,
+                   edgecolors='k', alpha=0.7, label='Điểm lân cận')
 
+    # Vẽ cụm
+    unique_labels = np.unique(step['labels'])
+    colors = plt.cm.get_cmap('tab10', len(unique_labels))
     for label in unique_labels:
-        mask = labels == label
-        color = "black" if label == -1 else colors(label)
-        ax.scatter(X[mask, 0], X[mask, 1], color=color, label=f"Cụm {label}" if label != -1 else "Nhiễu", edgecolors="k", alpha=0.7)
+        if label == -1:
+            continue
+        mask = step['labels'] == label
+        ax.scatter(X[mask, 0], X[mask, 1], c=[colors(label)], 
+                   edgecolors='k', alpha=0.8, label=f'Cụm {label}')
 
-    ax.set_title(f"Kết quả DBSCAN (eps={eps_dbscan}, min_samples={min_samples_dbscan})")
-    ax.legend()
+    # Vẽ nhiễu
+    noise_mask = step['labels'] == -1
+    ax.scatter(X[noise_mask, 0], X[noise_mask, 1], c='black', marker='x',
+               alpha=0.7, label='Nhiễu')
 
-    # Hiển thị biểu đồ
+    ax.set_title(f"DBSCAN từng bước (eps={eps_dbscan}, min_samples={min_samples_dbscan})")
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1))
     st.pyplot(fig)
 
+    # Hiển thị trạng thái hiện tại
+    if step['current_point'] is not None:
+        st.info(f"Đang xử lý điểm {step['current_point']}")
+        st.write(f"Số lân cận: {len(step['current_neighbors'])}")
+        st.write(f"ID cụm hiện tại: {step['cluster_id']}")
+        st.write(f"Số điểm trong hàng đợi: {len(step['queue'])}")
 
 
 
