@@ -12,9 +12,6 @@ import joblib
 import pandas as pd
 
 
-# Khởi tạo MLflo
-# mlflow.set_tracking_uri("sqlite:///mlruns.db")  # Lưu trữ local
-# mlflow.set_experiment("MNIST Classification")
 
 # Load dữ liệu MNIST
 def ly_thuyet_Decision_tree():
