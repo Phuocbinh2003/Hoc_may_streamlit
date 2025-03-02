@@ -252,7 +252,7 @@ def split_data():
 
     # Thanh kéo chọn số lượng ảnh để train
     num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
-    st.session_state.total_samples= num_samples
+    
     # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
     remaining_size = 100 - test_size
@@ -281,6 +281,7 @@ def split_data():
         )
 
         # Lưu dữ liệu vào session_state
+        st.session_state.total_samples= num_samples
         st.session_state.X_train = X_train
         st.session_state.X_val = X_val
         st.session_state.X_test = X_test
