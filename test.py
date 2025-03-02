@@ -7,35 +7,79 @@ from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
 
 def explain_pca():
-    st.markdown(r"""
-    ## 🧠 Principal Component Analysis (PCA)
-    PCA là một phương pháp giảm chiều dữ liệu bằng cách tìm các thành phần chính (principal components), tức là các trục mới sao cho dữ liệu được trải rộng nhất theo các hướng này.
+    st.markdown("## 🧠 Hiểu PCA một cách đơn giản")
 
-    ### 🔹 **Các bước thực hiện PCA:**
-    1. Chuẩn hóa dữ liệu để có giá trị trung bình bằng 0.
-    2. Tính ma trận hiệp phương sai (Covariance Matrix):
-       $$
-       C = \frac{1}{n} X^T X
-       $$
-    3. Tính giá trị riêng ($\lambda$) và vector riêng ($v$) của ma trận hiệp phương sai:
-       $$
-       C v = \lambda v
-       $$
-    4. Chọn $k$ vector riêng tương ứng với $k$ giá trị riêng lớn nhất để tạo không gian mới.
-    5. Biểu diễn dữ liệu trong không gian mới:
-       $$
-       X_{new} = X W
-       $$
-       với $W$ là ma trận chứa các vector riêng.
+    st.markdown("""
+    **PCA (Phân tích thành phần chính)** là một phương pháp giúp giảm số chiều của dữ liệu mà vẫn giữ được thông tin quan trọng nhất.  
+    Hãy tưởng tượng bạn có một tập dữ liệu nhiều chiều (nhiều cột), nhưng bạn muốn biểu diễn nó trong không gian 2D hoặc 3D để dễ hiểu hơn. PCA giúp bạn làm điều đó!  
 
-    ### ✅ **Ưu điểm của PCA**
-    - Giảm chiều nhanh chóng.
-    - Bảo toàn thông tin quan trọng trong dữ liệu.
-    - Loại bỏ nhiễu trong dữ liệu.
+    ### 🔹 **Ví dụ trực quan**:
+    Hãy tưởng tượng bạn có một tập dữ liệu gồm nhiều điểm phân bố theo một đường chéo trong không gian 2D:
+    """)
 
-    ### ❌ **Nhược điểm của PCA**
-    - Không giữ được cấu trúc phi tuyến tính của dữ liệu.
-    - Các thành phần chính không dễ giải thích về mặt ý nghĩa.
+    # Vẽ dữ liệu ban đầu
+    np.random.seed(42)
+    x = np.random.rand(100) * 10  
+    y = x * 0.8 + np.random.randn(100) * 2  
+    X = np.column_stack((x, y))
+
+    fig, ax = plt.subplots()
+    ax.scatter(X[:, 0], X[:, 1], color="blue", alpha=0.5, label="Dữ liệu ban đầu")
+    ax.set_xlabel("X1")
+    ax.set_ylabel("X2")
+    ax.legend()
+    st.pyplot(fig)
+
+    st.markdown("""
+    Dữ liệu này có sự phân tán rõ ràng theo một hướng chính. PCA sẽ tìm ra hướng đó để biểu diễn dữ liệu một cách tối ưu.
+
+    ### 🔹 **Các bước thực hiện PCA một cách dễ hiểu**:
+    1️⃣ **Tìm điểm trung tâm (mean vector)**  
+       Tính giá trị trung bình của từng cột (từng chiều dữ liệu).  
+       
+    2️⃣ **Dịch chuyển dữ liệu về gốc tọa độ**  
+       Trừ mỗi điểm dữ liệu đi giá trị trung bình để tập trung dữ liệu quanh gốc.  
+
+    3️⃣ **Tính ma trận hiệp phương sai**  
+       Hiểu đơn giản, ma trận này đo mức độ các biến thay đổi cùng nhau.  
+
+    4️⃣ **Tìm các hướng quan trọng nhất**  
+       - Tính các trị riêng (eigenvalues) và vector riêng (eigenvectors).  
+       - Chúng cho ta biết đâu là hướng quan trọng nhất của dữ liệu.  
+
+    5️⃣ **Chiếu dữ liệu lên không gian mới**  
+       - Chọn một số hướng chính (principal components).  
+       - Biểu diễn dữ liệu theo các trục này thay vì trục gốc.  
+
+    ### 🔹 **Trực quan hóa quá trình PCA**
+    Dưới đây là minh họa cách PCA tìm ra trục quan trọng nhất của dữ liệu:
+    """)
+
+    # PCA thủ công
+    X_centered = X - np.mean(X, axis=0)
+    cov_matrix = np.cov(X_centered.T)
+    eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+
+    fig, ax = plt.subplots()
+    ax.scatter(X[:, 0], X[:, 1], color="blue", alpha=0.5, label="Dữ liệu ban đầu")
+    origin = np.mean(X, axis=0)
+
+    for i in range(2):
+        ax.arrow(origin[0], origin[1], 
+                 eigenvectors[0, i] * 3, eigenvectors[1, i] * 3, 
+                 head_width=0.3, head_length=0.3, color="red", label=f"Trục {i+1}")
+
+    ax.set_xlabel("X1")
+    ax.set_ylabel("X2")
+    ax.legend()
+    st.pyplot(fig)
+
+    st.markdown("""
+    **🔹 Kết quả:**  
+    - Trục đỏ là hướng mà PCA tìm ra.  
+    - Nếu chọn 1 trục chính, ta có thể chiếu dữ liệu lên nó để giảm chiều.  
+      
+    Nhờ đó, chúng ta có thể biểu diễn dữ liệu một cách gọn gàng hơn mà không mất quá nhiều thông tin!  
     """)
 
 
