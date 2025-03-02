@@ -18,6 +18,7 @@ st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
 # Load dữ liệu
 X = np.load("buoi4/X.npy")
 y = np.load("buoi4/y.npy")
+X_flattened = X.reshape(X.shape[0], -1)  # Chuyển về (số ảnh, 784)
 
 st.write(X[0])
 
