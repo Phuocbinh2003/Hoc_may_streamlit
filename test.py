@@ -7,7 +7,7 @@ from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
 
 def explain_pca():
-    return r"""
+    st.markdown(r"""
     ## 🧠 Principal Component Analysis (PCA)
     PCA là một phương pháp giảm chiều dữ liệu bằng cách tìm các thành phần chính (principal components), tức là các trục mới sao cho dữ liệu được trải rộng nhất theo các hướng này.
 
@@ -36,11 +36,11 @@ def explain_pca():
     ### ❌ **Nhược điểm của PCA**
     - Không giữ được cấu trúc phi tuyến tính của dữ liệu.
     - Các thành phần chính không dễ giải thích về mặt ý nghĩa.
-    """
+    """)
 
 
 def explain_tsne():
-    return r"""
+    st.markdown(r"""
     ## 🌌 t-Distributed Stochastic Neighbor Embedding (t-SNE)
     t-SNE là một phương pháp giảm chiều mạnh mẽ, giúp hiển thị dữ liệu đa chiều trên mặt phẳng 2D hoặc không gian 3D bằng cách bảo toàn mối quan hệ giữa các điểm gần nhau.
 
@@ -71,7 +71,7 @@ def explain_tsne():
     ### ❌ **Nhược điểm của t-SNE**
     - Chạy chậm hơn PCA.
     - Nhạy cảm với các tham số như perplexity.
-    """
+    """)
 def thi_nghiem():
     
     st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
