@@ -18,6 +18,11 @@ from sklearn.model_selection import KFold
 
 import os
 from mlflow.tracking import MlflowClient
+
+
+
+
+
 def mlflow_input():
     st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
@@ -28,6 +33,12 @@ def mlflow_input():
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
 
     mlflow.set_experiment("Linear_replication")
+
+
+
+
+
+
 
 
 def drop(df):
@@ -821,6 +832,8 @@ def show_experiment_selector():
         st.write(f"📥 [Tải dataset]({dataset_path})")
     else:
         st.warning("⚠ Không tìm thấy thông tin cho run này.")
+
+
 
 
           
