@@ -222,9 +222,24 @@ def explain_tsne():
     - t-SNE phù hợp để **trực quan hóa dữ liệu**, nhưng **không phù hợp cho giảm chiều phục vụ mô hình học máy** (do không bảo toàn cấu trúc tổng thể của dữ liệu).  
     """)
 
+import mlflow
+import os
+import time
+import numpy as np
+import plotly.express as px
+import streamlit as st
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
+def input_mlflow():
+    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+    st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
+    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+    mlflow.set_experiment("PCA_t-SNE")
 
 def thi_nghiem():
-    
     st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
 
     # Load dữ liệu
@@ -233,47 +248,80 @@ def thi_nghiem():
     X = Xmt.reshape(Xmt.shape[0], -1) 
     y = ymt.reshape(-1) 
 
-
-
-
-
-
     # Tùy chọn thuật toán
     method = st.radio("Chọn phương pháp giảm chiều", ["PCA", "t-SNE"])
     n_components = st.slider("Số chiều giảm xuống", 2, 3, 2)
-
-    # Giới hạn số mẫu để tăng tốc (có thể chỉnh sửa)
+    
+    # Giới hạn số mẫu để tăng tốc
     num_samples = 5000
     X_subset, y_subset = X[:num_samples], y[:num_samples]
-
-    # Nút chạy thuật toán
+    input_mlflow()
+    
+    run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
+    st.session_state["run_name"] = run_name if run_name else "default_run"
+    
     if st.button("🚀 Chạy giảm chiều"):
         with st.spinner("Đang xử lý..."):
-            if method == "PCA":
-                reducer = PCA(n_components=n_components)
+            mlflow.start_run(run_name=st.session_state["run_name"])
+            mlflow.log_param("method", method)
+            mlflow.log_param("n_components", n_components)
+            mlflow.log_param("num_samples", num_samples)
+            mlflow.log_param("original_dim", X.shape[1])
+            
+            if method == "t-SNE":
+                perplexity = min(30, num_samples - 1)
+                mlflow.log_param("perplexity", perplexity)
+                reducer = TSNE(n_components=n_components, perplexity=perplexity, random_state=42)
             else:
-                reducer = TSNE(n_components=n_components, perplexity=min(30, num_samples - 1), random_state=42)
-
+                reducer = PCA(n_components=n_components)
+            
+            start_time = time.time()
             X_reduced = reducer.fit_transform(X_subset)
-
+            elapsed_time = time.time() - start_time
+            mlflow.log_metric("elapsed_time", elapsed_time)
+            
+            if method == "PCA":
+                explained_variance = np.sum(reducer.explained_variance_ratio_)
+                mlflow.log_metric("explained_variance_ratio", explained_variance)
+            elif method == "t-SNE" and hasattr(reducer, "kl_divergence_"):
+                mlflow.log_metric("KL_divergence", reducer.kl_divergence_)
+            
             # Hiển thị kết quả
             if n_components == 2:
                 fig = px.scatter(x=X_reduced[:, 0], y=X_reduced[:, 1], color=y_subset.astype(str),
-                                title=f"{method} giảm chiều xuống {n_components}D",
-                                labels={'x': "Thành phần 1", 'y': "Thành phần 2"})
-            else:  # Biểu đồ 3D
+                                 title=f"{method} giảm chiều xuống {n_components}D",
+                                 labels={'x': "Thành phần 1", 'y': "Thành phần 2"})
+            else:
                 fig = px.scatter_3d(x=X_reduced[:, 0], y=X_reduced[:, 1], z=X_reduced[:, 2],
-                                    color=y_subset.astype(str),
-                                    title=f"{method} giảm chiều xuống {n_components}D",
-                                    labels={'x': "Thành phần 1", 'y': "Thành phần 2", 'z': "Thành phần 3"})
+                                     color=y_subset.astype(str),
+                                     title=f"{method} giảm chiều xuống {n_components}D",
+                                     labels={'x': "Thành phần 1", 'y': "Thành phần 2", 'z': "Thành phần 3"})
 
             st.plotly_chart(fig)
+            
+            # Lưu kết quả vào MLflow
+            os.makedirs("logs", exist_ok=True)
+            fig_path = f"logs/{method}_{n_components}D.png"
+            fig.write_image(fig_path)
+            mlflow.log_artifact(fig_path)
+            
+            np.save(f"logs/{method}_X_reduced.npy", X_reduced)
+            mlflow.log_artifact(f"logs/{method}_X_reduced.npy")
+            mlflow.end_run()
 
     st.success("Hoàn thành!")
+
     
     
+    
+import mlflow
+import os
+from mlflow.tracking import MlflowClient
 def pca_tsne():
-        
+    #st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
+    
+    
+    
     tab1, tab2, tab3 = st.tabs(["📘 Lý thuyết PCA", "📘 Lý thuyết t-NSE", "📘 Giảm chiều"] )
 
     with tab1:
