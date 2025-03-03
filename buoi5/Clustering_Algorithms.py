@@ -267,7 +267,7 @@ def ly_thuyet_DBSCAN():
     d(p, q) = \sqrt{\sum_{i=1}^{n} (p_i - q_i)^2}
     """)
 
-    st.markdown("""
+    st.markdown(r"""
     Trong đó:  
     - \( d(p, q) \) là khoảng cách giữa hai điểm dữ liệu \( p \) và \( q \).  
     - \( p_i \) và \( q_i \) là tọa độ của điểm \( p \) và \( q \) trong không gian **n** chiều.  
