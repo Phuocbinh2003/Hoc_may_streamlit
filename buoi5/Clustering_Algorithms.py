@@ -246,7 +246,7 @@ def ly_thuyet_DBSCAN():
         ---
 
         ### 🔹 **Ý tưởng chính của DBSCAN**
-        1️⃣ **Xác định các điểm lõi (Core Points):** Nếu một điểm có ít nhất **min_samples** điểm lân cận trong bán kính **\( \varepsilon \)**, nó là một **điểm lõi**.  
+        1️⃣ **Xác định các điểm lõi (Core Points):** Nếu một điểm có ít nhất **min_samples** điểm lân cận trong bán kính **\( \ varepsilon \)**, nó là một **điểm lõi**.  
         2️⃣ **Xác định các điểm biên (Border Points):** Là các điểm thuộc vùng lân cận của điểm lõi nhưng không đủ **min_samples**.  
         3️⃣ **Xác định nhiễu (Noise Points):** Các điểm không thuộc bất kỳ cụm nào.  
         4️⃣ **Mở rộng cụm:** Bắt đầu từ một điểm lõi, mở rộng cụm bằng cách thêm các điểm biên lân cận cho đến khi không còn điểm nào thoả mãn điều kiện.  
