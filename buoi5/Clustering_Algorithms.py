@@ -738,7 +738,7 @@ def ClusteringAlgorithms():
     
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
-    tab1, tab2, tab3, tab4,tab5 = st.tabs(["📘 Lý thuyết K-means", "📘 Lý thuyết DBSCAN", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán"])
+    tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết K-means", "📘 Lý thuyết DBSCAN", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","🔥 Mlflow"])
 
     with tab1:
         ly_thuyet_K_means()
@@ -761,7 +761,9 @@ def ClusteringAlgorithms():
     with tab5:
         
         du_doan() 
-
+    with tab6:
+        
+        show_experiment_selector() 
 
 
 
