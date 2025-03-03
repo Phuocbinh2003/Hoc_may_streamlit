@@ -534,8 +534,9 @@ def train():
             st.session_state["models"].append({"name": new_model_name, "model": model})
             st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
             st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
-
-
+            mlflow.end_run()
+            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+            st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
 
 
 
