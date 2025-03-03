@@ -175,43 +175,8 @@ def explain_tsne():
     # Trực quan hóa bằng biểu đồ matplotlib
     
 
-    # Tạo dữ liệu hình cầu (phi tuyến tính)
-    np.random.seed(42)
-    num_points = 500
-    phi = np.random.uniform(0, np.pi, num_points)  # Góc azimuth
-    theta = np.random.uniform(0, 2 * np.pi, num_points)  # Góc polar
-    r = np.random.uniform(4, 6, num_points)  # Bán kính
-
-    # Chuyển sang tọa độ Descartes (x, y, z)
-    X = np.zeros((num_points, 3))
-    X[:, 0] = r * np.sin(phi) * np.cos(theta)  # x
-    X[:, 1] = r * np.sin(phi) * np.sin(theta)  # y
-    X[:, 2] = r * np.cos(phi)  # z
-
-    # Nhãn dựa trên bán kính (phân cụm đơn giản)
-    labels = (r > 5).astype(int)
-
-    # Giảm chiều bằng t-SNE
-    X_embedded = TSNE(n_components=2, perplexity=40, learning_rate=200, random_state=42).fit_transform(X)
-
-    # Hiển thị kết quả trên Streamlit
-    st.title("So sánh không gian gốc và t-SNE")
-
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-
-    # Không gian gốc (3D chiếu lên 2D)
-    ax[0].scatter(X[:, 0], X[:, 1], c=labels, cmap="coolwarm", alpha=0.6)
-    ax[0].set_title("Không gian gốc")
-    ax[0].set_xlabel("$x_1$")
-    ax[0].set_ylabel("$x_2$")
-
-    # Không gian sau khi giảm chiều bằng t-SNE
-    ax[1].scatter(X_embedded[:, 0], X_embedded[:, 1], c=labels, cmap="coolwarm", alpha=0.6)
-    ax[1].set_title("Không gian sau khi giảm chiều (t-SNE)")
-    ax[1].set_xlabel("$y_1$")
-    ax[1].set_ylabel("$y_2$")
-
-    st.pyplot(fig)
+    
+    st.image("buoi6/img2.png")  # Đường dẫn cần đúng
 
     st.markdown(r"""
     ---
