@@ -274,6 +274,7 @@ def ly_thuyet_DBSCAN():
         
         """)
     st.latex(r"""
+             
         ### 🔢 **Cách hoạt động của DBSCAN**
         **Gọi** \( N_{\varepsilon}(p) \) **là tập hợp các điểm nằm trong bán kính** \( \varepsilon \) **của** \( p \):  
         """)
