@@ -484,23 +484,23 @@ def train():
             accuracy = np.mean(predicted_labels == y_train)
             st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
 
-        # 🔍 Lưu mô hình vào session_state
-        if "models" not in st.session_state:
-            st.session_state["models"] = []
+            # 🔍 Lưu mô hình vào session_state
+            if "models" not in st.session_state:
+                st.session_state["models"] = []
 
-        model_name = model_choice.lower().replace(" ", "_")
+            model_name = model_choice.lower().replace(" ", "_")
 
-        # Kiểm tra tên để tránh trùng lặp
-        count = 1
-        new_model_name = model_name
-        while any(m["name"] == new_model_name for m in st.session_state["models"]):
-            new_model_name = f"{model_name}_{count}"
-            count += 1
+            # Kiểm tra tên để tránh trùng lặp
+            count = 1
+            new_model_name = model_name
+            while any(m["name"] == new_model_name for m in st.session_state["models"]):
+                new_model_name = f"{model_name}_{count}"
+                count += 1
 
-        st.session_state["models"].append({"name": new_model_name, "model": model})
+            st.session_state["models"].append({"name": new_model_name, "model": model})
 
-        st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
-        st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+            st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
+            st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
 
 
 
