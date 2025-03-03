@@ -730,12 +730,9 @@ def ClusteringAlgorithms():
 
     st.title("🖊️ MNIST Classification App")
 
-    ### **Phần 1: Hiển thị dữ liệu MNIST**
     
-    ### **Phần 2: Trình bày lý thuyết về Decision Tree & SVM*
     
-    # 1️⃣ Phần giới thiệ
-    
+   
     # === Sidebar để chọn trang ===
     # === Tạo Tabs ===
     tab1, tab2, tab3, tab4,tab5 ,tab6= st.tabs(["📘 Lý thuyết K-means", "📘 Lý thuyết DBSCAN", "📘 Data" ,"⚙️ Huấn luyện", "🔢 Dự đoán","🔥 Mlflow"])
