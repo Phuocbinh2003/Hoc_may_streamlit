@@ -143,22 +143,22 @@ def ly_thuyet_SVM():
     """)
 
     
-    # st.write("""
+    st.write(r"""
              
-    # ### 🔎 **Biến slack là gì? Nó có cần thiết không?**
-    # - Biến slack (\(\xi\)) giúp SVM có thể làm việc với dữ liệu **không thể phân tách tuyến tính hoàn hảo**.
-    # - Thay vì ép tất cả điểm dữ liệu phải nằm hoàn toàn ngoài lề (Hard Margin), biến slack cho phép một số điểm nằm **bên trong lề hoặc bị phân loại sai**.
-    # - Điều này giúp mô hình linh hoạt hơn, đặc biệt khi dữ liệu có nhiễu hoặc chồng lấn.
+    ### 🔎 **Biến slack là gì? Nó có cần thiết không?**
+    - Biến slack (\(\xi\)) giúp SVM có thể làm việc với dữ liệu **không thể phân tách tuyến tính hoàn hảo**.
+    - Thay vì ép tất cả điểm dữ liệu phải nằm hoàn toàn ngoài lề (Hard Margin), biến slack cho phép một số điểm nằm **bên trong lề hoặc bị phân loại sai**.
+    - Điều này giúp mô hình linh hoạt hơn, đặc biệt khi dữ liệu có nhiễu hoặc chồng lấn.
 
-    # 💡 **Ý nghĩa của biến slack:**
-    # - Nếu không có biến slack → SVM chỉ hoạt động tốt khi dữ liệu có thể phân tách hoàn hảo.
-    # - Nếu có biến slack → SVM có thể chấp nhận một số lỗi nhỏ để tìm ra mô hình tổng quát hóa tốt hơn.
+    💡 **Ý nghĩa của biến slack:**
+    - Nếu không có biến slack → SVM chỉ hoạt động tốt khi dữ liệu có thể phân tách hoàn hảo.
+    - Nếu có biến slack → SVM có thể chấp nhận một số lỗi nhỏ để tìm ra mô hình tổng quát hóa tốt hơn.
 
-    # 👉 **Điều chỉnh hệ số \( C \):**
-    # - Nếu \( C \) lớn → Mô hình cố gắng giảm lỗi phân loại, nhưng có thể bị **overfitting**.
-    # - Nếu \( C \) nhỏ → Mô hình linh hoạt hơn, nhưng có thể chấp nhận nhiều lỗi hơn.
+    👉 **Điều chỉnh hệ số \( C \):**
+    - Nếu \( C \) lớn → Mô hình cố gắng giảm lỗi phân loại, nhưng có thể bị **overfitting**.
+    - Nếu \( C \) nhỏ → Mô hình linh hoạt hơn, nhưng có thể chấp nhận nhiều lỗi hơn.
 
-    # """)  
+    """)  
     
     st.write("""
     💡 **Ý nghĩa của công thức:**
