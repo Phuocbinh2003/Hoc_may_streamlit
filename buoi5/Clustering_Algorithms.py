@@ -74,30 +74,73 @@ def ly_thuyet_K_means():
 
     # 🔹 Giới thiệu về K-Means
     st.markdown("""
-    **K-Means Clustering** là thuật toán phân cụm **không giám sát**, giúp chia dữ liệu thành **K cụm** sao cho các điểm trong cùng một cụm có đặc trưng giống nhau nhất.  
-    - 📌 **Ý tưởng chính**:  
-        1. Chọn ngẫu nhiên **K tâm cụm (centroids)**.  
-        2. Gán mỗi điểm dữ liệu vào cụm có tâm gần nhất.  
-        3. Cập nhật lại tâm cụm bằng cách lấy trung bình các điểm trong cụm.  
-        4. Lặp lại quá trình trên cho đến khi hội tụ.  
+    ## 📌 **K-Means Clustering**
+    **K-Means** là thuật toán **phân cụm không giám sát** phổ biến, giúp chia dữ liệu thành **K cụm** sao cho các điểm dữ liệu trong cùng một cụm có đặc trưng giống nhau nhất.
+
+    ---
+
+    ### 🔹 **Ý tưởng chính**
+    1️⃣ **Chọn ngẫu nhiên \( K \) tâm cụm (centroids)** từ tập dữ liệu.  
+    2️⃣ **Gán mỗi điểm dữ liệu vào cụm có tâm gần nhất**, sử dụng khoảng cách Euclidean:  
     """)
 
-    # 🔹 Công thức khoảng cách Euclidean
+    # Công thức khoảng cách Euclidean
     st.latex(r"""
     d(p, q) = \sqrt{\sum_{i=1}^{n} (p_i - q_i)^2}
     """)
-    
-    # 🔹 Ưu điểm và Nhược điểm
-    st.markdown("### ✅ **Ưu điểm & ❌ Nhược điểm**")
-    st.markdown("""
-    ✅ **Ưu điểm:**  
-    - Đơn giản, dễ hiểu và hiệu quả trên tập dữ liệu lớn.  
-    - Chạy nhanh vì thuật toán có độ phức tạp thấp.  
 
-    ❌ **Nhược điểm:**  
-    - Cần xác định số cụm \( K \) trước.  
-    - Nhạy cảm với giá trị outlier và cách chọn điểm ban đầu.  
+    st.markdown("""
+    3️⃣ **Cập nhật lại tâm cụm** bằng cách tính trung bình của các điểm trong cụm:
     """)
+
+    # Công thức cập nhật tâm cụm
+    st.latex(r"""
+    \mu_k = \frac{1}{|C_k|} \sum_{x_i \in C_k} x_i
+    """)
+
+    st.markdown("""
+    4️⃣ **Lặp lại quá trình trên** cho đến khi không có sự thay đổi hoặc đạt đến số lần lặp tối đa.
+
+    ---
+
+    ### 🔢 **Công thức tổng quát của K-Means**
+    K-Means tối ưu hóa tổng bình phương khoảng cách từ mỗi điểm đến tâm cụm của nó:
+    """)
+
+    # Hàm mục tiêu của K-Means
+    st.latex(r"""
+    J = \sum_{k=1}^{K} \sum_{x_i \in C_k} ||x_i - \mu_k||^2
+    """)
+
+    st.markdown("""
+    - **\( J \)**: Hàm mất mát (tổng bình phương khoảng cách).
+    - **\( x_i \)**: Điểm dữ liệu thứ \( i \).
+    - **\( \mu_k \)**: Tâm cụm thứ \( k \).
+    - **\( C_k \)**: Nhóm các điểm thuộc cụm thứ \( k \).
+
+    ---
+
+    ### ✅ **Ưu điểm & ❌ Nhược điểm**
+    ✅ **Ưu điểm:**
+    - Đơn giản, dễ hiểu, tốc độ nhanh.
+    - Hiệu quả trên tập dữ liệu lớn.
+    - Dễ triển khai và mở rộng.
+
+    ❌ **Nhược điểm:**
+    - Cần xác định số cụm **\( K \)** trước.
+    - Nhạy cảm với giá trị **outlier**.
+    - Kết quả phụ thuộc vào vị trí khởi tạo ban đầu.
+
+    ---
+
+    ### 🔍 **Một số cải tiến của K-Means**
+    - **K-Means++**: Cải thiện cách chọn tâm cụm ban đầu.
+    - **Mini-batch K-Means**: Dùng mẫu nhỏ thay vì toàn bộ dữ liệu để tăng tốc độ.
+    - **K-Medoids**: Thay vì trung bình, sử dụng điểm thực tế làm tâm cụm.
+
+    📌 **K-Means được ứng dụng rộng rãi trong:** Phân tích khách hàng, nhận diện mẫu, nén ảnh, phân cụm văn bản, v.v.
+    """)
+
 
     # 🔹 Định nghĩa hàm tính toán
     def euclidean_distance(a, b):
