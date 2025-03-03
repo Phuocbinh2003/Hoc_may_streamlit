@@ -254,7 +254,7 @@ def ly_thuyet_DBSCAN():
         ---
 
         ### 🔢 **Tham số quan trọng của DBSCAN**
-        - **\( \varepsilon \)** (eps): Bán kính tìm kiếm điểm lân cận.  
+        - **\( varepsilon \)** (eps): Bán kính tìm kiếm điểm lân cận.  
         - **min_samples**: Số lượng điểm tối thiểu trong **eps** để xác định một **core point**.  
 
         ---
@@ -273,10 +273,11 @@ def ly_thuyet_DBSCAN():
         ---
 
         ### 🔢 **Cách hoạt động của DBSCAN**
-        **Gọi \( N_{\varepsilon}(p) \) là tập hợp các điểm nằm trong bán kính \( \varepsilon \) của \( p \):**  
+        **Gọi ( N_{\varepsilon}(p) \) là tập hợp các điểm nằm trong bán kính \( \varepsilon \) của \( p \):**  
         """)
 
     st.latex(r"N_{\varepsilon}(p) = \{ q \in D \mid d(p, q) \leq \varepsilon \}")
+    
 
     st.markdown(r"""
         - Nếu \( |N_{\varepsilon}(p)| \geq \) min_samples, thì **\( p \)** là một **core point**.  
@@ -292,7 +293,7 @@ def ly_thuyet_DBSCAN():
         - Phát hiện **outlier** một cách tự nhiên.  
 
         ❌ **Nhược điểm:**  
-        - Nhạy cảm với **tham số \( \varepsilon \) và min_samples**.  
+        - Nhạy cảm với **tham số \( varepsilon \) và min_samples**.  
         - Không hoạt động tốt trên **dữ liệu có mật độ thay đổi**.  
 
         ---
