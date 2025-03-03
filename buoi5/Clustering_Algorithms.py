@@ -275,8 +275,8 @@ def ly_thuyet_DBSCAN():
         """)
     st.markdown(r"""
         ### 🔢 **Cách hoạt động của DBSCAN**
-        **Gọi** \( N_{\varepsilon}(p) \) **là tập hợp các điểm nằm trong bán kính** \( \varepsilon \) **của** \( p \):  
-        """)
+        **Gọi** $$ N_{\varepsilon}(p) $$ **là tập hợp các điểm nằm trong bán kính** $$ \varepsilon $$ **của** $$ p $$:
+        """ )
 
     st.latex(r"N_{\varepsilon}(p) = \{ q \in D \mid d(p, q) \leq \varepsilon \}")
     
