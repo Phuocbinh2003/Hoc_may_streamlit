@@ -324,7 +324,7 @@ import mlflow
 from datetime import datetime
 
 def show_experiment_selector():
-    st.title("📊 MLflow Experiments - DAGsHub")
+    st.title("📊 MLflow")
     
     # Kết nối với DAGsHub MLflow Tracking
     mlflow.set_tracking_uri("https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow")
