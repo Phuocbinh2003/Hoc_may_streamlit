@@ -253,8 +253,12 @@ def thi_nghiem():
     n_components = st.slider("Số chiều giảm xuống", 2, 3, 2)
     
     # Giới hạn số mẫu để tăng tốc
-    num_samples = 5000
+    # Thanh trượt chọn số lượng mẫu sử dụng từ MNIST
+    num_samples = st.slider("Chọn số lượng mẫu MNIST sử dụng:", min_value=1000, max_value=60000, value=5000, step=1000)
+
+    # Giới hạn số mẫu để tăng tốc
     X_subset, y_subset = X[:num_samples], y[:num_samples]
+
     input_mlflow()
     
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
@@ -307,7 +311,7 @@ def thi_nghiem():
             
             np.save(f"logs/{method}_X_reduced.npy", X_reduced)
             mlflow.log_artifact(f"logs/{method}_X_reduced.npy")
-            st.success("Lưu lên mlflow!")
+           
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
