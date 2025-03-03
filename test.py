@@ -31,40 +31,72 @@ def explain_pca():
     st.pyplot(fig)
 
     st.markdown(r"""
-    ## 📌 PCA - Giải thích Trực Quan
+    ## 📌 PCA - Giải thích Trực Quan  
     Dữ liệu này có sự phân tán rõ ràng theo một hướng chính. PCA sẽ tìm ra hướng đó để biểu diễn dữ liệu một cách tối ưu.
 
+    ---
+
     ### 🔹 **Các bước thực hiện PCA dễ hiểu**
+
     1️⃣ **Tìm điểm trung tâm (mean vector)**  
-    Tính giá trị trung bình của từng cột (từng chiều dữ liệu):  
-    $$ \mu = \frac{1}{n} \sum_{i=1}^{n} x_i $$
+    - Trước tiên, tính giá trị trung bình của từng đặc trưng (feature) trong tập dữ liệu.  
+    - Vector trung bình này giúp xác định "trung tâm" của dữ liệu.  
+    $$ 
+    \mu = \frac{1}{n} \sum_{i=1}^{n} x_i 
+    $$  
+    - Trong đó:
+        - \( n \) là số lượng mẫu dữ liệu.
+        - \( x_i \) là từng điểm dữ liệu.
 
     2️⃣ **Dịch chuyển dữ liệu về gốc tọa độ**  
-    Trừ mỗi điểm dữ liệu đi giá trị trung bình để tập trung dữ liệu quanh gốc:  
-    $$ X_{\text{norm}} = X - \mu $$
+    - Để đảm bảo phân tích chính xác hơn, ta dịch chuyển dữ liệu sao cho trung tâm của nó nằm tại gốc tọa độ bằng cách trừ đi vector trung bình:  
+    $$ 
+    X_{\text{norm}} = X - \mu
+    $$  
+    - Khi đó, dữ liệu sẽ có giá trị trung bình bằng 0.
 
     3️⃣ **Tính ma trận hiệp phương sai**  
-    Ma trận này đo mức độ các biến thay đổi cùng nhau:  
-    $$ C = \frac{1}{n} X_{\text{norm}}^T X_{\text{norm}} $$
+    - Ma trận hiệp phương sai giúp đo lường mức độ biến thiên giữa các đặc trưng:  
+    $$ 
+    C = \frac{1}{n} X_{\text{norm}}^T X_{\text{norm}}
+    $$  
+    - Ý nghĩa:
+        - Nếu phần tử \( C_{ij} \) có giá trị lớn → Hai đặc trưng \( i \) và \( j \) có mối tương quan mạnh.
+        - Nếu \( C_{ij} \) gần 0 → Hai đặc trưng không liên quan nhiều.
 
     4️⃣ **Tìm các hướng quan trọng nhất**  
-    - Tính các trị riêng (eigenvalues) và vector riêng (eigenvectors).  
-    - Chúng cho ta biết đâu là hướng quan trọng nhất của dữ liệu:  
-    $$ C v = \lambda v $$
+    - Tính trị riêng (eigenvalues) và vector riêng (eigenvectors) từ ma trận hiệp phương sai:  
+    $$ 
+    C v = \lambda v
+    $$  
+    - Trong đó:
+        - \( v \) là vector riêng (eigenvector) - đại diện cho các hướng chính của dữ liệu.
+        - \( \lambda \) là trị riêng (eigenvalue) - thể hiện độ quan trọng của từng hướng.
+    - Vector riêng có trị riêng lớn hơn sẽ mang nhiều thông tin quan trọng hơn.
 
-    5️⃣ **Chiếu dữ liệu lên không gian mới**  
-    **Chọn $K$ vector riêng tương ứng với $K$ trị riêng lớn nhất để tạo ma trận $U_K$:**  
-    - Các vector riêng này tạo thành một hệ trực giao và được gọi là các thành phần chính.
+    5️⃣ **Chọn số chiều mới và tạo không gian con**  
+    - Chọn \( K \) vector riêng tương ứng với \( K \) trị riêng lớn nhất để tạo ma trận \( U_K \):  
+    $$ 
+    U_K = [v_1, v_2, ..., v_K]
+    $$  
+    - Các vector này tạo thành hệ trực giao và giúp ta biểu diễn dữ liệu tối ưu trong không gian mới.
 
-    6️⃣ **Chiếu dữ liệu ban đầu đã chuẩn hóa $X_{\text{norm}}$ xuống không gian con tìm được:**  
-    $$ X_{\text{new}} = X_{\text{norm}} U_K $$
+    6️⃣ **Chiếu dữ liệu vào không gian mới**  
+    - Biểu diễn dữ liệu trong hệ trục mới bằng cách nhân dữ liệu chuẩn hóa với ma trận \( U_K \):  
+    $$ 
+    X_{\text{new}} = X_{\text{norm}} U_K
+    $$  
+    - Dữ liệu mới \( X_{\text{new}} \) có số chiều ít hơn nhưng vẫn giữ được nhiều thông tin quan trọng.
 
-    7️⃣ **Dữ liệu mới chính là tọa độ của các điểm dữ liệu trên không gian mới.**  
+    7️⃣ **Dữ liệu mới chính là tọa độ của các điểm trong không gian mới.**  
+    - Mỗi điểm dữ liệu giờ đây được biểu diễn bằng các thành phần chính thay vì các đặc trưng ban đầu.
 
     ---
-    ### 🔹 **Trực quan hóa quá trình PCA**
+
+    ### 🔹 **Trực quan hóa quá trình PCA**  
     Dưới đây là minh họa cách PCA tìm ra trục quan trọng nhất của dữ liệu:
     """)
+
 
 
     # PCA thủ công
