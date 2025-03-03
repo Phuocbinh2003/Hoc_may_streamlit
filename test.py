@@ -126,8 +126,12 @@ def explain_pca():
     Nhờ đó, chúng ta có thể biểu diễn dữ liệu một cách gọn gàng hơn mà không mất quá nhiều thông tin!  
     """)
 
-
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
 def explain_tsne():
+    
     st.markdown(r"""
     ## 🌌 t-Distributed Stochastic Neighbor Embedding (t-SNE)
     t-SNE là một phương pháp giảm chiều mạnh mẽ, giúp hiển thị dữ liệu đa chiều trên mặt phẳng 2D hoặc không gian 3D bằng cách bảo toàn mối quan hệ giữa các điểm gần nhau.
@@ -169,10 +173,7 @@ def explain_tsne():
     """)
 
     # Trực quan hóa bằng biểu đồ matplotlib
-    import streamlit as st
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from sklearn.manifold import TSNE
+    
 
     # Tạo dữ liệu hình cầu (phi tuyến tính)
     np.random.seed(42)
