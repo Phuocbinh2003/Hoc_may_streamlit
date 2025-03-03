@@ -310,7 +310,8 @@ def thi_nghiem():
             mlflow.end_run()
 
     st.success("Hoàn thành!")
-
+    st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+    st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
     
     
     
