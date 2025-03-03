@@ -380,22 +380,32 @@ from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from scipy.stats import mode  
 
+import streamlit as st
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans, DBSCAN
+from scipy.stats import mode
+
 def split_data():
     st.title("📌 Chia dữ liệu Train/Test")
 
     # Đọc dữ liệu
-    X = np.load("buoi4/X.npy")
-    y = np.load("buoi4/y.npy")
+    Xmt = np.load("buoi4/X.npy")
+    ymt = np.load("buoi4/y.npy")
+    X = Xmt.reshape(Xmt.shape[0], -1)  # Giữ nguyên định dạng dữ liệu
+    y = ymt.reshape(-1)  
+
     total_samples = X.shape[0]
 
     # Thanh kéo chọn số lượng ảnh để train
-    num_samples = st.slider("Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
+    num_samples = st.slider("Chọn số lượng ảnh để train:", min_value=1000, max_value=total_samples, value=10000)
 
     # Thanh kéo chọn tỷ lệ Train/Test
-    test_size = st.slider("Chọn tỷ lệ test:", 0.1, 0.5, 0.2)
+    test_size = st.slider("Chọn tỷ lệ test:", min_value=0.1, max_value=0.5, value=0.2)
 
     if st.button("✅ Xác nhận & Lưu"):
-        # Lấy số lượng ảnh mong muốn
+        # Chọn số lượng ảnh mong muốn
         X_selected, y_selected = X[:num_samples], y[:num_samples]
 
         # Chia train/test theo tỷ lệ đã chọn
@@ -424,7 +434,7 @@ def train():
     y_train = st.session_state["y_train"]
 
     # 🌟 **Chuẩn hóa dữ liệu**
-    X_train = X_train.reshape(-1, 28 * 28) / 255.0
+    X_train_norm = X_train / 255.0  # Chia giá trị pixel về khoảng [0,1]
 
     # 📌 **Chọn mô hình**
     model_choice = st.selectbox("Chọn mô hình:", ["K-Means", "DBSCAN"])
@@ -432,23 +442,23 @@ def train():
     if model_choice == "K-Means":
         st.markdown("🔹 **K-Means**: Thuật toán phân cụm chia dữ liệu thành K nhóm dựa trên khoảng cách.")
 
-        n_clusters = st.slider("🔢 Chọn số cụm (K):", 2, 20, 10)
+        n_clusters = st.slider("🔢 Chọn số cụm (K):", min_value=2, max_value=20, value=10)
 
         # 📉 Giảm chiều dữ liệu bằng PCA trước khi huấn luyện
         pca = PCA(n_components=2)
-        X_train_pca = pca.fit_transform(X_train)
+        X_train_pca = pca.fit_transform(X_train_norm)
 
         model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
     elif model_choice == "DBSCAN":
         st.markdown("🛠️ **DBSCAN**: Thuật toán phân cụm dựa trên mật độ.")
 
-        eps = st.slider("📏 Bán kính lân cận (eps):", 0.1, 10.0, 0.5)
-        min_samples = st.slider("👥 Số điểm tối thiểu trong cụm:", 2, 20, 5)
+        eps = st.slider("📏 Bán kính lân cận (eps):", min_value=0.1, max_value=10.0, value=0.5)
+        min_samples = st.slider("👥 Số điểm tối thiểu trong cụm:", min_value=2, max_value=20, value=5)
 
         # 📉 Giảm chiều dữ liệu bằng PCA trước khi huấn luyện
         pca = PCA(n_components=2)
-        X_train_pca = pca.fit_transform(X_train)
+        X_train_pca = pca.fit_transform(X_train_norm)
 
         model = DBSCAN(eps=eps, min_samples=min_samples)
 
@@ -491,6 +501,7 @@ def train():
 
         st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
         st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+
 
 
 
