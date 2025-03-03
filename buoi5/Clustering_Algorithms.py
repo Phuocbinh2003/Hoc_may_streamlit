@@ -111,8 +111,8 @@ def ly_thuyet_K_means():
 
     st.markdown(r"""
         Trong đó:  
-        - **$$ J $$**: Hàm mất mát (tổng bình phương khoảng cách).  
-        - **$$ x_i $$**: Điểm dữ liệu thứ \( i \).  
+        - **\( J \)**: Hàm mất mát (tổng bình phương khoảng cách).  
+        - **\( x_i \)**: Điểm dữ liệu thứ \( i \).  
         - **\( \mu_k \)**: Tâm cụm thứ \( k \).  
         - **\( C_k \)**: Tập các điểm thuộc cụm \( k \).  
 
