@@ -466,9 +466,9 @@ def train():
         model.fit(X_train_pca)
         st.success("✅ Huấn luyện thành công!")
 
-        if model_choice == "K-Means":
-            labels = model.labels_
+        labels = model.labels_  # Nhãn cụm từ mô hình
 
+        if model_choice == "K-Means":
             # 🔄 Ánh xạ nhãn cụm với nhãn thực tế
             label_mapping = {}
             for i in range(n_clusters):
@@ -484,23 +484,34 @@ def train():
             accuracy = np.mean(predicted_labels == y_train)
             st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
 
-            # 🔍 Lưu mô hình vào session_state
-            if "models" not in st.session_state:
-                st.session_state["models"] = []
+        elif model_choice == "DBSCAN":
+            # 🧐 Kiểm tra số cụm thực tế (DBSCAN có thể tạo ra số cụm khác nhau)
+            unique_clusters = set(labels) - {-1}  # Loại bỏ -1 (nhiễu)
+            n_clusters_found = len(unique_clusters)
 
-            model_name = model_choice.lower().replace(" ", "_")
+            st.write(f"🔍 **Số cụm tìm thấy:** `{n_clusters_found}`")
 
-            # Kiểm tra tên để tránh trùng lặp
-            count = 1
-            new_model_name = model_name
-            while any(m["name"] == new_model_name for m in st.session_state["models"]):
-                new_model_name = f"{model_name}_{count}"
-                count += 1
+            # 🛠️ Tính tỉ lệ điểm bị coi là nhiễu
+            noise_ratio = np.sum(labels == -1) / len(labels)
+            st.write(f"🚨 **Tỉ lệ nhiễu:** `{noise_ratio * 100:.2f}%`")
 
-            st.session_state["models"].append({"name": new_model_name, "model": model})
+        # 🔍 Lưu mô hình vào session_state
+        if "models" not in st.session_state:
+            st.session_state["models"] = []
 
-            st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
-            st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+        model_name = model_choice.lower().replace(" ", "_")
+
+        # Kiểm tra tên để tránh trùng lặp
+        count = 1
+        new_model_name = model_name
+        while any(m["name"] == new_model_name for m in st.session_state["models"]):
+            new_model_name = f"{model_name}_{count}"
+            count += 1
+
+        st.session_state["models"].append({"name": new_model_name, "model": model})
+
+        st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
+        st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}") 
 
 
 
