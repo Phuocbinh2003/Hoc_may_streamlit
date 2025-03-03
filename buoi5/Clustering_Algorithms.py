@@ -239,73 +239,70 @@ from sklearn.cluster import DBSCAN
 def ly_thuyet_DBSCAN():
 
   
-    st.markdown("""
-    ## 📌 **DBSCAN (Density-Based Spatial Clustering of Applications with Noise)**
-    **DBSCAN** là một thuật toán phân cụm **không giám sát**, dựa trên **mật độ điểm dữ liệu**, giúp xác định các cụm có hình dạng bất kỳ và phát hiện nhiễu (outliers).  
+    st.markdown(r"""
+        ## 📌 **DBSCAN (Density-Based Spatial Clustering of Applications with Noise)**
+        **DBSCAN** là một thuật toán phân cụm **không giám sát**, dựa trên **mật độ điểm dữ liệu**, giúp xác định các cụm có hình dạng bất kỳ và phát hiện nhiễu (outliers).  
 
-    ---
-    
-    ### 🔹 **Ý tưởng chính của DBSCAN**
-    1️⃣ **Xác định các điểm lõi (Core Points):** Nếu một điểm có ít nhất **min_samples** điểm lân cận trong bán kính **\( \varepsilon \)**, nó là một **điểm lõi**.  
-    2️⃣ **Xác định các điểm biên (Border Points):** Là các điểm thuộc vùng lân cận của điểm lõi nhưng không đủ **min_samples**.  
-    3️⃣ **Xác định nhiễu (Noise Points):** Các điểm không thuộc bất kỳ cụm nào.  
-    4️⃣ **Mở rộng cụm:** Bắt đầu từ một điểm lõi, mở rộng cụm bằng cách thêm các điểm biên lân cận cho đến khi không còn điểm nào thoả mãn điều kiện.  
+        ---
 
-    ---
-    
-    ### 🔢 **Tham số quan trọng của DBSCAN**
-    - **\( \varepsilon \) (eps):** Bán kính tìm kiếm điểm lân cận.  
-    - **min_samples:** Số lượng điểm tối thiểu trong **eps** để xác định một **core point**.  
+        ### 🔹 **Ý tưởng chính của DBSCAN**
+        1️⃣ **Xác định các điểm lõi (Core Points):** Nếu một điểm có ít nhất **min_samples** điểm lân cận trong bán kính **\( \varepsilon \)**, nó là một **điểm lõi**.  
+        2️⃣ **Xác định các điểm biên (Border Points):** Là các điểm thuộc vùng lân cận của điểm lõi nhưng không đủ **min_samples**.  
+        3️⃣ **Xác định nhiễu (Noise Points):** Các điểm không thuộc bất kỳ cụm nào.  
+        4️⃣ **Mở rộng cụm:** Bắt đầu từ một điểm lõi, mở rộng cụm bằng cách thêm các điểm biên lân cận cho đến khi không còn điểm nào thoả mãn điều kiện.  
 
-    ---
-    
-    ### 📌 **Công thức khoảng cách trong DBSCAN**
-    DBSCAN sử dụng **khoảng cách Euclidean** để xác định **điểm lân cận**, được tính bằng công thức:  
-    """)
-    
-    st.latex(r"""
-    d(p, q) = \sqrt{\sum_{i=1}^{n} (p_i - q_i)^2}
-    """)
+        ---
+
+        ### 🔢 **Tham số quan trọng của DBSCAN**
+        - **\( \varepsilon \)** (eps): Bán kính tìm kiếm điểm lân cận.  
+        - **min_samples**: Số lượng điểm tối thiểu trong **eps** để xác định một **core point**.  
+
+        ---
+
+        ### 📌 **Công thức khoảng cách trong DBSCAN**
+        DBSCAN sử dụng **khoảng cách Euclidean** để xác định **điểm lân cận**, được tính bằng công thức:  
+        """)
+
+    st.latex(r"d(p, q) = \sqrt{\sum_{i=1}^{n} (p_i - q_i)^2}")
 
     st.markdown(r"""
-    Trong đó:  
-    - \( d(p, q) \) là khoảng cách giữa hai điểm dữ liệu \( p \) và \( q \).  
-    - \( p_i \) và \( q_i \) là tọa độ của điểm \( p \) và \( q \) trong không gian **n** chiều.  
+        Trong đó:  
+        - \( d(p, q) \) là khoảng cách giữa hai điểm dữ liệu \( p \) và \( q \).  
+        - \( p_i \) và \( q_i \) là tọa độ của điểm \( p \) và \( q \) trong không gian **n** chiều.  
 
-    ---
-    
-    ### 🔢 **Cách hoạt động của DBSCAN**
-    **Gọi \( N_{\varepsilon}(p) \) là tập hợp các điểm nằm trong bán kính \( \varepsilon \) của \( p \):**  
+        ---
+
+        ### 🔢 **Cách hoạt động của DBSCAN**
+        **Gọi \( N_{\varepsilon}(p) \) là tập hợp các điểm nằm trong bán kính \( \varepsilon \) của \( p \):**  
+        """)
+
+    st.latex(r"N_{\varepsilon}(p) = \{ q \in D \mid d(p, q) \leq \varepsilon \}")
+
+    st.markdown(r"""
+        - Nếu \( |N_{\varepsilon}(p)| \geq \) min_samples, thì **\( p \)** là một **core point**.  
+        - Nếu **\( p \)** là **core point**, tất cả các điểm trong \( N_{\varepsilon}(p) \) sẽ được gán vào cùng một cụm.  
+        - Nếu một điểm không thuộc cụm nào, nó được đánh dấu là **nhiễu**.  
+
+        ---
+
+        ### ✅ **Ưu điểm & ❌ Nhược điểm**
+        ✅ **Ưu điểm:**  
+        - Tự động tìm số cụm mà **không cần xác định trước \( K \)** như K-Means.  
+        - Xử lý tốt **các cụm có hình dạng phức tạp**.  
+        - Phát hiện **outlier** một cách tự nhiên.  
+
+        ❌ **Nhược điểm:**  
+        - Nhạy cảm với **tham số \( \varepsilon \) và min_samples**.  
+        - Không hoạt động tốt trên **dữ liệu có mật độ thay đổi**.  
+
+        ---
+
+        ### 📌 **Ứng dụng của DBSCAN**
+        - **Phát hiện gian lận tài chính**.  
+        - **Phân tích dữ liệu không gian (GIS, bản đồ)**.  
+        - **Phát hiện bất thường (Anomaly Detection)**.  
     """)
-    
-    st.latex(r"""
-    N_{\varepsilon}(p) = \{ q \in D \mid d(p, q) \leq \varepsilon \}
-    """)
 
-    st.markdown("""
-    - Nếu \( |N_{\varepsilon}(p)| \geq \) min_samples, thì **\( p \)** là một **core point**.  
-    - Nếu **\( p \)** là **core point**, tất cả các điểm trong \( N_{\varepsilon}(p) \) sẽ được gán vào cùng một cụm.  
-    - Nếu một điểm không thuộc cụm nào, nó được đánh dấu là **nhiễu**.  
-
-    ---
-    
-    ### ✅ **Ưu điểm & ❌ Nhược điểm**
-    ✅ **Ưu điểm:**  
-    - Tự động tìm số cụm mà **không cần xác định trước \( K \)** như K-Means.  
-    - Xử lý tốt **các cụm có hình dạng phức tạp**.  
-    - Phát hiện **outlier** một cách tự nhiên.  
-
-    ❌ **Nhược điểm:**  
-    - Nhạy cảm với **tham số \( \varepsilon \) và min_samples**.  
-    - Không hoạt động tốt trên **dữ liệu có mật độ thay đổi**.  
-
-    ---
-    
-    ### 📌 **Ứng dụng của DBSCAN**
-    - **Phát hiện gian lận tài chính**.  
-    - **Phân tích dữ liệu không gian (GIS, bản đồ)**.  
-    - **Phát hiện bất thường (Anomaly Detection)**.  
-    """)
 
     # Tiếp tục phần giao diện chạy DBSCAN
 
