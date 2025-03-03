@@ -120,11 +120,38 @@ def explain_pca():
 
     st.markdown("""
     **🔹 Kết quả:**  
+    
+    
+    
+    
+    
     - Trục đỏ là hướng mà PCA tìm ra.  
     - Nếu chọn 1 trục chính, ta có thể chiếu dữ liệu lên nó để giảm chiều.  
       
     Nhờ đó, chúng ta có thể biểu diễn dữ liệu một cách gọn gàng hơn mà không mất quá nhiều thông tin!  
     """)
+    st.image("buoi6/img1.png")  # Đường dẫn cần đúng
+    st.markdown("""
+        ### ✅ **Ưu điểm của PCA**  
+        - **Giảm chiều dữ liệu hiệu quả**: PCA giúp giảm số chiều của dữ liệu mà vẫn giữ lại phần lớn thông tin quan trọng.  
+        - **Tăng tốc độ xử lý**: Khi số chiều giảm, các mô hình học máy sẽ chạy nhanh hơn và yêu cầu ít tài nguyên hơn.  
+        - **Giảm nhiễu**: PCA có thể loại bỏ các thành phần nhiễu bằng cách giữ lại các thành phần chính có phương sai cao.  
+        - **Trực quan hóa dữ liệu**: PCA giúp hiển thị dữ liệu nhiều chiều dưới dạng 2D hoặc 3D để con người dễ quan sát hơn.  
+
+        ---
+
+        ### ❌ **Nhược điểm của PCA**  
+        - **Mất thông tin**: PCA chọn những thành phần có phương sai cao nhất, có thể làm mất thông tin quan trọng.  
+        - **Không phải lúc nào cũng hiệu quả**: PCA chỉ hoạt động tốt khi dữ liệu có cấu trúc tuyến tính. Với dữ liệu phi tuyến tính, t-SNE có thể tốt hơn.  
+        - **Khó diễn giải**: Sau khi giảm chiều, các thành phần chính không còn giữ nguyên ý nghĩa gốc, khiến việc hiểu dữ liệu trở nên khó khăn hơn.  
+        - **Ảnh hưởng bởi dữ liệu đầu vào**: PCA nhạy cảm với thang đo dữ liệu. Nếu dữ liệu chưa được chuẩn hóa, kết quả có thể bị méo mó.  
+        """)
+
+    
+    
+    
+    
+    
 
 import streamlit as st
 import numpy as np
