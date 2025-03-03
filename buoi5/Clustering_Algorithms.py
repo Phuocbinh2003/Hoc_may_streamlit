@@ -67,7 +67,7 @@ def data():
       
       
       
-    """)
+    # """)
 
 def ly_thuyet_K_means():
     st.title("📌 K-Means Clustering")
@@ -422,10 +422,35 @@ def split_data():
     if "X_train" in st.session_state:
         st.write("📌 Dữ liệu train/test đã sẵn sàng để sử dụng!")
 
+
+import mlflow
+import os
+import time
+import numpy as np
+import plotly.express as px
+import streamlit as st
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+import mlflow
+import mlflow.sklearn
+import streamlit as st
+import numpy as np
+import os
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans, DBSCAN
+from scipy.stats import mode
+
+def input_mlflow():
+    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+    st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
+    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+    mlflow.set_experiment("Clustering")
+
 def train():
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
-    # Kiểm tra dữ liệu trước khi train
     if "X_train" not in st.session_state:
         st.warning("⚠️ Vui lòng chia dữ liệu trước khi train!")
         return
@@ -433,85 +458,83 @@ def train():
     X_train = st.session_state["X_train"]
     y_train = st.session_state["y_train"]
 
-    # 🌟 **Chuẩn hóa dữ liệu**
-    X_train_norm = X_train / 255.0  # Chia giá trị pixel về khoảng [0,1]
+    X_train_norm = X_train / 255.0  # Chuẩn hóa
 
-    # 📌 **Chọn mô hình**
     model_choice = st.selectbox("Chọn mô hình:", ["K-Means", "DBSCAN"])
 
     if model_choice == "K-Means":
-        st.markdown("🔹 **K-Means**: Thuật toán phân cụm chia dữ liệu thành K nhóm dựa trên khoảng cách.")
-
-        n_clusters = st.slider("🔢 Chọn số cụm (K):", min_value=2, max_value=20, value=10)
-
-        # 📉 Giảm chiều dữ liệu bằng PCA trước khi huấn luyện
+        st.markdown("🔹 **K-Means**")
+        n_clusters = st.slider("🔢 Chọn số cụm (K):", 2, 20, 10)
         pca = PCA(n_components=2)
         X_train_pca = pca.fit_transform(X_train_norm)
-
         model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
     elif model_choice == "DBSCAN":
-        st.markdown("🛠️ **DBSCAN**: Thuật toán phân cụm dựa trên mật độ.")
-
-        eps = st.slider("📏 Bán kính lân cận (eps):", min_value=0.1, max_value=10.0, value=0.5)
-        min_samples = st.slider("👥 Số điểm tối thiểu trong cụm:", min_value=2, max_value=20, value=5)
-
-        # 📉 Giảm chiều dữ liệu bằng PCA trước khi huấn luyện
+        st.markdown("🛠️ **DBSCAN**")
+        eps = st.slider("📏 Bán kính lân cận (eps):", 0.1, 10.0, 0.5)
+        min_samples = st.slider("👥 Số điểm tối thiểu trong cụm:", 2, 20, 5)
         pca = PCA(n_components=2)
         X_train_pca = pca.fit_transform(X_train_norm)
-
         model = DBSCAN(eps=eps, min_samples=min_samples)
 
+    input_mlflow()
+    run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
+    st.session_state["run_name"] = run_name if run_name else "default_run"
+
     if st.button("🚀 Huấn luyện mô hình"):
-        model.fit(X_train_pca)
-        st.success("✅ Huấn luyện thành công!")
+        with mlflow.start_run(run_name=st.session_state["run_name"]):
+            model.fit(X_train_pca)
+            st.success("✅ Huấn luyện thành công!")
 
-        labels = model.labels_  # Nhãn cụm từ mô hình
+            labels = model.labels_
 
-        if model_choice == "K-Means":
-            # 🔄 Ánh xạ nhãn cụm với nhãn thực tế
-            label_mapping = {}
-            for i in range(n_clusters):
-                mask = labels == i
-                if np.sum(mask) > 0:
-                    most_common_label = mode(y_train[mask], keepdims=True).mode[0]  
-                    label_mapping[i] = most_common_label
+            if model_choice == "K-Means":
+                label_mapping = {}
+                for i in range(n_clusters):
+                    mask = labels == i
+                    if np.sum(mask) > 0:
+                        most_common_label = mode(y_train[mask], keepdims=True).mode[0]
+                        label_mapping[i] = most_common_label
 
-            # 🎯 Chuyển nhãn cụm thành nhãn thực
-            predicted_labels = np.array([label_mapping[label] for label in labels])
+                predicted_labels = np.array([label_mapping[label] for label in labels])
+                accuracy = np.mean(predicted_labels == y_train)
+                st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
 
-            # ✅ Tính độ chính xác
-            accuracy = np.mean(predicted_labels == y_train)
-            st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
+                # Log vào MLflow
+                mlflow.log_param("model", "K-Means")
+                mlflow.log_param("n_clusters", n_clusters)
+                mlflow.log_metric("accuracy", accuracy)
+                mlflow.sklearn.log_model(model, "kmeans_model")
 
-        elif model_choice == "DBSCAN":
-            # 🧐 Kiểm tra số cụm thực tế (DBSCAN có thể tạo ra số cụm khác nhau)
-            unique_clusters = set(labels) - {-1}  # Loại bỏ -1 (nhiễu)
-            n_clusters_found = len(unique_clusters)
+            elif model_choice == "DBSCAN":
+                unique_clusters = set(labels) - {-1}
+                n_clusters_found = len(unique_clusters)
+                noise_ratio = np.sum(labels == -1) / len(labels)
+                st.write(f"🔍 **Số cụm tìm thấy:** `{n_clusters_found}`")
+                st.write(f"🚨 **Tỉ lệ nhiễu:** `{noise_ratio * 100:.2f}%`")
 
-            st.write(f"🔍 **Số cụm tìm thấy:** `{n_clusters_found}`")
+                # Log vào MLflow
+                mlflow.log_param("model", "DBSCAN")
+                mlflow.log_param("eps", eps)
+                mlflow.log_param("min_samples", min_samples)
+                mlflow.log_metric("n_clusters_found", n_clusters_found)
+                mlflow.log_metric("noise_ratio", noise_ratio)
+                mlflow.sklearn.log_model(model, "dbscan_model")
 
-            # 🛠️ Tính tỉ lệ điểm bị coi là nhiễu
-            noise_ratio = np.sum(labels == -1) / len(labels)
-            st.write(f"🚨 **Tỉ lệ nhiễu:** `{noise_ratio * 100:.2f}%`")
+            if "models" not in st.session_state:
+                st.session_state["models"] = []
 
-        # 🔍 Lưu mô hình vào session_state
-        if "models" not in st.session_state:
-            st.session_state["models"] = []
+            model_name = model_choice.lower().replace(" ", "_")
+            count = 1
+            new_model_name = model_name
+            while any(m["name"] == new_model_name for m in st.session_state["models"]):
+                new_model_name = f"{model_name}_{count}"
+                count += 1
 
-        model_name = model_choice.lower().replace(" ", "_")
+            st.session_state["models"].append({"name": new_model_name, "model": model})
+            st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
+            st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
 
-        # Kiểm tra tên để tránh trùng lặp
-        count = 1
-        new_model_name = model_name
-        while any(m["name"] == new_model_name for m in st.session_state["models"]):
-            new_model_name = f"{model_name}_{count}"
-            count += 1
-
-        st.session_state["models"].append({"name": new_model_name, "model": model})
-
-        st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
-        st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}") 
 
 
 
