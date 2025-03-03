@@ -271,11 +271,9 @@ def ly_thuyet_DBSCAN():
         - \( p_i \) và \( q_i \) là tọa độ của điểm \( p \) và \( q \) trong không gian **n** chiều.  
 
         ---
-
-        ### 🔢 **Cách hoạt động của DBSCAN**
-        **Gọi \( N_{\varepsilon}(p) \) là tập hợp các điểm nằm trong bán kính \( \varepsilon \) của \( p \):**  
+        
         """)
-    st.markdown(r"""
+    st.latex(r"""
         ### 🔢 **Cách hoạt động của DBSCAN**
         **Gọi** \( N_{\varepsilon}(p) \) **là tập hợp các điểm nằm trong bán kính** \( \varepsilon \) **của** \( p \):  
         """)
