@@ -172,7 +172,7 @@ def explain_tsne():
        - Ý nghĩa:
          - Phân phối t-Student giúp giảm tác động của các điểm xa nhau, tạo ra cụm dữ liệu rõ hơn.
       
-    3️⃣ **Tối ưu hóa khoảng cách giữa \( p_{j|i} \) và \( q_{j|i} \)**  
+    3️⃣ **Tối ưu hóa khoảng cách giữa $$ p_{j|i} $$ và $$ q_{j|i} $$**  
        - t-SNE cố gắng làm cho phân phối xác suất trong không gian gốc gần bằng trong không gian mới bằng cách tối thiểu hóa **hàm mất mát Kullback-Leibler (KL divergence)**:  
        $$ 
        KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
