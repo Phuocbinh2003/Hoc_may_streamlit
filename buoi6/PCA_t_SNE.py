@@ -18,7 +18,7 @@ def explain_pca():
     """)
 
    
-    st.image("buoi6/img8.png",use_container_width ="auto", caption="dữ liệu mô phỏng")   
+    st.image("buoi6/img9.png",use_container_width ="auto", caption="dữ liệu mô phỏng")   
 
 
     st.markdown(r"""
@@ -227,27 +227,36 @@ def input_mlflow():
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
     mlflow.set_experiment("PCA_t-SNE")
 
+import streamlit as st
+import numpy as np
+import plotly.express as px
+import mlflow
+import time
+import os
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
 def thi_nghiem():
     st.title("📉 Giảm chiều dữ liệu MNIST với PCA & t-SNE")
 
     # Load dữ liệu
     Xmt = np.load("buoi4/X.npy")
     ymt = np.load("buoi4/y.npy")
-    X = Xmt.reshape(Xmt.shape[0], -1) 
-    y = ymt.reshape(-1) 
+    X = Xmt.reshape(Xmt.shape[0], -1)
+    y = ymt.reshape(-1)
 
     # Tùy chọn thuật toán
     method = st.radio("Chọn phương pháp giảm chiều", ["PCA", "t-SNE"])
-    n_components = st.slider("Số chiều giảm xuống", 2, 3, 2)
+    n_components = st.slider("Chọn số chiều giảm xuống", 2, min(X.shape[1], 50), 10)
     
-    # Giới hạn số mẫu để tăng tốc
-    # Thanh trượt chọn số lượng mẫu sử dụng từ MNIST
+    # Chọn trực quan hóa 2D hoặc 3D
+    visualization_dim = st.radio("Chọn cách trực quan hóa", ["2D", "3D"])
+    vis_components = 3 if visualization_dim == "3D" else 2
+    
+    # Thanh trượt chọn số lượng mẫu
     num_samples = st.slider("Chọn số lượng mẫu MNIST sử dụng:", min_value=1000, max_value=60000, value=5000, step=1000)
-
-    # Giới hạn số mẫu để tăng tốc
+    
     X_subset, y_subset = X[:num_samples], y[:num_samples]
-
-    input_mlflow()
     
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state["run_name"] = run_name if run_name else "default_run"
@@ -259,7 +268,8 @@ def thi_nghiem():
             mlflow.log_param("n_components", n_components)
             mlflow.log_param("num_samples", num_samples)
             mlflow.log_param("original_dim", X.shape[1])
-            
+            mlflow.log_param("visualization_dim", vis_components)
+
             if method == "t-SNE":
                 perplexity = min(30, num_samples - 1)
                 mlflow.log_param("perplexity", perplexity)
@@ -279,16 +289,16 @@ def thi_nghiem():
                 mlflow.log_metric("KL_divergence", reducer.kl_divergence_)
             
             # Hiển thị kết quả
-            if n_components == 2:
+            if vis_components == 2:
                 fig = px.scatter(x=X_reduced[:, 0], y=X_reduced[:, 1], color=y_subset.astype(str),
-                                 title=f"{method} giảm chiều xuống {n_components}D",
+                                 title=f"{method} giảm chiều xuống {n_components}D (Trực quan hóa 2D)",
                                  labels={'x': "Thành phần 1", 'y': "Thành phần 2"})
             else:
                 fig = px.scatter_3d(x=X_reduced[:, 0], y=X_reduced[:, 1], z=X_reduced[:, 2],
                                      color=y_subset.astype(str),
-                                     title=f"{method} giảm chiều xuống {n_components}D",
+                                     title=f"{method} giảm chiều xuống {n_components}D (Trực quan hóa 3D)",
                                      labels={'x': "Thành phần 1", 'y': "Thành phần 2", 'z': "Thành phần 3"})
-
+            
             st.plotly_chart(fig)
             
             # Lưu kết quả vào MLflow
@@ -299,13 +309,12 @@ def thi_nghiem():
             
             np.save(f"logs/{method}_X_reduced.npy", X_reduced)
             mlflow.log_artifact(f"logs/{method}_X_reduced.npy")
-           
+            
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
             st.success("Hoàn thành!")
-    
-    
+
 from datetime import datetime    
 import streamlit as st
 import mlflow
