@@ -80,7 +80,7 @@ def explain_pca():
     
     st.markdown(r"""
     5️⃣ **Chọn số chiều mới và tạo không gian con**  
-    - Chọn \( K \) vector riêng tương ứng với \( K \) trị riêng lớn nhất để tạo ma trận \( U_K \):  
+    - Chọn \( K \) vector riêng tương ứng với \( K \) trị riêng lớn nhất để tạo ma trận $$( U_K )$$:  
     $$ 
     U_K = [v_1, v_2, ..., v_K]
     $$  
@@ -89,11 +89,11 @@ def explain_pca():
     st.image("buoi6/img5.png",caption="Chọn không gian con với các vector riêng") 
     st.markdown(r"""
     6️⃣ **Chiếu dữ liệu vào không gian mới**  
-    - Biểu diễn dữ liệu trong hệ trục mới bằng cách nhân dữ liệu chuẩn hóa với ma trận \( U_K \):  
+    - Biểu diễn dữ liệu trong hệ trục mới bằng cách nhân dữ liệu chuẩn hóa với ma trận $$( U_K )$$:  
     $$ 
     X_{\text{new}} = X_{\text{norm}} U_K
     $$  
-    - Dữ liệu mới \( X_{\text{new}} \) có số chiều ít hơn nhưng vẫn giữ được nhiều thông tin quan trọng.
+    - Dữ liệu mới $$ X_{\text{new}} $$ có số chiều ít hơn nhưng vẫn giữ được nhiều thông tin quan trọng.
     """)
     st.image("buoi6/img6.png", caption="Chiếu dữ liệu vào không gian mới") 
 
