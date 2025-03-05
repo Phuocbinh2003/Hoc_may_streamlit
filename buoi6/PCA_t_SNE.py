@@ -37,7 +37,7 @@ def explain_pca():
     $$  
     - Trong đó:
         - \( n \) là số lượng mẫu dữ liệu.
-        - $$ \( x_i \)$$  là từng điểm dữ liệu.
+        - $$ ( x_i )$$  là từng điểm dữ liệu.
         
         
     """)  
