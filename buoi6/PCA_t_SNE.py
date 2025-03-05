@@ -115,7 +115,7 @@ def explain_pca():
     
     st.markdown(r"""
     ---
-    """)
+    
 
     ### 🔹 **Trực quan hóa quá trình PCA**  
     Dưới đây là minh họa cách PCA tìm ra trục quan trọng nhất của dữ liệu:
