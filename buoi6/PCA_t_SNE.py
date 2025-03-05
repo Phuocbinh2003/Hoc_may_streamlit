@@ -50,7 +50,7 @@ def explain_pca():
         
         
     """)  
-    st.image("buoi6/img3.png",use_container_width ="auto")   
+    st.image("buoi6/img3.png",use_container_width ="auto", caption="Trung bình dữ liệu")   
 
         
     st.markdown(r"""
@@ -61,7 +61,7 @@ def explain_pca():
     $$  
     - Khi đó, dữ liệu sẽ có giá trị trung bình bằng 0.
     """)
-    st.image("buoi6/img4.png") 
+    st.image("buoi6/img4.png", caption="Dịch chuyển dữ liệu về gốc tọa độ") 
     st.markdown(r"""
     3️⃣ **Tính ma trận hiệp phương sai**  
     - Ma trận hiệp phương sai giúp đo lường mức độ biến thiên giữa các đặc trưng:  
@@ -95,7 +95,7 @@ def explain_pca():
     $$  
     - Các vector này tạo thành hệ trực giao và giúp ta biểu diễn dữ liệu tối ưu trong không gian mới.
     """)
-    st.image("buoi6/img5.png") 
+    st.image("buoi6/img5.png",caption="Chọn không gian con với các vector riêng") 
     st.markdown(r"""
     6️⃣ **Chiếu dữ liệu vào không gian mới**  
     - Biểu diễn dữ liệu trong hệ trục mới bằng cách nhân dữ liệu chuẩn hóa với ma trận \( U_K \):  
@@ -104,43 +104,16 @@ def explain_pca():
     $$  
     - Dữ liệu mới \( X_{\text{new}} \) có số chiều ít hơn nhưng vẫn giữ được nhiều thông tin quan trọng.
     """)
-    st.image("buoi6/img6.png") 
+    st.image("buoi6/img6.png", caption="Chiếu dữ liệu vào không gian mới") 
 
     st.markdown(r"""
     7️⃣ **Dữ liệu mới chính là tọa độ của các điểm trong không gian mới.**  
     - Mỗi điểm dữ liệu giờ đây được biểu diễn bằng các thành phần chính thay vì các đặc trưng ban đầu.
 
     """)
-    st.image("buoi6/img7.png") 
-    
-    st.markdown(r"""
-    ---
+    st.image("buoi6/img7.png", caption="Dữ liệu mới sau PCA") 
     
 
-    ### 🔹 **Trực quan hóa quá trình PCA**  
-    Dưới đây là minh họa cách PCA tìm ra trục quan trọng nhất của dữ liệu:
-    """)
-
-
-
-    # PCA thủ công
-    X_centered = X - np.mean(X, axis=0)
-    cov_matrix = np.cov(X_centered.T)
-    eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
-
-    fig, ax = plt.subplots()
-    ax.scatter(X[:, 0], X[:, 1], color="blue", alpha=0.5, label="Dữ liệu ban đầu")
-    origin = np.mean(X, axis=0)
-
-    for i in range(2):
-        ax.arrow(origin[0], origin[1], 
-                 eigenvectors[0, i] * 3, eigenvectors[1, i] * 3, 
-                 head_width=0.3, head_length=0.3, color="red", label=f"Trục {i+1}")
-
-    ax.set_xlabel("X1")
-    ax.set_ylabel("X2")
-    ax.legend()
-    st.pyplot(fig)
 
     st.markdown("""
     **🔹 Kết quả:**  
