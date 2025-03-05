@@ -56,13 +56,13 @@ def ly_thuyet_Decision_tree():
     st.latex(r"""
     IG = H(S) - \sum_{j=1}^{k} \frac{|S_j|}{|S|} H(S_j)
     """)
-    st.write("""
+    st.write(r"""
     Trong đó:
-    - \( S \) : tập dữ liệu ban đầu.
-    - \( S_j \) : tập con sau khi chia theo thuộc tính đang xét.
-    - \( \frac{|S_j|}{|S|} \) : tỷ lệ số lượng mẫu trong tập con \( S_j \) so với tổng số mẫu.
-    - \( H(S) \) : Entropy của tập dữ liệu ban đầu.
-    - \( H(S_j) \) : Entropy của tập con \( S_j \).
+    - $$ S $$: tập dữ liệu ban đầu.
+    - $$S_j $$: tập con sau khi chia theo thuộc tính đang xét.
+    - $$ \frac{|S_j|}{|S|} $$ : tỷ lệ số lượng mẫu trong tập con $$ S_j $$ so với tổng số mẫu.
+    - $$H(S) $$ : Entropy của tập dữ liệu ban đầu.
+    - $$ H(S_j) $$ : Entropy của tập con $$S_j $$.
     """)
     
     st.write("""
