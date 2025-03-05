@@ -222,7 +222,7 @@ def ly_thuyet_K_means():
 
 from sklearn.datasets import make_moons, make_blobs
 from sklearn.cluster import DBSCAN
-
+from sklearn.datasets import make_blobs, make_moons, make_circles
 def ly_thuyet_DBSCAN():
 
     st.markdown(r"""
