@@ -156,12 +156,12 @@ def explain_tsne():
     ### 🔹 **Nguyên lý hoạt động của t-SNE**
     
     1️⃣ **Tính xác suất điểm gần nhau trong không gian gốc**  
-       - Với mỗi điểm \( x_i \), xác suất có điều kiện giữa \( x_i \) và \( x_j \) được tính dựa trên khoảng cách Gaussian:  
+       - Với mỗi điểm $$ x_i $$, xác suất có điều kiện giữa $$ x_i $$ và $$ x_j $$ được tính dựa trên khoảng cách Gaussian:  
        $$ 
        p_{j|i} = \frac{\exp(-\| x_i - x_j \|^2 / 2\sigma^2)}{\sum_{k \neq i} \exp(-\| x_i - x_k \|^2 / 2\sigma^2)} 
        $$  
        - Trong đó:
-         - \( \sigma \) là độ lệch chuẩn (bandwidth) của Gaussian Kernel.
+         - $$ \sigma $$ là độ lệch chuẩn (bandwidth) của Gaussian Kernel.
          - Xác suất này phản ánh mức độ gần gũi của các điểm dữ liệu trong không gian ban đầu.
       
     2️⃣ **Tính xác suất trong không gian giảm chiều (2D/3D)**  
@@ -178,8 +178,8 @@ def explain_tsne():
        KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
        $$  
        - Ý nghĩa:
-         - Nếu \( P \) và \( Q \) giống nhau, KL divergence sẽ nhỏ.
-         - t-SNE cập nhật tọa độ \( y_i \) để giảm KL divergence, giúp bảo toàn cấu trúc dữ liệu.
+         - Nếu $$ P $$và $$ Q $$ giống nhau, KL divergence sẽ nhỏ.
+         - t-SNE cập nhật tọa độ $$y_i $$ để giảm KL divergence, giúp bảo toàn cấu trúc dữ liệu.
 
     ---
     
