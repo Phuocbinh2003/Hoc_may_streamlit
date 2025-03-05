@@ -247,7 +247,7 @@ def thi_nghiem():
 
     # Tùy chọn thuật toán
     method = st.radio("Chọn phương pháp giảm chiều", ["PCA", "t-SNE"])
-    n_components = st.slider("Chọn số chiều giảm xuống", 2, min(X.shape[1], 50), 10)
+    n_components = st.slider("Chọn số chiều giảm xuống", 2, min(X.shape[1], 50), 3)
     
     # Chọn trực quan hóa 2D hoặc 3D
     visualization_dim = st.radio("Chọn cách trực quan hóa", ["2D", "3D"])
@@ -296,7 +296,7 @@ def thi_nghiem():
             else:
                 fig = px.scatter_3d(x=X_reduced[:, 0], y=X_reduced[:, 1], z=X_reduced[:, 2],
                                      color=y_subset.astype(str),
-                                     title=f"{method} giảm chiều xuống {n_components}D (Trực quan hóa 3D)",
+                                     title=f"{method} giảm chiều xuống {n_components} (Trực quan hóa 3D)",
                                      labels={'x': "Thành phần 1", 'y': "Thành phần 2", 'z': "Thành phần 3"})
             
             st.plotly_chart(fig)
@@ -353,8 +353,8 @@ def show_experiment_selector():
     run_info = []
     for _, run in runs.iterrows():
         run_id = run["run_id"]
-        run_params = mlflow.get_run(run_id).data.params
-        run_name = run_params.get("run_name", f"Run {run_id[:8]}")
+        run_tags = mlflow.get_run(run_id).data.tags
+        run_name = run_tags.get("mlflow.runName", f"Run {run_id[:8]}")  # Lấy từ tags
         run_info.append((run_name, run_id))
     
     # Tạo dictionary để map run_name -> run_id
