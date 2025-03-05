@@ -95,7 +95,7 @@ def ly_thuyet_SVM():
     """)
 
     # Hiển thị hình ảnh minh họa SV
-    st.image("buoi4/img2.png",use_container_width ="auto", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_container_width =True)
+    st.image("buoi4/img2.png",use_container_width ="auto", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu")
 
     st.write("""
     ### 🔍 **Cách hoạt động của SVM**
