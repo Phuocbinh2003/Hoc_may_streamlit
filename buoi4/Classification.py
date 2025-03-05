@@ -538,11 +538,25 @@ def du_doan():
             # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
-            # Dự đoán
+            # Dự đoán số
             prediction = model.predict(img)
-            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
+            probabilities = model.predict_proba(img)
+
+            # Lấy xác suất cao nhất và số được dự đoán
+            max_prob = np.max(probabilities)
+            predicted_number = prediction[0]
+
+            st.subheader(f"🔢 Dự đoán: {predicted_number}")
+            st.write(f"📊 Độ tin cậy: {max_prob:.2%}")  # Hiển thị dưới dạng phần trăm
+
+            # Hiển thị bảng xác suất của tất cả các số từ 0-9
+            prob_df = pd.DataFrame(probabilities, columns=[str(i) for i in range(10)]).T
+            prob_df.columns = ["Xác suất"]
+            st.bar_chart(prob_df)  # Vẽ biểu đồ xác suất dự đoán cho từng số
+
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
+
 
 
 from datetime import datetime   
