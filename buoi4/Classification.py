@@ -25,57 +25,56 @@ def ly_thuyet_Decision_tree():
     """)
 
     # Hiển thị ảnh minh họa Decision Tree
-    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_container_width =True)
+    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_container_width=True)
+
+    st.subheader("2️⃣ Các bước thực hiện trong Decision Tree")
+    st.write("""
+    **Bước 1: Tính Entropy của tập dữ liệu ban đầu**
+    - Entropy đo lường mức độ hỗn loạn của dữ liệu. Nếu dữ liệu hoàn toàn đồng nhất, Entropy = 0.
+    - Công thức Entropy:
+    """)
+    st.latex(r"""
+    H(S) = - \sum_{i=1}^{c} p_i \log_2 p_i
+    """)
+    st.write("""
+    Trong đó:
+    - \( c \) : số lượng lớp trong tập dữ liệu.
+    - \( p_i \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
+    """)
 
     st.write("""
-    ### 🔍 Cách Decision Tree hoạt động với MNIST:
-    - Mỗi ảnh trong MNIST có kích thước **28×28 pixels**, mỗi pixel có thể xem là một **đặc trưng (feature)**.
-    - Mô hình sẽ quyết định phân tách dữ liệu bằng cách **chọn những pixels quan trọng nhất** để tạo nhánh.
-    - Ví dụ, để phân biệt chữ số **0** và **1**, Decision Tree có thể kiểm tra:
-        - Pixel ở giữa có sáng không?
-        - Pixel dọc hai bên có sáng không?
-    - Dựa trên câu trả lời, mô hình sẽ tiếp tục chia nhỏ tập dữ liệu.
-    """)
-
-    # 2️⃣ Công thức toán họ
-    st.subheader("2️⃣ Các bước tính toán trong Decision Tree")
-
-    st.markdown(r"""
-    ### 📌 **Công thức chính**
-    - **Entropy (Độ hỗn loạn của dữ liệu)**:
-    $$
-    H(S) = - \sum_{i=1}^{c} p_i \log_2 p_i
-    $$
-    → **Đo lường mức độ hỗn loạn của tập dữ liệu**. Nếu dữ liệu hoàn toàn đồng nhất, Entropy = 0. Nếu dữ liệu được phân bố đều giữa các lớp, Entropy đạt giá trị lớn nhất.
-
-    **Trong đó:**  
-    - \( c \) : số lượng lớp trong tập dữ liệu.  
-    - \( $$p_i$$ \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
-
-    - **Information Gain (Lợi ích thông tin sau khi chia tách)**:
-    $$
-    IG = H(S) - \sum_{j=1}^{k} \frac{|S_j|}{|S|} H(S_j)
-    $$
-    → **Đo lường mức độ giảm Entropy khi chia tập dữ liệu** theo một thuộc tính nào đó.  
-    - Nếu **IG cao**, nghĩa là thuộc tính đó giúp phân loại tốt hơn.  
-    - Nếu **IG thấp**, nghĩa là thuộc tính đó không có nhiều ý nghĩa để phân tách dữ liệu.
-
-    **Trong đó:**  
-    - \( S \) : tập dữ liệu ban đầu.  
-    - \( $$S_j$$ \) : tập con sau khi chia theo thuộc tính đang xét.  
-    - \( $$|S_j| / |S|$$ \) : tỷ lệ số lượng mẫu trong tập con \( $$S_j$$ \) so với tổng số mẫu.  
-    - \( H(S) \) : Entropy của tập dữ liệu ban đầu.  
-    - \( $$H(S_j)$$ \) : Entropy của tập con \( $$S_j$$ \).
-
-    💡 **Cách áp dụng**:.
-    
-    1️⃣ **Tính Entropy \( H(S) \) của tập dữ liệu ban đầu**.  
-    2️⃣ **Tính Entropy \( $$H(S_j)$$ \) của từng tập con khi chia theo từng thuộc tính**.  
-    3️⃣ **Tính Information Gain cho mỗi thuộc tính**.  
-    4️⃣ **Chọn thuộc tính có Information Gain cao nhất để chia nhánh**.  
-    5️⃣ **Lặp lại quy trình trên cho đến khi dữ liệu được phân loại hoàn toàn**.  
+    **Bước 2: Chia tập dữ liệu theo từng thuộc tính và tính Entropy của từng tập con**
+    - Mỗi lần chia, dữ liệu được tách thành nhiều tập con nhỏ hơn.
+    - Entropy của mỗi tập con được tính tương tự như Entropy ban đầu.
     """)
     
+    st.write("""
+    **Bước 3: Tính Information Gain (IG) của từng thuộc tính**
+    - IG đo lường mức độ giảm Entropy khi chia dữ liệu theo một thuộc tính.
+    - Công thức Information Gain:
+    """)
+    st.latex(r"""
+    IG = H(S) - \sum_{j=1}^{k} rac{|S_j|}{|S|} H(S_j)
+    """)
+    st.write("""
+    Trong đó:
+    - \( S \) : tập dữ liệu ban đầu.
+    - \( S_j \) : tập con sau khi chia theo thuộc tính đang xét.
+    - \( \frac{|S_j|}{|S|} \) : tỷ lệ số lượng mẫu trong tập con \( S_j \) so với tổng số mẫu.
+    - \( H(S) \) : Entropy của tập dữ liệu ban đầu.
+    - \( H(S_j) \) : Entropy của tập con \( S_j \).
+    """)
+    
+    st.write("""
+    **Bước 4: Chọn thuộc tính có Information Gain cao nhất để phân nhánh**
+    - Thuộc tính có IG cao nhất sẽ được chọn để chia tập dữ liệu.
+    """)
+    
+    st.write("""
+    **Bước 5: Lặp lại quá trình trên cho từng nhánh của cây**
+    - Quá trình chia nhỏ tiếp tục đến khi các tập con không thể chia nhỏ hơn hoặc đạt điều kiện dừng.
+    """)
+
     
     
 def ly_thuyet_SVM():
@@ -94,7 +93,7 @@ def ly_thuyet_SVM():
     """)
 
     # Hiển thị hình ảnh minh họa SV
-    st.image("buoi4/img2.png", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_container_width =True)
+    st.image("buoi4/img2.png",use_container_width ="auto", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu", use_container_width =True)
 
     st.write("""
     ### 🔍 **Cách hoạt động của SVM**
