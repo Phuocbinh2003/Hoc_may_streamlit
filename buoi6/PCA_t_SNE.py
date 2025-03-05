@@ -73,7 +73,7 @@ def explain_pca():
     $$  
     - Trong đó:
         - \( v \) là vector riêng (eigenvector) - đại diện cho các hướng chính của dữ liệu.
-        - \( \lambda \) là trị riêng (eigenvalue) - thể hiện độ quan trọng của từng hướng.
+        - $$ ( \lambda \) $$ là trị riêng (eigenvalue) - thể hiện độ quan trọng của từng hướng.
     - Vector riêng có trị riêng lớn hơn sẽ mang nhiều thông tin quan trọng hơn.
     
     """)
