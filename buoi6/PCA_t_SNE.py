@@ -18,17 +18,8 @@ def explain_pca():
     """)
 
    
-    np.random.seed(42)
-    x = np.random.rand(100) * 10  
-    y = x * 0.8 + np.random.randn(100) * 2  
-    X = np.column_stack((x, y))
+    st.image("buoi6/img8.png",use_container_width ="auto", caption="dữ liệu mô phỏng")   
 
-    fig, ax = plt.subplots()
-    ax.scatter(X[:, 0], X[:, 1], color="blue", alpha=0.5, label="Dữ liệu ban đầu")
-    ax.set_xlabel("X1")
-    ax.set_ylabel("X2")
-    ax.legend()
-    st.pyplot(fig ,use_container_width ="auto")
 
     st.markdown(r"""
     ## 📌 PCA - Giải thích Trực Quan  
