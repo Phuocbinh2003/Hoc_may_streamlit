@@ -54,7 +54,7 @@ def ly_thuyet_Decision_tree():
     - Công thức Information Gain:
     """)
     st.latex(r"""
-    IG = H(S) - \sum_{j=1}^{k} rac{|S_j|}{|S|} H(S_j)
+    IG = H(S) - \sum_{j=1}^{k} rac{|S_j|}{|S|} H(S_j)
     """)
     st.write("""
     Trong đó:
@@ -75,6 +75,7 @@ def ly_thuyet_Decision_tree():
     - Quá trình chia nhỏ tiếp tục đến khi các tập con không thể chia nhỏ hơn hoặc đạt điều kiện dừng.
     """)
 
+    
     
     
 def ly_thuyet_SVM():
