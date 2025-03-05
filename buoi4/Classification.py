@@ -25,7 +25,7 @@ def ly_thuyet_Decision_tree():
     """)
 
     # Hiển thị ảnh minh họa Decision Tree
-    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_container_width ="auto")
+    st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_container_width=True)
 
     st.subheader("2️⃣ Các bước thực hiện trong Decision Tree")
     st.write("""
