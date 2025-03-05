@@ -535,24 +535,25 @@ def du_doan():
         img = preprocess_canvas_image(canvas_result)
 
         if img is not None:
-            # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
             # Dự đoán số
             prediction = model.predict(img)
-            probabilities = model.predict_proba(img)
+            confidence_scores = model.decision_function(img)  # Lấy điểm số tin cậy
 
-            # Lấy xác suất cao nhất và số được dự đoán
-            max_prob = np.max(probabilities)
+            # Chuyển đổi điểm số tin cậy thành xác suất tương đối
+            confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores)) 
+
             predicted_number = prediction[0]
+            max_confidence = np.max(confidence_scores)
 
             st.subheader(f"🔢 Dự đoán: {predicted_number}")
-            st.write(f"📊 Độ tin cậy: {max_prob:.2%}")  # Hiển thị dưới dạng phần trăm
+            st.write(f"📊 Mức độ tin cậy (ước lượng): {max_confidence:.2%}")
 
-            # Hiển thị bảng xác suất của tất cả các số từ 0-9
-            prob_df = pd.DataFrame(probabilities, columns=[str(i) for i in range(10)]).T
-            prob_df.columns = ["Xác suất"]
-            st.bar_chart(prob_df)  # Vẽ biểu đồ xác suất dự đoán cho từng số
+            # Hiển thị bảng confidence scores
+            prob_df = pd.DataFrame(confidence_scores.reshape(1, -1), columns=[str(i) for i in range(10)]).T
+            prob_df.columns = ["Mức độ tin cậy"]
+            st.bar_chart(prob_df) 
 
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
