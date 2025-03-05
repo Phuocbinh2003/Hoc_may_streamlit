@@ -349,7 +349,7 @@ def show_experiment_selector():
 
     st.write("### 🏃‍♂️ Các Runs gần đây:")
     
-    # Lấy danh sách run_name từ params
+    
     run_info = []
     for _, run in runs.iterrows():
         run_id = run["run_id"]
