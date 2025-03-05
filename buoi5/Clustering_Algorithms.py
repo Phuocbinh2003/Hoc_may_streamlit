@@ -313,18 +313,24 @@ def ly_thuyet_DBSCAN():
     st.title("🔍 Minh họa thuật toán DBSCAN")
 
     # Tùy chọn loại dữ liệu
-    dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng", "Hai hình tròn lồng nhau"], key="dataset_type_dbscan")
+    dataset_type = st.radio(
+        "Chọn kiểu dữ liệu", 
+        ["Cụm Gauss", "Hai vòng trăng", "Hai hình tròn lồng nhau"], 
+        key="dataset_type_dbscan"
+    )
 
     num_samples_dbscan = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_dbscan")
     eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.1, step=0.1, key="eps_dbscan")
     min_samples_dbscan = st.slider("Số điểm tối thiểu để tạo cụm", 2, 20, 5, key="min_samples_dbscan")
 
     # Kiểm tra và cập nhật dữ liệu DBSCAN trong session_state
-    if "X_dbscan" not in st.session_state or st.session_state.dataset_type_dbscan != dataset_type:
+    if "X_dbscan" not in st.session_state or st.session_state.get("prev_dataset_type") != dataset_type:
         st.session_state.X_dbscan = generate_data(num_samples_dbscan, dataset_type)
         st.session_state.labels_dbscan = np.full(num_samples_dbscan, -1)
-        st.session_state.dataset_type_dbscan = dataset_type  # Cập nhật loại dữ liệu
-
+        st.session_state.prev_dataset_type = dataset_type 
+        
+        
+        
     X_dbscan = st.session_state.X_dbscan
 
     # Nút Reset để tạo lại dữ liệu
