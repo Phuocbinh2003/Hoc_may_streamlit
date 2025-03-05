@@ -6,8 +6,6 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
 
-
-
 def explain_pca():
     st.markdown("## 🧠 Hiểu PCA một cách đơn giản")
 
@@ -19,13 +17,12 @@ def explain_pca():
     Hãy tưởng tượng bạn có một tập dữ liệu gồm nhiều điểm phân bố theo một đường chéo trong không gian 2D:
     """)
 
-    # Tạo dữ liệu giả lập
+   
     np.random.seed(42)
     x = np.random.rand(100) * 10  
     y = x * 0.8 + np.random.randn(100) * 2  
     X = np.column_stack((x, y))
 
-    # Vẽ dữ liệu ban đầu
     fig, ax = plt.subplots()
     ax.scatter(X[:, 0], X[:, 1], color="blue", alpha=0.5, label="Dữ liệu ban đầu")
     ax.set_xlabel("X1")
@@ -34,67 +31,103 @@ def explain_pca():
     st.pyplot(fig)
 
     st.markdown(r"""
-    ## 📌 PCA - Giải thích 
+    ## 📌 PCA - Giải thích Trực Quan  
     Dữ liệu này có sự phân tán rõ ràng theo một hướng chính. PCA sẽ tìm ra hướng đó để biểu diễn dữ liệu một cách tối ưu.
 
     ---
-    """)
 
-    # Các bước thực hiện PCA
-    st.markdown("### 🔹 **Các bước thực hiện PCA **")
-    
-    st.markdown("#### 1️⃣ **Tìm điểm trung tâm (mean vector)**")
-    st.markdown(r"""
-    Trước tiên, tính giá trị trung bình của từng đặc trưng trong tập dữ liệu:  
+    ### 🔹 **Các bước thực hiện PCA**
+
+    1️⃣ **Tìm điểm trung tâm (mean vector)**  
+    - Trước tiên, tính giá trị trung bình của từng đặc trưng (feature) trong tập dữ liệu.  
+    - Vector trung bình này giúp xác định "trung tâm" của dữ liệu.  
     $$ 
     \mu = \frac{1}{n} \sum_{i=1}^{n} x_i 
     $$  
-    Trong đó:
-    - \( n \) là số lượng mẫu dữ liệu.
-    - \( x_i \) là từng điểm dữ liệu.
-    """)
-    st.image("buoi6/img3.png", use_column_width="auto") # Đảm bảo đường dẫn đúng
+    - Trong đó:
+        - \( n \) là số lượng mẫu dữ liệu.
+        - \( x_i \) là từng điểm dữ liệu.
+        
+        
+    """)  
+    st.image("buoi6/img3.png",use_container_width ="auto")   
 
-    st.markdown("#### 2️⃣ **Dịch chuyển dữ liệu về gốc tọa độ**")
+        
     st.markdown(r"""
-    Để đảm bảo phân tích chính xác hơn, ta dịch chuyển dữ liệu sao cho trung tâm của nó nằm tại gốc tọa độ:
+    2️⃣ **Dịch chuyển dữ liệu về gốc tọa độ**  
+    - Để đảm bảo phân tích chính xác hơn, ta dịch chuyển dữ liệu sao cho trung tâm của nó nằm tại gốc tọa độ bằng cách trừ đi vector trung bình:  
     $$ 
     X_{\text{norm}} = X - \mu
     $$  
+    - Khi đó, dữ liệu sẽ có giá trị trung bình bằng 0.
     """)
-    st.image("buoi6/img4.png")
-
-    st.markdown("#### 3️⃣ **Tính ma trận hiệp phương sai**")
+    st.image("buoi6/img4.png") 
     st.markdown(r"""
-    Ma trận hiệp phương sai giúp đo lường mức độ biến thiên giữa các đặc trưng:  
+    3️⃣ **Tính ma trận hiệp phương sai**  
+    - Ma trận hiệp phương sai giúp đo lường mức độ biến thiên giữa các đặc trưng:  
     $$ 
     C = \frac{1}{n} X_{\text{norm}}^T X_{\text{norm}}
     $$  
-    """)
+    - Ý nghĩa:
+        - Nếu phần tử \( C_{ij} \) có giá trị lớn → Hai đặc trưng \( i \) và \( j \) có mối tương quan mạnh.
+        - Nếu \( C_{ij} \) gần 0 → Hai đặc trưng không liên quan nhiều.
+        
+        
     
-    st.markdown("#### 4️⃣ **Tìm các hướng quan trọng nhất**")
-    st.markdown(r"""
-    - Tính trị riêng (eigenvalues) và vector riêng (eigenvectors) từ ma trận hiệp phương sai:
+
+    4️⃣ **Tìm các hướng quan trọng nhất**  
+    - Tính trị riêng (eigenvalues) và vector riêng (eigenvectors) từ ma trận hiệp phương sai:  
     $$ 
     C v = \lambda v
     $$  
+    - Trong đó:
+        - \( v \) là vector riêng (eigenvector) - đại diện cho các hướng chính của dữ liệu.
+        - \( \lambda \) là trị riêng (eigenvalue) - thể hiện độ quan trọng của từng hướng.
+    - Vector riêng có trị riêng lớn hơn sẽ mang nhiều thông tin quan trọng hơn.
+    
+    """)
+    
+    st.markdown(r"""
+    5️⃣ **Chọn số chiều mới và tạo không gian con**  
+    - Chọn \( K \) vector riêng tương ứng với \( K \) trị riêng lớn nhất để tạo ma trận \( U_K \):  
+    $$ 
+    U_K = [v_1, v_2, ..., v_K]
+    $$  
+    - Các vector này tạo thành hệ trực giao và giúp ta biểu diễn dữ liệu tối ưu trong không gian mới.
+    """)
+    st.image("buoi6/img5.png") 
+    st.markdown(r"""
+    6️⃣ **Chiếu dữ liệu vào không gian mới**  
+    - Biểu diễn dữ liệu trong hệ trục mới bằng cách nhân dữ liệu chuẩn hóa với ma trận \( U_K \):  
+    $$ 
+    X_{\text{new}} = X_{\text{norm}} U_K
+    $$  
+    - Dữ liệu mới \( X_{\text{new}} \) có số chiều ít hơn nhưng vẫn giữ được nhiều thông tin quan trọng.
+    """)
+    st.image("buoi6/img6.png") 
+
+    st.markdown(r"""
+    7️⃣ **Dữ liệu mới chính là tọa độ của các điểm trong không gian mới.**  
+    - Mỗi điểm dữ liệu giờ đây được biểu diễn bằng các thành phần chính thay vì các đặc trưng ban đầu.
+
+    """)
+    st.image("buoi6/img7.png") 
+    
+    st.markdown(r"""
+    ---
     """)
 
-    st.markdown("#### 5️⃣ **Chọn số chiều mới và tạo không gian con**")
-    st.image("buoi6/img5.png")
+    ### 🔹 **Trực quan hóa quá trình PCA**  
+    Dưới đây là minh họa cách PCA tìm ra trục quan trọng nhất của dữ liệu:
+    """)
 
-    st.markdown("#### 6️⃣ **Chiếu dữ liệu vào không gian mới**")
-    st.image("buoi6/img6.png")
 
-    st.markdown("#### 7️⃣ **Dữ liệu mới chính là tọa độ của các điểm trong không gian mới.**")
-    st.image("buoi6/img7.png")
 
     # PCA thủ công
     X_centered = X - np.mean(X, axis=0)
-    cov_matrix = np.cov(X_centered.T, rowvar=False)
+    cov_matrix = np.cov(X_centered.T)
     eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
 
-    # Vẽ trục PCA
     fig, ax = plt.subplots()
     ax.scatter(X[:, 0], X[:, 1], color="blue", alpha=0.5, label="Dữ liệu ban đầu")
     origin = np.mean(X, axis=0)
@@ -111,28 +144,32 @@ def explain_pca():
 
     st.markdown("""
     **🔹 Kết quả:**  
+    
+    
+    
+    
+    
     - Trục đỏ là hướng mà PCA tìm ra.  
     - Nếu chọn 1 trục chính, ta có thể chiếu dữ liệu lên nó để giảm chiều.  
+      
+    Nhờ đó, chúng ta có thể biểu diễn dữ liệu một cách gọn gàng hơn mà không mất quá nhiều thông tin!  
     """)
-    st.image("buoi6/img1.png")
-
+    st.image("buoi6/img1.png")  # Đường dẫn cần đúng
     st.markdown("""
-    ### ✅ **Ưu điểm của PCA**  
-    - **Giảm chiều dữ liệu hiệu quả**: PCA giúp giảm số chiều của dữ liệu mà vẫn giữ lại phần lớn thông tin quan trọng.  
-    - **Tăng tốc độ xử lý**: Khi số chiều giảm, các mô hình học máy sẽ chạy nhanh hơn và yêu cầu ít tài nguyên hơn.  
-    - **Giảm nhiễu**: PCA có thể loại bỏ các thành phần nhiễu bằng cách giữ lại các thành phần chính có phương sai cao.  
-    - **Trực quan hóa dữ liệu**: PCA giúp hiển thị dữ liệu nhiều chiều dưới dạng 2D hoặc 3D để con người dễ quan sát hơn.  
+        ### ✅ **Ưu điểm của PCA**  
+        - **Giảm chiều dữ liệu hiệu quả**: PCA giúp giảm số chiều của dữ liệu mà vẫn giữ lại phần lớn thông tin quan trọng.  
+        - **Tăng tốc độ xử lý**: Khi số chiều giảm, các mô hình học máy sẽ chạy nhanh hơn và yêu cầu ít tài nguyên hơn.  
+        - **Giảm nhiễu**: PCA có thể loại bỏ các thành phần nhiễu bằng cách giữ lại các thành phần chính có phương sai cao.  
+        - **Trực quan hóa dữ liệu**: PCA giúp hiển thị dữ liệu nhiều chiều dưới dạng 2D hoặc 3D để con người dễ quan sát hơn.  
 
-    ---
+        ---
 
-    ### ❌ **Nhược điểm của PCA**  
-    - **Mất thông tin**: PCA chọn những thành phần có phương sai cao nhất, có thể làm mất thông tin quan trọng.  
-    - **Không phải lúc nào cũng hiệu quả**: PCA chỉ hoạt động tốt khi dữ liệu có cấu trúc tuyến tính. Với dữ liệu phi tuyến tính, t-SNE có thể tốt hơn.  
-    - **Khó diễn giải**: Sau khi giảm chiều, các thành phần chính không còn giữ nguyên ý nghĩa gốc, khiến việc hiểu dữ liệu trở nên khó khăn hơn.  
-    - **Ảnh hưởng bởi dữ liệu đầu vào**: PCA nhạy cảm với thang đo dữ liệu. Nếu dữ liệu chưa được chuẩn hóa, kết quả có thể bị méo mó.  
-    """)
-
-
+        ### ❌ **Nhược điểm của PCA**  
+        - **Mất thông tin**: PCA chọn những thành phần có phương sai cao nhất, có thể làm mất thông tin quan trọng.  
+        - **Không phải lúc nào cũng hiệu quả**: PCA chỉ hoạt động tốt khi dữ liệu có cấu trúc tuyến tính. Với dữ liệu phi tuyến tính, t-SNE có thể tốt hơn.  
+        - **Khó diễn giải**: Sau khi giảm chiều, các thành phần chính không còn giữ nguyên ý nghĩa gốc, khiến việc hiểu dữ liệu trở nên khó khăn hơn.  
+        - **Ảnh hưởng bởi dữ liệu đầu vào**: PCA nhạy cảm với thang đo dữ liệu. Nếu dữ liệu chưa được chuẩn hóa, kết quả có thể bị méo mó.  
+        """)
 
     
     
