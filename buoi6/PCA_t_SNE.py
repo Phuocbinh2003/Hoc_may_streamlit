@@ -28,7 +28,7 @@ def explain_pca():
     ax.set_xlabel("X1")
     ax.set_ylabel("X2")
     ax.legend()
-    st.pyplot(fig)
+    st.pyplot(fig ,use_container_width ="auto")
 
     st.markdown(r"""
     ## 📌 PCA - Giải thích Trực Quan  
