@@ -74,7 +74,7 @@ def ly_thuyet_K_means():
 
     # 🔹 Giới thiệu về K-Means
     st.markdown(r"""
-        ## 📌 **K-Means Clustering**
+        
         **K-Means** là một thuật toán **phân cụm không giám sát** phổ biến, giúp chia tập dữ liệu thành **K cụm** sao cho các điểm trong cùng một cụm có đặc trưng tương đồng nhất.  
 
         ---
@@ -145,9 +145,10 @@ def ly_thuyet_K_means():
     def euclidean_distance(a, b):
         return np.linalg.norm(a - b, axis=1)
 
-    def generate_data(n_samples, n_clusters, cluster_std):
+    def generate_data(n_samples, n_clusters):
         np.random.seed(42)
         X = []
+        cluster_std = 1.0  # Độ rời rạc cố định
         centers = np.random.uniform(-10, 10, size=(n_clusters, 2))
         for c in centers:
             X.append(c + np.random.randn(n_samples // n_clusters, 2) * cluster_std)
@@ -167,26 +168,19 @@ def ly_thuyet_K_means():
 
     num_samples_kmeans = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10)
     cluster_kmeans = st.slider("Số cụm (K)", 2, 10, 3)
-    spread_kmeans = st.slider("Độ rời rạc", 0.1, 2.0, 1.0)
-
-    # if "X" not in st.session_state:
-    #     st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
-
-    # X = st.session_state.X
 
     # Kiểm tra và cập nhật dữ liệu khi tham số thay đổi
-    if "data_params" not in st.session_state or st.session_state.data_params != (num_samples_kmeans, cluster_kmeans, spread_kmeans):
-        st.session_state.data_params = (num_samples_kmeans, cluster_kmeans, spread_kmeans)
-        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
+    if "data_params" not in st.session_state or st.session_state.data_params != (num_samples_kmeans, cluster_kmeans):
+        st.session_state.data_params = (num_samples_kmeans, cluster_kmeans)
+        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans)
         st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
         st.session_state.iteration = 0
         st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
 
     X = st.session_state.X
 
-
     if st.button("🔄 Reset"):
-        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans, spread_kmeans)
+        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans)
         st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
         st.session_state.iteration = 0
         st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
@@ -194,7 +188,7 @@ def ly_thuyet_K_means():
     if st.button("🔄 Cập nhật vị trí tâm cụm"):
         st.session_state.labels = assign_clusters(X, st.session_state.centroids)
         new_centroids = update_centroids(X, st.session_state.labels, cluster_kmeans)
-        
+
         # Kiểm tra hội tụ với sai số nhỏ
         if np.allclose(new_centroids, st.session_state.centroids, atol=1e-3):
             st.warning("⚠️ Tâm cụm không thay đổi đáng kể, thuật toán đã hội tụ!")
@@ -203,20 +197,14 @@ def ly_thuyet_K_means():
             st.session_state.iteration += 1
 
     # 🔥 Thêm thanh trạng thái hiển thị tiến trình
-    
-    
-    
     st.status(f"Lần cập nhật: {st.session_state.iteration} - Đang phân cụm...", state="running")
     st.markdown("### 📌 Tọa độ tâm cụm hiện tại:")
-    num_centroids = st.session_state.centroids.shape[0]  # Số lượng tâm cụm thực tế
+    num_centroids = st.session_state.centroids.shape[0]
     centroid_df = pd.DataFrame(st.session_state.centroids, columns=["X", "Y"])
-    centroid_df.index = [f"Tâm cụm {i}" for i in range(num_centroids)]  # Đảm bảo index khớp
+    centroid_df.index = [f"Tâm cụm {i}" for i in range(num_centroids)]
 
     st.dataframe(centroid_df)
-    
-    
-    
-    
+
     # Vẽ biểu đồ
     fig, ax = plt.subplots(figsize=(6, 6))
     labels = st.session_state.labels
