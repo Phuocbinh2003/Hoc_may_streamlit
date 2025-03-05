@@ -7,7 +7,7 @@ from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
 
 def explain_pca():
-    st.markdown("## 🧠 Hiểu PCA một cách đơn giản")
+    st.markdown("## 🧠 PCA ")
 
     st.markdown("""
     **PCA (Phân tích thành phần chính)** là một phương pháp giúp giảm số chiều của dữ liệu mà vẫn giữ được thông tin quan trọng nhất.  
