@@ -294,11 +294,13 @@ def ly_thuyet_DBSCAN():
 
 
 # Tạo dữ liệu ngẫu nhiên
-    def generate_data(n_samples, noise, dataset_type):
+    def generate_data(n_samples, dataset_type):
         if dataset_type == "Cụm Gauss":
-            X, _ = make_blobs(n_samples=n_samples, centers=3, cluster_std=noise, random_state=42)
-        else:
-            X, _ = make_moons(n_samples=n_samples, noise=noise, random_state=42)
+            X, _ = make_blobs(n_samples=n_samples, centers=3, cluster_std=1.0, random_state=42)
+        elif dataset_type == "Hai vòng trăng":
+            X, _ = make_moons(n_samples=n_samples, noise=0.1, random_state=42)
+        else:  # Hai hình tròn lồng nhau
+            X, _ = make_circles(n_samples=n_samples, noise=0.05, factor=0.5, random_state=42)
         return X
 
     # Hàm chạy DBSCAN
@@ -310,36 +312,33 @@ def ly_thuyet_DBSCAN():
     # Giao diện Streamlit
     st.title("🔍 Minh họa thuật toán DBSCAN")
 
-    # Tùy chỉnh tham số
-    # Tùy chỉnh tham số với key để tránh lỗi trùng ID
-    
-    dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng (Moons)"], key="dataset_type")
-    
+    # Tùy chọn loại dữ liệu
+    dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng", "Hai hình tròn lồng nhau"], key="dataset_type_dbscan")
 
     num_samples_dbscan = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_dbscan")
-    noise_dbscan = st.slider("Mức nhiễu", 0.05, 1.0, 0.2, key="noise_dbscan")
     eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.5, step=0.1, key="eps_dbscan")
     min_samples_dbscan = st.slider("Số điểm tối thiểu để tạo cụm", 2, 20, 5, key="min_samples_dbscan")
 
+    # Kiểm tra và cập nhật dữ liệu DBSCAN trong session_state
+    if "X_dbscan" not in st.session_state or st.session_state.dataset_type_dbscan != dataset_type:
+        st.session_state.X_dbscan = generate_data(num_samples_dbscan, dataset_type)
+        st.session_state.labels_dbscan = np.full(num_samples_dbscan, -1)
+        st.session_state.dataset_type_dbscan = dataset_type  # Cập nhật loại dữ liệu
+
+    X_dbscan = st.session_state.X_dbscan
+
     # Nút Reset để tạo lại dữ liệu
     if st.button("🔄 Reset", key="reset_dbscan"):
-        st.session_state.X = generate_data(num_samples_dbscan, noise_dbscan, dataset_type)
-        st.session_state.labels = np.full(num_samples_dbscan, -1)  # Chưa có cụm nào
-
-    # Kiểm tra dữ liệu trong session_state
-    if "X" not in st.session_state:
-        st.session_state.X = generate_data(num_samples_dbscan, noise_dbscan, dataset_type)
-        st.session_state.labels = np.full(num_samples_dbscan, -1)
-
-    X = st.session_state.X
+        st.session_state.X_dbscan = generate_data(num_samples_dbscan, dataset_type)
+        st.session_state.labels_dbscan = np.full(num_samples_dbscan, -1)
 
     # Nút chạy DBSCAN
     if st.button("➡️ Chạy DBSCAN"):
-        st.session_state.labels = run_dbscan(X, eps_dbscan, min_samples_dbscan)
+        st.session_state.labels_dbscan = run_dbscan(X_dbscan, eps_dbscan, min_samples_dbscan)
 
     # Vẽ biểu đồ
     fig, ax = plt.subplots(figsize=(6, 6))
-    labels = st.session_state.labels
+    labels = st.session_state.labels_dbscan
     unique_labels = set(labels)
 
     # Màu cho các cụm
@@ -348,13 +347,14 @@ def ly_thuyet_DBSCAN():
     for label in unique_labels:
         mask = labels == label
         color = "black" if label == -1 else colors(label)
-        ax.scatter(X[mask, 0], X[mask, 1], color=color, label=f"Cụm {label}" if label != -1 else "Nhiễu", edgecolors="k", alpha=0.7)
+        ax.scatter(X_dbscan[mask, 0], X_dbscan[mask, 1], color=color, label=f"Cụm {label}" if label != -1 else "Nhiễu", edgecolors="k", alpha=0.7)
 
     ax.set_title(f"Kết quả DBSCAN (eps={eps_dbscan}, min_samples={min_samples_dbscan})")
     ax.legend()
 
     # Hiển thị biểu đồ
     st.pyplot(fig)
+
 
 
 
