@@ -84,7 +84,7 @@ def ly_thuyet_SVM():
     
     # 1️⃣ Tổng quan về SVM
     st.header("1️⃣ Tổng quan về SVM")
-    st.write("""
+    st.write(r"""
     - **Support Vector Machine (SVM)** là một thuật toán học máy mạnh mẽ dùng để phân loại dữ liệu.
     - **Mục tiêu chính**: Tìm **siêu phẳng (hyperplane) tối ưu** để phân tách các lớp dữ liệu.
     - **Ứng dụng**: Nhận diện khuôn mặt, phát hiện thư rác, phân loại văn bản, nhận dạng chữ viết tay,...
@@ -119,7 +119,7 @@ def ly_thuyet_SVM():
     \min_{w, b} \frac{1}{2} ||w||^2
     """)
     
-    st.write("Mục tiêu là tìm vector trọng số \( w \) nhỏ nhất để tăng khả năng tổng quát hóa mô hình.")
+    st.write(r"Mục tiêu là tìm vector trọng số \( w \) nhỏ nhất để tăng khả năng tổng quát hóa mô hình.")
     
     st.subheader("📌 Ràng buộc đảm bảo phân loại đúng")
     st.latex(r"""
@@ -144,7 +144,7 @@ def ly_thuyet_SVM():
     \min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i
     """)
     
-    st.write("""
+    st.write(r"""
     - Thêm biến slack \( \xi_i \) để cho phép một số điểm bị phân loại sai.
     - Ý nghĩa của biến slack:
       - \( \xi_i = 0 \) : Điểm nằm ngoài hoặc trên lề, được phân loại đúng.
@@ -152,7 +152,7 @@ def ly_thuyet_SVM():
       - \( \xi_i > 1 \) : Điểm bị phân loại sai.
     """)
     
-    st.write("""
+    st.write(r"""
     📍 **Ý nghĩa của hệ số \( C \)**
     - Nếu \( C \) lớn → Mô hình cố gắng phân loại chính xác nhất có thể nhưng dễ bị **overfitting**.
     - Nếu \( C \) nhỏ → Mô hình linh hoạt hơn nhưng có thể chấp nhận nhiều lỗi hơn.
@@ -160,7 +160,7 @@ def ly_thuyet_SVM():
     
     # 5️⃣ Tổng kết
     st.header("5️⃣ Tổng kết")
-    st.write("""
+    st.write(r"""
     ✅ **SVM tìm kiếm siêu phẳng tối ưu** để phân tách dữ liệu, đảm bảo khoảng cách giữa hai lớp là lớn nhất.
     ✅ **Nếu dữ liệu không tuyến tính**, SVM sử dụng **Kernel Trick** để ánh xạ dữ liệu sang không gian cao hơn.
     ✅ **Nếu dữ liệu có nhiễu**, SVM sử dụng **Soft Margin** để chấp nhận một số điểm bị phân loại sai.
