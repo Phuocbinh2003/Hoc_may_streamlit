@@ -54,7 +54,7 @@ def ly_thuyet_Decision_tree():
     - Công thức Information Gain:
     """)
     st.latex(r"""
-    IG = H(S) - \sum_{j=1}^{k} rac{|S_j|}{|S|} H(S_j)
+    IG = H(S) - \sum_{j=1}^{k} \frac{|S_j|}{|S|} H(S_j)
     """)
     st.write("""
     Trong đó:
@@ -74,6 +74,7 @@ def ly_thuyet_Decision_tree():
     **Bước 5: Lặp lại quá trình trên cho từng nhánh của cây**
     - Quá trình chia nhỏ tiếp tục đến khi các tập con không thể chia nhỏ hơn hoặc đạt điều kiện dừng.
     """)
+
 
     
     
