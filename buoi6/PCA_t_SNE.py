@@ -60,8 +60,8 @@ def explain_pca():
     C = \frac{1}{n} X_{\text{norm}}^T X_{\text{norm}}
     $$  
     - Ý nghĩa:
-        - Nếu phần tử \( C_{ij} \) có giá trị lớn → Hai đặc trưng \( i \) và \( j \) có mối tương quan mạnh.
-        - Nếu \( C_{ij} \) gần 0 → Hai đặc trưng không liên quan nhiều.
+        - Nếu phần tử $$ ( C_{ij} )$$  có giá trị lớn → Hai đặc trưng \( i \) và \( j \) có mối tương quan mạnh.
+        - Nếu $$ ( C_{ij} )$$  gần 0 → Hai đặc trưng không liên quan nhiều.
         
         
     
