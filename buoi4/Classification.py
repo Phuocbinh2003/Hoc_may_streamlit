@@ -36,10 +36,10 @@ def ly_thuyet_Decision_tree():
     st.latex(r"""
     H(S) = - \sum_{i=1}^{c} p_i \log_2 p_i
     """)
-    st.write("""
+    st.write(r"""
     Trong đó:
-    - \( c \) : số lượng lớp trong tập dữ liệu.
-    - \( p_i \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
+    - $$ c $$ : số lượng lớp trong tập dữ liệu.
+    - $$p_i $$ : xác suất xuất hiện của lớp $$ i $$, được tính bằng tỷ lệ số mẫu của lớp $$ i $$trên tổng số mẫu.
     """)
 
     st.write(r"""
@@ -93,7 +93,7 @@ def ly_thuyet_SVM():
       ✅ Có thể phân loại dữ liệu không tuyến tính bằng **Kernel Trick**.
     - **Nhược điểm**:
       ❌ Chậm trên tập dữ liệu lớn do tính toán phức tạp.
-      ❌ Nhạy cảm với tham số \(C\) và lựa chọn Kernel.
+      ❌ Nhạy cảm với tham số $$C$$và lựa chọn Kernel.
     """)
     
     st.image("buoi4/img2.png", use_container_width=True, caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu")
