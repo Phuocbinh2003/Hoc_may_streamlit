@@ -80,93 +80,98 @@ def ly_thuyet_Decision_tree():
     
     
 def ly_thuyet_SVM():
-    st.subheader(" Support Vector Machine (SVM)")
-
+    st.title("🔎 Support Vector Machine (SVM)")
+    
+    # 1️⃣ Tổng quan về SVM
+    st.header("1️⃣ Tổng quan về SVM")
     st.write("""
-    - **Support Vector Machine (SVM)** là một thuật toán học máy mạnh mẽ để phân loại dữ liệu.
-    - **Mục tiêu chính**: Tìm một **siêu phẳng (hyperplane)** tối ưu để phân tách các lớp dữ liệu.
-    - **Ứng dụng**: Nhận diện khuôn mặt, phát hiện thư rác, phân loại văn bản, v.v.
+    - **Support Vector Machine (SVM)** là một thuật toán học máy mạnh mẽ dùng để phân loại dữ liệu.
+    - **Mục tiêu chính**: Tìm **siêu phẳng (hyperplane) tối ưu** để phân tách các lớp dữ liệu.
+    - **Ứng dụng**: Nhận diện khuôn mặt, phát hiện thư rác, phân loại văn bản, nhận dạng chữ viết tay,...
     - **Ưu điểm**:
-        - Hiệu quả trên dữ liệu có độ nhiễu thấp.
-        - Hỗ trợ dữ liệu không tuyến tính bằng **kernel trick**.
+      ✅ Hiệu quả trên dữ liệu có độ nhiễu thấp.
+      ✅ Có thể phân loại dữ liệu không tuyến tính bằng **Kernel Trick**.
     - **Nhược điểm**:
-        - Chậm trên tập dữ liệu lớn do tính toán phức tạp.
-        - Nhạy cảm với lựa chọn tham số (C, Kernel).
+      ❌ Chậm trên tập dữ liệu lớn do tính toán phức tạp.
+      ❌ Nhạy cảm với tham số \(C\) và lựa chọn Kernel.
     """)
-
-    # Hiển thị hình ảnh minh họa SV
-    st.image("buoi4/img2.png",use_container_width ="auto", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu")
-
-    st.write("""
-    ### 🔍 **Cách hoạt động của SVM**
-    - Dữ liệu được biểu diễn trong không gian nhiều chiều.
-    - Mô hình tìm một siêu phẳng để phân tách dữ liệu sao cho khoảng cách từ siêu phẳng đến các điểm gần nhất (support vectors) là lớn nhất.
-    - Nếu dữ liệu **không thể phân tách tuyến tính**, ta có thể:
-        - **Dùng Kernel Trick** để ánh xạ dữ liệu sang không gian cao hơn.
-        - **Thêm soft margin** để chấp nhận một số điểm bị phân loại sai.
-    """)
-
-    # 📌 2️⃣ Công thức toán học
-    st.subheader("📌 Công thức toán học")
-
-    st.markdown(r"""
-    - **Hàm mục tiêu cần tối ưu**:  
-    $$\min_{w, b} \frac{1}{2} ||w||^2$$  
-    → Mô hình cố gắng tìm **siêu phẳng phân cách** sao cho **vector trọng số \( w \) có độ lớn nhỏ nhất**, giúp tăng độ tổng quát.  
-
-    **Trong đó:**  
-    - \( w \) : vector trọng số xác định hướng của siêu phẳng.  
-    - \( b \) : bias (độ dịch của siêu phẳng).  
-
-    - **Ràng buộc**:  
-    $$y_i (w \cdot x_i + b) \geq 1, \forall i$$  
-    → Mọi điểm dữ liệu **phải nằm đúng phía** của siêu phẳng, đảm bảo phân loại chính xác.  
-
-    **Trong đó:**  
-    - \( $$xi$$ \) : điểm dữ liệu đầu vào.  
-    - \( $$yi$$ \) : nhãn của điểm dữ liệu (\(+1\) hoặc \(-1\)).  
-
-    - **Khoảng cách từ một điểm đến siêu phẳng**:  
-    $$d = \frac{|w \cdot x + b|}{||w||}$$  
-    → Đo **khoảng cách vuông góc** từ một điểm đến siêu phẳng, khoảng cách càng lớn thì mô hình càng đáng tin cậy.  
-
-    - **Hàm mất mát với soft margin (SVM không tuyến tính)**:  
-    $$\min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i$$  
-    → Nếu dữ liệu **không thể phân tách hoàn hảo**, cho phép một số điểm bị phân loại sai với **biến slack \( $$\xi_i$$ \)**.  
-
-    **Trong đó:**  
-    - $$C$$ : hệ số điều chỉnh giữa việc tối ưu hóa margin và chấp nhận lỗi.  
-    - $$\xi_i$$ : biến slack cho phép một số điểm bị phân loại sai.  
-    - $$\xi_i$$ = 0: khi điểm dữ liệu nằm ngoài hoặc trên lề, được phân loại đúng.
-    - 0< $$\xi_i$$<1 :  khi điểm dữ liệu nằm trong lề nhưng vẫn được phân loại đúng.
-    - $$\xi_i$$>1 : khi điểm dữ liệu bị phân loại sai.
-    → Biến slack giúp mô hình linh hoạt hơn bằng cách cho phép một số điểm vi phạm lề nhưng vẫn có tác động nhỏ đến hàm mục tiêu.
-    """)
-
     
-    st.write(r"""
-             
-    ### 🔎 **Biến slack là gì? Nó có cần thiết không?**
-    - Biến slack (\(\xi\)) giúp SVM có thể làm việc với dữ liệu **không thể phân tách tuyến tính hoàn hảo**.
-    - Thay vì ép tất cả điểm dữ liệu phải nằm hoàn toàn ngoài lề (Hard Margin), biến slack cho phép một số điểm nằm **bên trong lề hoặc bị phân loại sai**.
-    - Điều này giúp mô hình linh hoạt hơn, đặc biệt khi dữ liệu có nhiễu hoặc chồng lấn.
+    st.image("buoi4/img2.png", use_container_width=True, caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu")
+    
+    # 2️⃣ Cách hoạt động của SVM
+    st.header("2️⃣ Cách hoạt động của SVM")
+    st.write("""
+    🔹 **Bước 1: Biểu diễn dữ liệu trong không gian nhiều chiều**
+    - Dữ liệu được ánh xạ vào một không gian có nhiều chiều hơn, nơi mà có thể tìm được một siêu phẳng để phân tách dữ liệu.
 
-    💡 **Ý nghĩa của biến slack:**
-    - Nếu không có biến slack → SVM chỉ hoạt động tốt khi dữ liệu có thể phân tách hoàn hảo.
-    - Nếu có biến slack → SVM có thể chấp nhận một số lỗi nhỏ để tìm ra mô hình tổng quát hóa tốt hơn.
-
-    👉 **Điều chỉnh hệ số \( C \):**
-    - Nếu \( C \) lớn → Mô hình cố gắng giảm lỗi phân loại, nhưng có thể bị **overfitting**.
-    - Nếu \( C \) nhỏ → Mô hình linh hoạt hơn, nhưng có thể chấp nhận nhiều lỗi hơn.
-
-    """)  
+    🔹 **Bước 2: Tìm siêu phẳng tối ưu**
+    - Mô hình tìm một siêu phẳng sao cho khoảng cách từ siêu phẳng đến các điểm dữ liệu gần nhất (**support vectors**) là lớn nhất.
+    - Nếu dữ liệu **không thể phân tách tuyến tính**, có hai hướng giải quyết:
+      ✅ **Dùng Kernel Trick** để ánh xạ dữ liệu sang không gian cao hơn.
+      ✅ **Thêm Soft Margin** để chấp nhận một số điểm bị phân loại sai.
+    """)
+    
+    # 3️⃣ Công thức toán học trong SVM
+    st.header("3️⃣ Công thức toán học trong SVM")
+    
+    st.subheader("📌 Tìm siêu phẳng tối ưu")
+    st.latex(r"""
+    \min_{w, b} \frac{1}{2} ||w||^2
+    """)
+    
+    st.write("Mục tiêu là tìm vector trọng số \( w \) nhỏ nhất để tăng khả năng tổng quát hóa mô hình.")
+    
+    st.subheader("📌 Ràng buộc đảm bảo phân loại đúng")
+    st.latex(r"""
+    y_i (w \cdot x_i + b) \geq 1, \forall i
+    """)
+    
+    st.write("Mọi điểm dữ liệu phải nằm đúng phía của siêu phẳng để đảm bảo phân loại chính xác.")
+    
+    st.subheader("📌 Khoảng cách từ một điểm đến siêu phẳng")
+    st.latex(r"""
+    d = \frac{|w \cdot x + b|}{||w||}
+    """)
+    
+    # 4️⃣ SVM với Soft Margin và biến slack
+    st.header("4️⃣ SVM với Soft Margin và biến slack")
+    st.write("""
+    🔹 Nếu dữ liệu **không thể phân tách hoàn hảo**, ta sử dụng Soft Margin để cho phép một số điểm nằm sai bên lề.
+    """)
+    
+    st.subheader("📌 Hàm mất mát với Soft Margin")
+    st.latex(r"""
+    \min_{w, b} \frac{1}{2} ||w||^2 + C \sum_{i=1}^{n} \xi_i
+    """)
     
     st.write("""
-    💡 **Ý nghĩa của công thức:**
-    - SVM tối ưu hóa khoảng cách giữa hai lớp dữ liệu (margin).
-    - Nếu dữ liệu không tuyến tính, kernel trick giúp ánh xạ dữ liệu lên không gian cao hơn.
-    - \( C \) là hệ số điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
+    - Thêm biến slack \( \xi_i \) để cho phép một số điểm bị phân loại sai.
+    - Ý nghĩa của biến slack:
+      - \( \xi_i = 0 \) : Điểm nằm ngoài hoặc trên lề, được phân loại đúng.
+      - \( 0 < \xi_i < 1 \) : Điểm nằm trong lề nhưng vẫn được phân loại đúng.
+      - \( \xi_i > 1 \) : Điểm bị phân loại sai.
     """)
+    
+    st.write("""
+    📍 **Ý nghĩa của hệ số \( C \)**
+    - Nếu \( C \) lớn → Mô hình cố gắng phân loại chính xác nhất có thể nhưng dễ bị **overfitting**.
+    - Nếu \( C \) nhỏ → Mô hình linh hoạt hơn nhưng có thể chấp nhận nhiều lỗi hơn.
+    """)
+    
+    # 5️⃣ Tổng kết
+    st.header("5️⃣ Tổng kết")
+    st.write("""
+    ✅ **SVM tìm kiếm siêu phẳng tối ưu** để phân tách dữ liệu, đảm bảo khoảng cách giữa hai lớp là lớn nhất.
+    ✅ **Nếu dữ liệu không tuyến tính**, SVM sử dụng **Kernel Trick** để ánh xạ dữ liệu sang không gian cao hơn.
+    ✅ **Nếu dữ liệu có nhiễu**, SVM sử dụng **Soft Margin** để chấp nhận một số điểm bị phân loại sai.
+    ✅ **Tham số quan trọng:**
+    - **\( C \)**: Điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
+    - **Kernel**: Biến đổi dữ liệu để làm việc với dữ liệu không tuyến tính.
+    """)
+
+# Gọi hàm hiển thị nội dung lý thuyết về SVM
+
+
 
 
 def data():
