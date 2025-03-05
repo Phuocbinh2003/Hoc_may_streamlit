@@ -147,15 +147,15 @@ def ly_thuyet_SVM():
     st.write(r"""
     - Thêm biến slack \( \xi_i \) để cho phép một số điểm bị phân loại sai.
     - Ý nghĩa của biến slack:
-      - \( \xi_i = 0 \) : Điểm nằm ngoài hoặc trên lề, được phân loại đúng.
-      - \( 0 < \xi_i < 1 \) : Điểm nằm trong lề nhưng vẫn được phân loại đúng.
-      - \( \xi_i > 1 \) : Điểm bị phân loại sai.
+      - $$ \xi_i = 0 $$: Điểm nằm ngoài hoặc trên lề, được phân loại đúng.
+      - $$0 < \xi_i < 1 $$: Điểm nằm trong lề nhưng vẫn được phân loại đúng.
+      - $$ \xi_i > 1 $$ : Điểm bị phân loại sai.
     """)
     
     st.write(r"""
-    📍 **Ý nghĩa của hệ số \( C \)**
-    - Nếu \( C \) lớn → Mô hình cố gắng phân loại chính xác nhất có thể nhưng dễ bị **overfitting**.
-    - Nếu \( C \) nhỏ → Mô hình linh hoạt hơn nhưng có thể chấp nhận nhiều lỗi hơn.
+    📍 **Ý nghĩa của hệ số $$ C $$**
+    - Nếu $$ C $$lớn → Mô hình cố gắng phân loại chính xác nhất có thể nhưng dễ bị **overfitting**.
+    - Nếu $$C $$ nhỏ → Mô hình linh hoạt hơn nhưng có thể chấp nhận nhiều lỗi hơn.
     """)
     
     # 5️⃣ Tổng kết
@@ -165,7 +165,7 @@ def ly_thuyet_SVM():
     ✅ **Nếu dữ liệu không tuyến tính**, SVM sử dụng **Kernel Trick** để ánh xạ dữ liệu sang không gian cao hơn.
     ✅ **Nếu dữ liệu có nhiễu**, SVM sử dụng **Soft Margin** để chấp nhận một số điểm bị phân loại sai.
     ✅ **Tham số quan trọng:**
-    - **\( C \)**: Điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
+    - **$$C $$**: Điều chỉnh giữa việc tối ưu margin và chấp nhận lỗi.
     - **Kernel**: Biến đổi dữ liệu để làm việc với dữ liệu không tuyến tính.
     """)
 
