@@ -840,6 +840,8 @@ def chon():
     except Exception as e:
         st.error(f"Lỗi xảy ra: {e}")
 def main():
+    
+    
     # mlflow_input()
     tab1, tab2, tab3 ,tab4= st.tabs(["📘 Tiền xử lý dữ liệu","⚙️ Huấn luyện", "🔢 Dự đoán","🔥 Mlflow"])
     with tab1:
