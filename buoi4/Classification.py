@@ -42,8 +42,8 @@ def ly_thuyet_Decision_tree():
     - \( p_i \) : xác suất xuất hiện của lớp \( i \), được tính bằng tỷ lệ số mẫu của lớp \( i \) trên tổng số mẫu.
     """)
 
-    st.write("""
-    **Bước 2: Chia tập dữ liệu theo từng thuộc tính và tính Entropy của từng tập con**
+    st.write(r"""
+    **Bước 2:  Tính Entropy \( $$H(S_j)$$ \) của từng tập con khi chia theo từng thuộc tính**
     - Mỗi lần chia, dữ liệu được tách thành nhiều tập con nhỏ hơn.
     - Entropy của mỗi tập con được tính tương tự như Entropy ban đầu.
     """)
