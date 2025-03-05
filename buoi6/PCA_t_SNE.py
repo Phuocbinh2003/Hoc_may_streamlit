@@ -118,7 +118,7 @@ def explain_pca():
       
     Nhờ đó, chúng ta có thể biểu diễn dữ liệu một cách gọn gàng hơn mà không mất quá nhiều thông tin!  
     """)
-    st.image("buoi6/img1.png")  # Đường dẫn cần đúng
+    # st.image("buoi6/img1.png")  # Đường dẫn cần đúng
     st.markdown("""
         ### ✅ **Ưu điểm của PCA**  
         - **Giảm chiều dữ liệu hiệu quả**: PCA giúp giảm số chiều của dữ liệu mà vẫn giữ lại phần lớn thông tin quan trọng.  
