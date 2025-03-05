@@ -487,29 +487,38 @@ import random
 # ✅ Chạy dự đoán
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-    
+
+    # 🔹 Danh sách mô hình có sẵn
     models = {
         "SVM Linear": "buoi4/svm_mnist_linear.joblib",
         "SVM Poly": "buoi4/svm_mnist_poly.joblib",
         "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
         "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
     }
-    
+
+    # Lấy tên mô hình từ session_state
     model_names = [model["name"] for model in st.session_state.get("models", [])]
+
+    # 📌 Chọn mô hình
     model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()) + model_names)
-    
+
+    # Nếu chọn mô hình đã được huấn luyện và lưu trong session_state
     if model_option in model_names:
         model = next(model for model in st.session_state["models"] if model["name"] == model_option)["model"]
     else:
+        # Nếu chọn mô hình có sẵn (các mô hình đã được huấn luyện và lưu trữ dưới dạng file
         model = load_model(models[model_option])
         st.success(f"✅ Đã tải mô hình: {model_option}")
-    
+
+    # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
-        st.session_state.key_value = str(random.randint(0, 1000000))
-    
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+
     if st.button("🔄 Tải lại nếu không thấy canvas"):
-        st.session_state.key_value = str(random.randint(0, 1000000))
+        st.session_state.key_value = str(random.randint(0, 1000000))  # Đổi key thành string
+        #st.rerun()  # Cập nhật lại giao diện để vùng vẽ được làm mới
     
+    # ✍️ Vẽ số
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=10,
@@ -518,25 +527,22 @@ def du_doan():
         height=150,
         width=150,
         drawing_mode="freedraw",
-        key=st.session_state.key_value,
+        key=st.session_state.key_value,  # Đảm bảo key là string
         update_streamlit=True
     )
-    
+
     if st.button("Dự đoán số"):
         img = preprocess_canvas_image(canvas_result)
+
         if img is not None:
+            # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
-            
+
+            # Dự đoán
             prediction = model.predict(img)
-            if hasattr(model, "predict_proba"):
-                probabilities = model.predict_proba(img)
-                confidence = np.max(probabilities)
-                st.subheader(f"🔢 Dự đoán: {prediction[0]} với độ tin cậy {confidence:.2%}")
-            else:
-                st.subheader(f"🔢 Dự đoán: {prediction[0]}")
+            st.subheader(f"🔢 Dự đoán: {prediction[0]}")
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
-
 
 
 from datetime import datetime   
