@@ -580,8 +580,8 @@ def show_experiment_selector():
     run_info = []
     for _, run in runs.iterrows():
         run_id = run["run_id"]
-        run_params = mlflow.get_run(run_id).data.params
-        run_name = run_params.get("run_name", f"Run {run_id[:8]}")  # Nếu không có run_name thì lấy run_id
+        run_tags = mlflow.get_run(run_id).data.tags
+        run_name = run_tags.get("mlflow.runName", f"Run {run_id[:8]}")  # Lấy từ tags
         run_info.append((run_name, run_id))
 
     # Tạo dictionary để map run_name -> run_id
