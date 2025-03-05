@@ -316,7 +316,7 @@ def ly_thuyet_DBSCAN():
     dataset_type = st.radio("Chọn kiểu dữ liệu", ["Cụm Gauss", "Hai vòng trăng", "Hai hình tròn lồng nhau"], key="dataset_type_dbscan")
 
     num_samples_dbscan = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_dbscan")
-    eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.5, step=0.1, key="eps_dbscan")
+    eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.1, step=0.1, key="eps_dbscan")
     min_samples_dbscan = st.slider("Số điểm tối thiểu để tạo cụm", 2, 20, 5, key="min_samples_dbscan")
 
     # Kiểm tra và cập nhật dữ liệu DBSCAN trong session_state
@@ -650,8 +650,8 @@ def show_experiment_selector():
     run_info = []
     for _, run in runs.iterrows():
         run_id = run["run_id"]
-        run_params = mlflow.get_run(run_id).data.params
-        run_name = run_params.get("run_name", f"Run {run_id[:8]}")
+        run_tags = mlflow.get_run(run_id).data.tags
+        run_name = run_tags.get("mlflow.runName", f"Run {run_id[:8]}")  # Lấy từ tags
         run_info.append((run_name, run_id))
     
     # Tạo dictionary để map run_name -> run_id
