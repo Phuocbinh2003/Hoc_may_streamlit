@@ -359,7 +359,10 @@ def ly_thuyet_DBSCAN():
     ax.legend()
 
     # Hiển thị biểu đồ
-    st.pyplot(fig)
+    col1, col2, col3 = st.columns([1, 5, 1])  # Cột giữa chiếm nhiều không gian hơn
+    with col2:
+        st.pyplot(fig)
+
 
 
 
