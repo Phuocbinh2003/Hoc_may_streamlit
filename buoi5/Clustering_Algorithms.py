@@ -361,9 +361,9 @@ def ly_thuyet_DBSCAN():
     # Hiển thị biểu đồ
     fig, ax = plt.subplots(figsize=(2, 2))  # Giảm kích thước xuống
 
-    col1, col2, col3 = st.columns([1, 5, 1])  # Cột giữa chiếm nhiều không gian hơn
-    with col2:
-        st.pyplot(fig)
+    # col1, col2, col3 = st.columns([1, 5, 1])  # Cột giữa chiếm nhiều không gian hơn
+    # with col2:
+    st.pyplot(fig)
 
 
 
