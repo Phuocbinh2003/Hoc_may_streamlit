@@ -10,3 +10,4 @@ st.title("🔍 Thuật toán giảm chiều")
 
 # Gọi hàm ClusteringAlgorithms từ module
 Neural_Network()
+    
