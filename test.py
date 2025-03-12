@@ -168,7 +168,7 @@ def split_data():
         st.table(summary_df)
 
 def thi_nghiem():
-    st.title("🧠 Huấn luyện Neural Network trên MNIST")
+   
     
     if "X_train" not in st.session_state:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
@@ -414,6 +414,7 @@ def pca_tsne():
         explain_nn()
 
     with tab2:
+        st.title("🧠 Huấn luyện Neural Network trên MNIST")
         split_data()
         thi_nghiem()
     
