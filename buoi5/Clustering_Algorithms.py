@@ -422,13 +422,8 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, DBSCAN
 from scipy.stats import mode
 
-def input_mlflow():
-    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-    st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
-    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-    mlflow.set_experiment("Clustering")
+
+    
 
 def train():
     st.header("⚙️ Chọn mô hình & Huấn luyện")
@@ -717,7 +712,12 @@ def show_experiment_selector():
 
 
 def ClusteringAlgorithms():
-    input_mlflow()
+    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+    st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
+    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+    mlflow.set_experiment("Clustering")
     st.title("🖊️ MNIST Classification App")
 
     
