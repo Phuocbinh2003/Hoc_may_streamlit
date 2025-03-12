@@ -25,7 +25,7 @@ def explain_nn():
 
     ### 🔰 Kiến trúc cơ bản:
     """)
-    st.image("buoi7/img1.webp", caption="", use_container_width=True)
+    #st.image("buoi7/img1.webp", caption="", use_container_width=True)
     
     st.markdown("""
     ### 📌 Các thành phần chính:
