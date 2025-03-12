@@ -33,7 +33,7 @@ def explain_nn():
     3. **Output Layer**: Lớp đưa ra kết quả dự đoán.
     """)
     
-    st.image("buoi7/img1.webp", caption="Cấu trúc mạng nơ-ron(medium.com)", use_container_width=True)
+    st.image("buoi7/img1.webp", caption="Cấu trúc mạng nơ-ron(medium.com)", use_container_width="auto")
     
    
 
@@ -65,7 +65,7 @@ def explain_nn():
     Hàm kích hoạt giúp mạng học được các tính phi tuyến tính, nhờ đó có thể mô hình hóa các mối quan hệ phức tạp.
     """)
     
-    st.image("buoi7/img2.png", caption="Một số hàm kích hoạt cơ bản", use_container_width=True)
+    st.image("buoi7/img2.png", caption="Một số hàm kích hoạt cơ bản", use_container_width="auto")
     
     st.markdown("- **Sigmoid:** Chuyển đổi giá trị đầu vào thành khoảng từ 0 đến 1, phù hợp cho bài toán phân loại nhị phân.")
     st.latex(r"\sigma(z) = \frac{1}{1 + e^{-z}}")
@@ -149,7 +149,7 @@ def data():
 
     # Đọc và hiển thị ảnh GIF minh họa
     gif_path = "buoi7/g1.gif"  # Thay bằng đường dẫn thực tế
-    st.image(gif_path, caption="Hình ảnh minh họa dữ liệu MNIST", use_container_width=True)
+    st.image(gif_path, caption="Hình ảnh minh họa dữ liệu MNIST", use_container_width="auto")
 
     # Mô tả về dữ liệu MNIST
     st.write("""
