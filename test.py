@@ -129,131 +129,97 @@ from tensorflow.keras import layers
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from mlflow.models.signature import infer_signature
 
+# Load dữ liệu MNIST
+def load_mnist_data():
+    X = np.load("buoi4/X.npy")
+    y = np.load("buoi4/y.npy")
+    return X, y
 
-def thi_nghiem():
-    st.title("🧠 Huấn luyện Neural Network trên MNIST")
-
-    # Load dữ liệu
-    Xmt = np.load("buoi4/X.npy")
-    ymt = np.load("buoi4/y.npy")
-    X = Xmt.reshape(Xmt.shape[0], -1) / 255.0  # Chuẩn hóa dữ liệu về [0,1]
-    y = ymt.reshape(-1)
-
-    num_samples = st.slider("Chọn số lượng mẫu MNIST sử dụng:", 1000, 60000, 5000, 1000)
-    X, y = X[:num_samples], y[:num_samples]
-
-    # Chia tỷ lệ train/test
+def split_data():
+    st.title("📌 Chia dữ liệu Train/Test")
+    
+    # Đọc dữ liệu
+    X, y = load_mnist_data()
+    total_samples = X.shape[0]
+    
+    # Thanh kéo chọn số lượng ảnh để train
+    num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
+    
+    # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
-    remaining_size = 100 - test_size
-    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong phần Train)", 0, 50, 15)
-    st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={remaining_size - val_size}%")
-
-    if st.button("✅ Xác nhận & Lưu") and not st.session_state.get("data_split_done", False):
-        st.session_state["data_split_done"] = True  # Đánh dấu đã chia dữ liệu
-
-        # Chia dữ liệu
-        stratify_option = y if len(np.unique(y)) > 1 else None
-        X_train_full, X_test, y_train_full, y_test = train_test_split(
-            X, y, test_size=test_size/100, stratify=stratify_option, random_state=42
-        )
-
-        stratify_option = y_train_full if len(np.unique(y_train_full)) > 1 else None
-        X_train, X_val, y_train, y_val = train_test_split(
-            X_train_full, y_train_full, test_size=val_size / (100 - test_size),
-            stratify=stratify_option, random_state=42
-        )
-
-        summary_df = pd.DataFrame({
-            "Tập dữ liệu": ["Train", "Validation", "Test"],
-            "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]
+    train_size = 100 - test_size
+    val_size = st.slider("📌 Chọn % dữ liệu Validation (trong Train)", 0, 50, 15)
+    
+    st.write(f"📌 **Tỷ lệ phân chia:** Test={test_size}%, Validation={val_size}%, Train={train_size - val_size}%")
+    
+    if st.button("✅ Xác nhận & Lưu"):
+        X_selected, _, y_selected, _ = train_test_split(X, y, train_size=num_samples, stratify=y, random_state=42)
+        X_train_full, X_test, y_train_full, y_test = train_test_split(X_selected, y_selected, test_size=test_size/100, stratify=y_selected, random_state=42)
+        X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=val_size / (100 - test_size), stratify=y_train_full, random_state=42)
+        
+        # Lưu vào session_state
+        st.session_state.update({
+            "X_train": X_train, "X_val": X_val, "X_test": X_test,
+            "y_train": y_train, "y_val": y_val, "y_test": y_test
         })
+        
+        summary_df = pd.DataFrame({"Tập dữ liệu": ["Train", "Validation", "Test"], "Số lượng mẫu": [X_train.shape[0], X_val.shape[0], X_test.shape[0]]})
         st.success("✅ Dữ liệu đã được chia thành công!")
         st.table(summary_df)
 
-    elif st.session_state.get("data_split_done", False):
-        st.info("✅ Dữ liệu đã được chia, không cần chạy lại.")
-
-    # Số fold K-Fold Cross Validation
+def train_model():
+    st.title("🧠 Huấn luyện Neural Network trên MNIST")
+    
+    if "X_train" not in st.session_state:
+        st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
+        return
+    
+    X_train, X_val, X_test = [st.session_state[k].reshape(-1, 28 * 28) / 255.0 for k in ["X_train", "X_val", "X_test"]]
+    y_train, y_val, y_test = [st.session_state[k] for k in ["y_train", "y_val", "y_test"]]
+    
     k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
-
-    # Cấu hình mô hình
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
     num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
-    loss_fn = st.selectbox("Hàm mất mát:", ["sparse_categorical_crossentropy", "categorical_crossentropy"])
-
+    loss_fn = "sparse_categorical_crossentropy"
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
-    st.session_state["run_name"] = run_name if run_name else "default_run"
-
+    
     if st.button("🚀 Huấn luyện mô hình"):
         with st.spinner("Đang huấn luyện..."):
-            mlflow.start_run(run_name=st.session_state["run_name"])
-            mlflow.log_params({
-                "num_layers": num_layers,
-                "num_neurons": num_neurons,
-                "activation": activation,
-                "optimizer": optimizer,
-                "loss_function": loss_fn,
-                "train_size": remaining_size - val_size,
-                "validation_size": val_size,
-                "test_size": test_size,
-                "k_folds": k_folds
-            })
-
-            # K-Fold Cross Validation
+            mlflow.start_run(run_name=run_name)
+            mlflow.log_params({"num_layers": num_layers, "num_neurons": num_neurons, "activation": activation, "optimizer": optimizer, "k_folds": k_folds})
+            
             kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
             accuracies, losses = [], []
-
+            
             for train_idx, val_idx in kf.split(X_train, y_train):
                 X_k_train, X_k_val = X_train[train_idx], X_train[val_idx]
                 y_k_train, y_k_val = y_train[train_idx], y_train[val_idx]
-
-                # Xây dựng mô hình
-                model = keras.Sequential([layers.Input(shape=(X_k_train.shape[1],))])
-                for _ in range(num_layers):
-                    model.add(layers.Dense(num_neurons, activation=activation))
-                model.add(layers.Dense(10, activation="softmax"))
-
+                
+                model = keras.Sequential([layers.Input(shape=(X_k_train.shape[1],))] + [layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)] + [layers.Dense(10, activation="softmax")])
                 model.compile(optimizer=optimizer, loss=loss_fn, metrics=["accuracy"])
-
+                
                 start_time = time.time()
                 history = model.fit(X_k_train, y_k_train, epochs=20, validation_data=(X_k_val, y_k_val), verbose=0)
                 elapsed_time = time.time() - start_time
-
-                # Lưu kết quả từng fold
+                
                 accuracies.append(history.history["val_accuracy"][-1])
                 losses.append(history.history["val_loss"][-1])
-
-            # Tính độ chính xác trung bình trên tập validation
+                
             avg_val_accuracy = np.mean(accuracies)
             avg_val_loss = np.mean(losses)
-
-            mlflow.log_metric("avg_val_accuracy", avg_val_accuracy)
-            mlflow.log_metric("avg_val_loss", avg_val_loss)
-            mlflow.log_metric("elapsed_time", elapsed_time)
-
-            # 🔥 Đánh giá trên tập test
+            
+            mlflow.log_metrics({"avg_val_accuracy": avg_val_accuracy, "avg_val_loss": avg_val_loss, "elapsed_time": elapsed_time})
+            
             test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
-
-            mlflow.log_metric("test_accuracy", test_accuracy)
-            mlflow.log_metric("test_loss", test_loss)
-
-            # Lưu model vào session_state để dùng cho dự đoán
-            st.session_state["trained_model"] = model
-
-            # Log model vào MLflow
-            signature = infer_signature(X_train[:1], model.predict(X_train[:1]))
-            mlflow.keras.log_model(model, "mnist_model", signature=signature)
-
+            mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
             mlflow.end_run()
-
-            # Hiển thị kết quả
-            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+            
+            st.success(f"✅ Huấn luyện hoàn tất!")
             st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
             st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
 
-            st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
 
             
             
