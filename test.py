@@ -212,11 +212,9 @@ def thi_nghiem():
             st.session_state["trained_model"] = model
 
             # Log model vào MLflow
-            example_input = np.random.rand(1, X_train.shape[1])
-            example_output = model.predict(example_input)
-            signature = infer_signature(example_input, example_output)
+            signature = infer_signature(X_train[:1], model.predict(X_train[:1]))
+            mlflow.keras.log_model(model, "mnist_model", signature=signature)
 
-            mlflow.keras.log_model(model, "mnist_model", signature=signature, input_example=example_input)
 
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
