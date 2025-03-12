@@ -121,12 +121,14 @@ def input_mlflow():
 
 import streamlit as st
 import numpy as np
-import tensorflow as tf
-import mlflow
-import mlflow.tensorflow
 import time
+import mlflow
+import mlflow.keras
 from tensorflow import keras
 from tensorflow.keras import layers
+from sklearn.model_selection import train_test_split, StratifiedKFold
+from mlflow.models.signature import infer_signature
+
 
 def thi_nghiem():
     st.title("🧠 Huấn luyện Neural Network trên MNIST")
@@ -148,14 +150,14 @@ def thi_nghiem():
     # Chia tập dữ liệu
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, stratify=y, random_state=42)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=validation_size / (1 - test_size), stratify=y_train, random_state=42)
-    
+    k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
     # Cấu hình mô hình
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
     num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
     loss_fn = st.selectbox("Hàm mất mát:", ["sparse_categorical_crossentropy", "categorical_crossentropy"])
-    k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
+    
     
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state["run_name"] = run_name if run_name else "default_run"
@@ -219,6 +221,7 @@ def thi_nghiem():
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
             st.write(f"📊 Độ chính xác trung bình trên validation: **{avg_accuracy:.4f}**")
+            
 
 import streamlit as st
 import numpy as np
