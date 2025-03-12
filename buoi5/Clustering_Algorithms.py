@@ -70,18 +70,19 @@ def data():
     # """)
 
 def ly_thuyet_K_means():
-    st.title("📌 K-Means Clustering")
+    st.title("📌 K-Means Clustering - Phân cụm dữ liệu")
 
     # 🔹 Giới thiệu về K-Means
     st.markdown(r"""
         
         **K-Means** là một thuật toán **phân cụm không giám sát** phổ biến, giúp chia tập dữ liệu thành **K cụm** sao cho các điểm trong cùng một cụm có đặc trưng tương đồng nhất.  
+        🚀 **Nguyên lý hoạt động**: K-Means cố gắng tối thiểu hóa tổng bình phương khoảng cách từ mỗi điểm đến tâm cụm của nó, giúp đảm bảo rằng các điểm dữ liệu trong cùng một cụm nằm gần nhau nhất có thể.  
 
         ---
 
         ### 🔹 **Ý tưởng chính của K-Means**
-        1️⃣ **Khởi tạo \( K \) tâm cụm (centroids)** ngẫu nhiên từ tập dữ liệu.  
-        2️⃣ **Gán mỗi điểm dữ liệu vào cụm có tâm gần nhất**, sử dụng khoảng cách Euclidean:  
+        1️⃣ **Khởi tạo \( K \) tâm cụm ban đầu** bằng cách chọn ngẫu nhiên \( K \) điểm dữ liệu làm tâm cụm. 
+        2️⃣ **Gán mỗi điểm dữ liệu vào cụm có tâm gần nhất**, dựa trên khoảng cách Euclidean:  
         """)
 
     st.latex(r"""
@@ -89,7 +90,7 @@ def ly_thuyet_K_means():
         """)
 
     st.markdown(r"""
-        3️⃣ **Cập nhật lại tâm cụm** bằng cách tính trung bình của các điểm trong cụm:  
+        3️⃣ **Cập nhật lại tâm cụm** bằng cách tính trung bình của các điểm dữ liệu trong cụm:  
         """)
 
     st.latex(r"""
@@ -118,8 +119,17 @@ def ly_thuyet_K_means():
         - **K-Means++**: Cải thiện cách chọn tâm cụm ban đầu để giảm thiểu hội tụ vào cực tiểu cục bộ.  
         - **Mini-batch K-Means**: Sử dụng tập mẫu nhỏ để cập nhật tâm cụm, giúp tăng tốc độ trên dữ liệu lớn.  
         - **K-Medoids**: Thay vì trung bình, sử dụng điểm thực tế làm tâm cụm để giảm ảnh hưởng của outliers.  
+        
+        ---
+        
 
-        📌 **Ứng dụng của K-Means:** Phân tích khách hàng, nhận diện mẫu, nén ảnh, phân cụm văn bản, v.v.  
+        ## 📌 **Ứng dụng của K-Means**
+        - **Phân tích khách hàng**: Nhóm khách hàng dựa trên hành vi mua hàng.  
+        - **Nhận diện mẫu**: Phân loại hình ảnh, chữ viết tay, âm thanh.  
+        - **Nén ảnh**: Giảm số màu trong ảnh mà vẫn giữ chất lượng tốt.  
+        - **Phân cụm văn bản**: Nhóm các tài liệu, bài báo có nội dung tương tự. 
+        ✍ **Tóm lại**, K-Means là một thuật toán mạnh mẽ, dễ triển khai và có nhiều ứng dụng thực tế. Tuy nhiên, để đạt hiệu quả cao, cần lựa chọn số cụm \( K \) hợp lý và có thể cân nhắc các biến thể cải tiến của thuật toán. 🚀  
+
         """)
 
 
@@ -202,24 +212,24 @@ from sklearn.datasets import make_blobs, make_moons, make_circles
 def ly_thuyet_DBSCAN():
 
     st.markdown(r"""
-    ## 📌 **DBSCAN (Density-Based Spatial Clustering of Applications with Noise)**
+    ## 📌 **DBSCAN **
     **DBSCAN** là một thuật toán phân cụm **không giám sát**, dựa trên **mật độ điểm dữ liệu**, giúp xác định các cụm có hình dạng bất kỳ và phát hiện nhiễu (outliers).  
-
+    Khác với **K-Means**, **DBSCAN** không yêu cầu xác định số cụm trước mà tự động tìm ra số cụm phù hợp dựa trên mật độ điểm dữ liệu.
     ---
 
+
+    DBSCAN dựa trên khái niệm mật độ điểm dữ liệu, được xác định dựa vào hai tham số quan trọng:
+    - **$$ \varepsilon $$ (eps)**: Bán kính tìm kiếm điểm lân cận.
+    - **min_samples**: Số lượng điểm tối thiểu trong **eps** để xác định một **core point**.
+    
     ### 🔹 **Ý tưởng chính của DBSCAN**
-    1️⃣ **Xác định các điểm lõi (Core Points):** Nếu một điểm có ít nhất **min_samples** điểm lân cận trong bán kính **$$ \varepsilon $$**, nó là một **điểm lõi**.  
-    2️⃣ **Xác định các điểm biên (Border Points):** Là các điểm thuộc vùng lân cận của điểm lõi nhưng không đủ **min_samples**.  
+    1️⃣ **Xác định các điểm lõi (Core Points):** Một điểm p là lõi nếu có ít nhất **min_samples** điểm lân cận trong bán kính **$$ \varepsilon $$**, nó là một **điểm lõi**.  
+    2️⃣ **Xác định các điểm biên (Border Points):** Là các điểm nằm trong vùng lân cận của điểm lõi nhưng không đủ điều kiện là lõi.  
     3️⃣ **Xác định nhiễu (Noise Points):** Các điểm không thuộc bất kỳ cụm nào.  
     4️⃣ **Mở rộng cụm:** Bắt đầu từ một điểm lõi, mở rộng cụm bằng cách thêm các điểm biên lân cận cho đến khi không còn điểm nào thoả mãn điều kiện.  
 
     ---
 
-    ### 🔢 **Tham số quan trọng của DBSCAN**
-    - **$$ \varepsilon $$** (eps): Bán kính tìm kiếm điểm lân cận.  
-    - **min_samples**: Số lượng điểm tối thiểu trong **eps** để xác định một **core point**.  
-
-    ---
 
     ### 📌 **Công thức khoảng cách trong DBSCAN**
     DBSCAN sử dụng **khoảng cách Euclidean** để xác định **điểm lân cận**, được tính bằng công thức:
@@ -260,9 +270,9 @@ def ly_thuyet_DBSCAN():
     ---
 
     ### 📌 **Ứng dụng của DBSCAN**
-    - **Phát hiện gian lận tài chính**.  
-    - **Phân tích dữ liệu không gian (GIS, bản đồ)**.  
-    - **Phát hiện bất thường (Anomaly Detection)**.  
+    - 🚀**Phát hiện gian lận tài chính**: Xác định các giao dịch đáng ngờ có mật độ thấp so với giao dịch thông thường.  
+    - 📍**Phân tích dữ liệu không gian (GIS, bản đồ)**: Nhóm các địa điểm có mật độ cao như trung tâm thương mại, điểm du lịch.  
+    - 🔍**Phát hiện bất thường (Anomaly Detection)**: Xác định lỗi trong dữ liệu cảm biến hoặc hành vi bất thường trong mạng máy tính..  
     """)
 
 
@@ -296,7 +306,7 @@ def ly_thuyet_DBSCAN():
     )
 
     num_samples_dbscan = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="num_samples_dbscan")
-    eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.1, step=0.1, key="eps_dbscan")
+    eps_dbscan = st.slider("Bán kính cụm (eps)", 0.1, 2.0, 0.3, step=0.1, key="eps_dbscan")
     min_samples_dbscan = st.slider("Số điểm tối thiểu để tạo cụm", 2, 20, 5, key="min_samples_dbscan")
 
     # Kiểm tra và cập nhật dữ liệu DBSCAN trong session_state
