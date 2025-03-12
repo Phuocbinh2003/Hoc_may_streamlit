@@ -167,7 +167,7 @@ def split_data():
         st.success("✅ Dữ liệu đã được chia thành công!")
         st.table(summary_df)
 
-def train_model():
+def thi_nghiem():
     st.title("🧠 Huấn luyện Neural Network trên MNIST")
     
     if "X_train" not in st.session_state:
