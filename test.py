@@ -148,8 +148,8 @@ def data():
     st.subheader("📊 Minh họa dữ liệu MNIST")
 
     # Đọc và hiển thị ảnh GIF minh họa
-    gif_path = "buoi7\g1.gif"  # Thay bằng đường dẫn thực tế
-    st.image(gif_path, caption="Hình ảnh minh họa dữ liệu MNIST", use_column_width=True)
+    gif_path = "buoi7/g1.gif"  # Thay bằng đường dẫn thực tế
+    st.image(gif_path, caption="Hình ảnh minh họa dữ liệu MNIST", use_container_width=True)
 
     # Mô tả về dữ liệu MNIST
     st.write("""
