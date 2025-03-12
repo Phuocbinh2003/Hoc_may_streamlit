@@ -21,35 +21,86 @@ def explain_nn():
     st.markdown("""
     ## 🧠 Neural Network Cơ Bản
 
-    **Neural Network (Mạng nơ-ron)** là mô hình lấy cảm hứng từ hoạt động của não bộ, gồm nhiều lớp nơ-ron nhân tạo kết nối với nhau.
+    **Neural Network (Mạng nơ-ron nhân tạo - ANN)** là một mô hình tính toán lấy cảm hứng từ cấu trúc và hoạt động của não bộ con người. Mạng bao gồm nhiều nơ-ron nhân tạo kết nối với nhau thành các lớp (layers), giúp mô hình học và nhận diện các mẫu trong dữ liệu.
 
     ### 🔰 Kiến trúc cơ bản:
     """)
+    
+    st.markdown("""
+    ### 📌 Cấu trúc của một mạng nơ-ron nhân tạo gồm ba loại lớp chính:
+    1. **Input Layer**: Lớp tiếp nhận dữ liệu đầu vào.
+    2. **Hidden Layers**: Xử lý thông tin thông qua các trọng số (weights) và hàm kích hoạt.
+    3. **Output Layer**: Lớp đưa ra kết quả dự đoán.
+    """)
+    
     st.image("buoi7/img1.webp", caption="", use_container_width=True)
     
     st.markdown("""
-    ### 📌 Các thành phần chính:
-    1. **Input Layer**: Lớp tiếp nhận dữ liệu đầu vào
-    2. **Hidden Layers**: Các lớp xử lý ẩn
-    3. **Output Layer**: Lớp đưa ra kết quả dự đoán
-
-    ### 🎯 Hàm kích hoạt (Activation Functions):
+    Mỗi nơ-ron trong một lớp nhận tín hiệu từ các nơ-ron lớp trước, nhân với trọng số (weights), cộng với bias, rồi đưa vào một hàm kích hoạt để quyết định tín hiệu truyền đi.
+    
+    ### 📌 Công thức toán học trong Neural Network:
+    Với một nơ-ron, giá trị đầu ra được tính như sau:
+    
+    \[ z = \sum_{i=1}^{n} w_i x_i + b \]
+    
+    Trong đó:
+    - \( x_i \) là đầu vào (input features)
+    - \( w_i \) là trọng số (weights)
+    - \( b \) là bias
+    - \( z \) là tổng có trọng số
+    
+    Sau đó, giá trị \( z \) đi qua hàm kích hoạt \( \sigma(z) \) để tạo đầu ra:
+    
+    \[ a = \sigma(z) \]
+    
+    Các hàm kích hoạt phổ biến sẽ được trình bày trong phần tiếp theo.
     """)
+    
+    st.markdown("""
+    ### 🎯 Hàm Kích Hoạt (Activation Functions)
+    Hàm kích hoạt giúp mạng học được các tính phi tuyến tính, nhờ đó có thể mô hình hóa các mối quan hệ phức tạp.
+    """)
+    
     st.image("buoi7/img2.png", caption="", use_container_width=True)
     
     st.markdown("""
-    ### 🔄 Quá trình lan truyền:
-    1. **Lan truyền thuận (Forward Propagation)**: Tính toán đầu ra
-    2. **Tính toán loss**: So sánh với giá trị thực
-    3. **Lan truyền ngược (Backpropagation)**: Cập nhật trọng số
-    4. **Tối ưu hóa**: Sử dụng các thuật toán như GD, Adam
-
-    ### 📉 Hàm mất mát phổ biến:
-    ```python
-    Loss = CrossEntropy(y_true, y_pred)
-    ```
+    - **Sigmoid:** Chuyển đổi giá trị đầu vào thành khoảng từ 0 đến 1, phù hợp cho bài toán phân loại nhị phân.
+      \[ \sigma(z) = \frac{1}{1 + e^{-z}} \]
+    
+    - **Tanh (Hyperbolic Tangent):** Đầu ra nằm trong khoảng từ -1 đến 1, giúp xử lý dữ liệu có cả giá trị dương và âm.
+      \[ \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}} \]
+    
+    - **ReLU (Rectified Linear Unit):** Nếu đầu vào âm thì bằng 0, còn nếu dương thì giữ nguyên giá trị.
+      \[ ReLU(z) = \max(0, z) \]
     """)
-
+    
+    st.markdown("""
+    ### 🔄 Quá trình huấn luyện Neural Network:
+    Mạng nơ-ron học bằng cách cập nhật các trọng số thông qua hai giai đoạn chính:
+    
+    1. **Lan truyền thuận (Forward Propagation):**
+       - Input đi qua từng lớp nơ-ron, tính toán đầu ra:
+         \[ a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)}) \]
+    
+    2. **Tính toán loss:**
+       - Hàm mất mát đo lường sai số giữa dự đoán và thực tế.
+       - Ví dụ: Mean Squared Error (MSE) cho bài toán hồi quy:
+         \[ L = \frac{1}{N} \sum (y_{true} - y_{pred})^2 \]
+       - Cross-Entropy Loss cho bài toán phân loại:
+         \[ L = - \sum y_{true} \log(y_{pred}) \]
+    
+    3. **Lan truyền ngược (Backpropagation):**
+       - Tính đạo hàm của hàm mất mát theo trọng số.
+       - Sử dụng thuật toán tối ưu để cập nhật trọng số.
+    
+    4. **Tối ưu hóa:**
+       - **Gradient Descent:** Cập nhật trọng số bằng cách đi theo hướng giảm của gradient.
+       - **Momentum:** Thêm động lượng giúp tối ưu nhanh hơn.
+       - **Adam (Adaptive Moment Estimation):** Kết hợp Momentum và RMSprop để đạt hiệu suất tối ưu.
+    
+    ### 🔍 Kết Luận
+    Neural Network là một mô hình mạnh mẽ trong Machine Learning và Deep Learning, có thể học được các đặc trưng phức tạp từ dữ liệu. Hiểu rõ cách hoạt động giúp ta tối ưu hóa mô hình để đạt hiệu suất cao hơn.
+    """)
     
     
     
