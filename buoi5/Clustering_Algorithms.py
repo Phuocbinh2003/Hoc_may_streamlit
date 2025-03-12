@@ -101,23 +101,6 @@ def ly_thuyet_K_means():
 
         ---
 
-        ### 🔢 **Công thức tối ưu hóa trong K-Means**
-        K-Means tìm cách tối thiểu hóa tổng bình phương khoảng cách từ mỗi điểm đến tâm cụm của nó:  
-        """)
-
-    st.latex(r"""
-        J = \sum_{k=1}^{K} \sum_{x_i \in C_k} ||x_i - \mu_k||^2
-        """)
-
-    st.markdown(r"""
-        Trong đó:  
-        - **$$ J $$**: Hàm mất mát (tổng bình phương khoảng cách).  
-        - **$$ x_i $$**: Điểm dữ liệu thứ $$ i $$.  
-        - **$$ \mu_k $$**: Tâm cụm thứ $$ k $$.  
-        - **$$ C_k $$**: Tập các điểm thuộc cụm $$ k $$.  
-
-        ---
-
         ### ✅ **Ưu điểm & ❌ Nhược điểm**
         ✅ **Ưu điểm:**  
         - Đơn giản, dễ hiểu, tốc độ nhanh.  
