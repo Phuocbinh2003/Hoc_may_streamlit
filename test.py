@@ -115,9 +115,9 @@ def explain_nn():
 
     st.markdown("Trong đó:")
     st.markdown(r"- $$\frac{\partial L}{\partial W^{(l)}} $$: Đạo hàm của loss theo trọng số $$ W^{(l)} $$.")
-    st.markdown("- \( \frac{\partial L}{\partial a^{(l)}} \): Đạo hàm của loss theo đầu ra của lớp \( l \).")
-    st.markdown("- \( \frac{\partial a^{(l)}}{\partial z^{(l)}} \): Đạo hàm của hàm kích hoạt.")
-    st.markdown("- \( \frac{\partial z^{(l)}}{\partial W^{(l)}} \): Đạo hàm của đầu vào trước lớp kích hoạt theo trọng số.")
+    st.markdown(r"- $$ \frac{\partial L}{\partial a^{(l)}} $$: Đạo hàm của loss theo đầu ra của lớp \( l \).")
+    st.markdown(r"- $$ \frac{\partial a^{(l)}}{\partial z^{(l)}} $$: Đạo hàm của hàm kích hoạt.")
+    st.markdown(r"- $$ \frac{\partial z^{(l)}}{\partial W^{(l)}} $$: Đạo hàm của đầu vào trước lớp kích hoạt theo trọng số.")
 
     st.markdown("#### 4️⃣ Tối ưu hóa")
     st.markdown("- **Gradient Descent:** Cập nhật trọng số bằng cách đi theo hướng giảm của gradient.")
@@ -132,11 +132,11 @@ def explain_nn():
     st.latex(r"W^{(l)} = W^{(l)} - \alpha \frac{\hat{m_t}}{\sqrt{\hat{v_t}} + \epsilon}")
 
     st.markdown("Trong đó:")
-    st.markdown("- \( \alpha \): Tốc độ học (learning rate).")
-    st.markdown("- \( v_t \): Giá trị động lượng tại thời điểm \( t \).")
-    st.markdown("- \( \beta, \beta_1, \beta_2 \): Hệ số Momentum hoặc Adam.")
-    st.markdown("- \( m_t \), \( v_t \): Trung bình trọng số và phương sai của gradient.")
-    st.markdown("- \( \epsilon \): Số rất nhỏ để tránh chia cho 0.")
+    st.markdown(r"- $$ \alpha $$: Tốc độ học (learning rate).")
+    st.markdown(r"- $$ v_t $$: Giá trị động lượng tại thời điểm $$ t $$.")
+    st.markdown(r"- $$ \beta, \beta_1, \beta_2 $$: Hệ số Momentum hoặc Adam.")
+    st.markdown(r"- $$ m_t $$, $$ v_t $$: Trung bình trọng số và phương sai của gradient.")
+    st.markdown(r"- $$ \epsilon $$: Số rất nhỏ để tránh chia cho 0.")
 
     st.markdown("""
     ### 🔍 Kết Luận
