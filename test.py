@@ -86,8 +86,8 @@ def explain_nn():
     st.latex(r"a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)})")
 
     st.markdown("Trong đó:")
-    st.markdown("- \( a^{(l)} \): Đầu ra của lớp thứ \( l \).")
-    st.markdown("- \( W^{(l)} \): Ma trận trọng số giữa lớp \( l-1 \) và lớp \( l \).")
+    st.markdown(r"- $$ a^{(l)} $$: Đầu ra của lớp thứ $$l $$.")
+    st.markdown(r"- $$ W^{(l)} $$: Ma trận trọng số giữa lớp $$l-1 $$ và lớp $$ l $$.")
     st.markdown("- \( a^{(l-1)} \): Đầu ra của lớp trước đó (hoặc là đầu vào nếu \( l = 1 \)).")
     st.markdown("- \( b^{(l)} \): Bias của lớp \( l \).")
     st.markdown("- \( \sigma(z) \): Hàm kích hoạt (ReLU, Sigmoid, Tanh,...).")
