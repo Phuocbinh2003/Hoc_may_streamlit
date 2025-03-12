@@ -19,15 +19,20 @@ def ly_thuyet_Decision_tree():
 
     st.subheader("1️⃣ Giới thiệu về Decision Tree")
     st.write("""
-    - **Decision Tree** hoạt động bằng cách chia nhỏ dữ liệu theo điều kiện để phân loại chính xác.
-    - Mỗi nhánh trong cây là một câu hỏi "Có/Không" dựa trên đặc trưng dữ liệu.
-    - Mô hình này dễ hiểu và trực quan nhưng có thể bị **overfitting** nếu không giới hạn độ sâu.
+    - **Decision Tree(Cây quyết định)** là một mô hình học máy có cấu trúc dạng cây, trong đó mỗi nút là một điều kiện phân loại dữ liệu.
+    - Mỗi nhánh đại diện cho một quyết định dựa trên đặc trưng của dữ liệu.
+    - Lá (leaf node) chứa kết quả phân loại cuối cùng.
+    - Decision Tree dễ hiểu, trực quan nhưng có thể bị **overfitting** nếu không kiểm soát độ sâu hợp lý.
     """)
 
     # Hiển thị ảnh minh họa Decision Tree
     st.image("buoi4/img1.png", caption="Ví dụ về cách Decision Tree phân chia dữ liệu", use_container_width="auto")
 
-    st.subheader("2️⃣ Các bước thực hiện trong Decision Tree")
+    st.subheader("2️⃣ Quá trình xây dựng Decision Tree")
+    st.write("""
+    Cây quyết định được xây dựng bằng cách chia dữ liệu thành các nhóm nhỏ hơn theo từng đặc trưng sao cho dữ liệu trong mỗi nhóm có độ thuần khiết cao nhất.
+    Các bước chính bao gồm:
+    """)
     st.write("""
     **Bước 1: Tính Entropy của tập dữ liệu ban đầu**
     - Entropy đo lường mức độ hỗn loạn của dữ liệu. Nếu dữ liệu hoàn toàn đồng nhất, Entropy = 0.
@@ -65,15 +70,19 @@ def ly_thuyet_Decision_tree():
     - $$ H(S_j) $$ : Entropy của tập con $$S_j $$.
     """)
     
+    st.markdown("### 🔹 Bước 4: Chọn thuộc tính có Information Gain cao nhất để phân nhánh")
     st.write("""
-    **Bước 4: Chọn thuộc tính có Information Gain cao nhất để phân nhánh**
-    - Thuộc tính có IG cao nhất sẽ được chọn để chia tập dữ liệu.
+    - Thuộc tính có IG cao nhất sẽ được chọn làm điều kiện phân chia.
+    - Việc này giúp tối đa hóa sự thuần khiết của các tập con sau khi chia.
     """)
-    
+    st.markdown("### 🔹 Bước 5: Tiếp tục chia cho đến khi đạt điều kiện dừng")
     st.write("""
-    **Bước 5: Lặp lại quá trình trên cho từng nhánh của cây**
-    - Quá trình chia nhỏ tiếp tục đến khi các tập con không thể chia nhỏ hơn hoặc đạt điều kiện dừng.
+    - Quá trình lặp lại đến khi:
+      1. Các tập con không thể chia nhỏ hơn (hoặc Entropy = 0).
+      2. Đạt đến giới hạn độ sâu tối đa của cây.
+      3. Số lượng mẫu trong tập con quá nhỏ để tiếp tục chia.
     """)
+
 
 
     
@@ -96,7 +105,7 @@ def ly_thuyet_SVM():
       ❌ Nhạy cảm với tham số $$C$$và lựa chọn Kernel.
     """)
     
-    st.image("buoi4/img2.png", use_container_width=True, caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu")
+    st.image("buoi4/img2.png", use_container_width="auto", caption="SVM tìm siêu phẳng tối ưu để phân tách dữ liệu")
     
     # 2️⃣ Cách hoạt động của SVM
     st.header("2️⃣ Cách hoạt động của SVM")
@@ -637,9 +646,9 @@ def show_experiment_selector():
             st.json(metrics)
 
         # Kiểm tra và hiển thị dataset artifact
-        dataset_path = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.csv"
-        st.write("### 📂 Dataset:")
-        st.write(f"📥 [Tải dataset]({dataset_path})")
+        # dataset_path = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.csv"
+        # st.write("### 📂 Dataset:")
+        # st.write(f"📥 [Tải dataset]({dataset_path})")
     else:
         st.warning("⚠ Không tìm thấy thông tin cho run này.")
            
