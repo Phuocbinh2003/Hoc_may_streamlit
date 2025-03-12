@@ -25,7 +25,7 @@ def explain_nn():
 
     ### 🔰 Kiến trúc cơ bản:
     """)
-    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
+    st.image("buoi7/img1.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
     
     st.markdown("""
     ### 📌 Các thành phần chính:
@@ -35,7 +35,7 @@ def explain_nn():
 
     ### 🎯 Hàm kích hoạt (Activation Functions):
     """)
-    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
+    st.image("buoi7/img1.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
     
     st.markdown("""
     ### 🔄 Quá trình lan truyền:
