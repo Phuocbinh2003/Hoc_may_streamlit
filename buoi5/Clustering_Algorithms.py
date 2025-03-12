@@ -622,7 +622,7 @@ def show_experiment_selector():
     mlflow.set_tracking_uri("https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow")
     
     # Lấy danh sách tất cả experiments
-    experiment_name = "Clustering"
+    experiment_name = "Clusterings"
     experiments = mlflow.search_experiments()
     selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
 
@@ -717,7 +717,8 @@ def ClusteringAlgorithms():
     st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-    mlflow.set_experiment("Clustering")
+    mlflow.set_experiment("Clusterings")
+    
     st.title("🖊️ MNIST Classification App")
 
     
