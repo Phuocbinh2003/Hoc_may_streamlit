@@ -35,7 +35,7 @@ def explain_nn():
     
     st.image("buoi7/img1.webp", caption="", use_container_width=True)
     
-    st.markdown("""
+    st.markdown(r"""
     Mỗi nơ-ron trong một lớp nhận tín hiệu từ các nơ-ron lớp trước, nhân với trọng số (weights), cộng với bias, rồi đưa vào một hàm kích hoạt để quyết định tín hiệu truyền đi.
     
     ### 📌 Công thức toán học trong Neural Network:
@@ -220,7 +220,7 @@ def thi_nghiem():
             st.success(f"✅ Huấn luyện hoàn tất!")
             st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
             st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
-            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+            st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** đã được ghi nhận thành công trong MLflow (Neural_Network)! 🚀")
             st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
             
@@ -313,7 +313,7 @@ def show_experiment_selector():
     mlflow.set_tracking_uri("https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow")
     
     # Lấy danh sách tất cả experiments
-    experiment_name = "NN"
+    experiment_name = "Neural_Network"
     experiments = mlflow.search_experiments()
     selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
 
@@ -404,7 +404,7 @@ def pca_tsne():
         os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
         os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
         st.session_state.mlflow_initialized = True
-        mlflow.set_experiment("NN")   
+        mlflow.set_experiment("Neural_Network")   
         
     
     
