@@ -184,6 +184,7 @@ def thi_nghiem():
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
     loss_fn = "sparse_categorical_crossentropy"
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
+    st.session_state['run_name'] = run_name
     
     if st.button("🚀 Huấn luyện mô hình"):
         with st.spinner("Đang huấn luyện..."):
@@ -219,7 +220,8 @@ def thi_nghiem():
             st.success(f"✅ Huấn luyện hoàn tất!")
             st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
             st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
-
+            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+            st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
             
             
