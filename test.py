@@ -128,6 +128,16 @@ import time
 from tensorflow import keras
 from tensorflow.keras import layers
 
+import streamlit as st
+import numpy as np
+import time
+import mlflow
+import mlflow.keras
+from tensorflow import keras
+from tensorflow.keras import layers
+from sklearn.model_selection import train_test_split, StratifiedKFold
+from mlflow.models.signature import infer_signature
+
 def thi_nghiem():
     st.title("🧠 Huấn luyện Neural Network trên MNIST")
 
@@ -137,9 +147,14 @@ def thi_nghiem():
     X = Xmt.reshape(Xmt.shape[0], -1) / 255.0  # Chuẩn hóa dữ liệu về [0,1]
     y = ymt.reshape(-1)
 
-    # Lựa chọn số lượng mẫu
-    num_samples = st.slider("Chọn số lượng mẫu MNIST sử dụng:", 1000, 60000, 5000, 1000)
-    X_train, y_train = X[:num_samples], y[:num_samples]
+    # Chia tỷ lệ train/test/validation
+    train_size = st.slider("Chọn % tập Train:", 50, 80, 70, 5) / 100
+    test_size = 1 - train_size
+    validation_size = st.slider("Chọn % tập Validation:", 10, 30, 20, 5) / 100
+
+    # Chia tập dữ liệu
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, stratify=y, random_state=42)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=validation_size, stratify=y_train, random_state=42)
 
     # Cấu hình mô hình
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
@@ -147,9 +162,7 @@ def thi_nghiem():
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
     loss_fn = st.selectbox("Hàm mất mát:", ["sparse_categorical_crossentropy", "categorical_crossentropy"])
-    batch_size = st.slider("Batch size:", 16, 128, 32, 16)
-    epochs = st.slider("Epochs:", 5, 100, 20, 5)
-    validation_split = st.slider("Tỉ lệ validation:", 0.1, 0.5, 0.2, 0.05)
+    k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
 
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state["run_name"] = run_name if run_name else "default_run"
@@ -163,42 +176,56 @@ def thi_nghiem():
                 "activation": activation,
                 "optimizer": optimizer,
                 "loss_function": loss_fn,
-                "batch_size": batch_size,
-                "epochs": epochs,
-                "validation_split": validation_split,
-                "num_samples": num_samples
+                "train_size": train_size,
+                "validation_size": validation_size,
+                "test_size": test_size,
+                "k_folds": k_folds
             })
 
-            # Xây dựng mô hình
-            model = keras.Sequential([layers.Input(shape=(X_train.shape[1],))])
-            for _ in range(num_layers):
-                model.add(layers.Dense(num_neurons, activation=activation))
-            model.add(layers.Dense(10, activation="softmax"))
+            # K-Fold Cross-Validation
+            kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
+            accuracies, losses = [], []
 
-            model.compile(optimizer=optimizer, loss=loss_fn, metrics=["accuracy"])
+            for train_idx, val_idx in kf.split(X_train, y_train):
+                X_k_train, X_k_val = X_train[train_idx], X_train[val_idx]
+                y_k_train, y_k_val = y_train[train_idx], y_train[val_idx]
 
-            start_time = time.time()
-            history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, 
-                                validation_split=validation_split, verbose=1)
-            elapsed_time = time.time() - start_time
+                # Xây dựng mô hình
+                model = keras.Sequential([layers.Input(shape=(X_k_train.shape[1],))])
+                for _ in range(num_layers):
+                    model.add(layers.Dense(num_neurons, activation=activation))
+                model.add(layers.Dense(10, activation="softmax"))
+
+                model.compile(optimizer=optimizer, loss=loss_fn, metrics=["accuracy"])
+
+                start_time = time.time()
+                history = model.fit(X_k_train, y_k_train, epochs=20, validation_data=(X_k_val, y_k_val), verbose=0)
+                elapsed_time = time.time() - start_time
+
+                # Lưu kết quả từng fold
+                accuracies.append(history.history["val_accuracy"][-1])
+                losses.append(history.history["val_loss"][-1])
+
+            # Tính độ chính xác trung bình
+            avg_accuracy = np.mean(accuracies)
+            avg_loss = np.mean(losses)
+
+            mlflow.log_metric("avg_val_accuracy", avg_accuracy)
+            mlflow.log_metric("avg_val_loss", avg_loss)
             mlflow.log_metric("elapsed_time", elapsed_time)
-
-            # Log kết quả
-            mlflow.log_metrics({
-                "train_accuracy": history.history["accuracy"][-1],
-                "val_accuracy": history.history["val_accuracy"][-1],
-                "train_loss": history.history["loss"][-1],
-                "val_loss": history.history["val_loss"][-1]
-            })
 
             st.session_state["trained_model"] = model
 
             # Log model vào MLflow
-            mlflow.keras.log_model(model, "mnist_model")
+            example_input = np.random.rand(1, X_train.shape[1])
+            example_output = model.predict(example_input)
+            signature = infer_signature(example_input, example_output)
 
+            mlflow.keras.log_model(model, "mnist_model", signature=signature, input_example=example_input)
 
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+            st.write(f"📊 Độ chính xác trung bình trên validation: **{avg_accuracy:.4f}**")
 
 import streamlit as st
 import numpy as np
