@@ -155,7 +155,8 @@ def ly_thuyet_K_means():
         return np.vstack(X)
 
     def initialize_centroids(X, k):
-        return X[np.random.choice(X.shape[0], k, replace=False)]
+        indices = np.random.choice(X.shape[0], k, replace=False)
+        return X[indices] + np.random.uniform(-3, 3, size=(k, 2))
 
     def assign_clusters(X, centroids):
         return np.array([np.argmin(euclidean_distance(x, centroids)) for x in X])
@@ -166,58 +167,50 @@ def ly_thuyet_K_means():
     # Giao diện Streamlit
     st.title("🎯 Minh họa thuật toán K-Means từng bước")
 
-    num_samples_kmeans = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10)
-    cluster_kmeans = st.slider("Số cụm (K)", 2, 10, 3)
+    num_samples_kmeans = st.slider("Số điểm dữ liệu", 50, 500, 200, step=10, key="kmeans_samples")
+    cluster_kmeans = st.slider("Số cụm (K)", 2, 10, 3, key="kmeans_clusters")
 
-    # Kiểm tra và cập nhật dữ liệu khi tham số thay đổi
-    if "data_params" not in st.session_state or st.session_state.data_params != (num_samples_kmeans, cluster_kmeans):
-        st.session_state.data_params = (num_samples_kmeans, cluster_kmeans)
-        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans)
-        st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
-        st.session_state.iteration = 0
-        st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
+    if "kmeans_state" not in st.session_state or st.session_state.kmeans_state != (num_samples_kmeans, cluster_kmeans):
+        st.session_state.kmeans_state = (num_samples_kmeans, cluster_kmeans)
+        st.session_state.kmeans_X = generate_data(num_samples_kmeans, cluster_kmeans)
+        st.session_state.kmeans_centroids = initialize_centroids(st.session_state.kmeans_X, cluster_kmeans)
+        st.session_state.kmeans_labels = assign_clusters(st.session_state.kmeans_X, st.session_state.kmeans_centroids)
+        st.session_state.kmeans_iteration = 0
 
-    X = st.session_state.X
+    X = st.session_state.kmeans_X
 
-    if st.button("🔄 Reset"):
-        st.session_state.X = generate_data(num_samples_kmeans, cluster_kmeans)
-        st.session_state.centroids = initialize_centroids(st.session_state.X, cluster_kmeans)
-        st.session_state.iteration = 0
-        st.session_state.labels = assign_clusters(st.session_state.X, st.session_state.centroids)
+    if st.button("🔄 Reset", key="kmeans_reset"):
+        st.session_state.kmeans_X = generate_data(num_samples_kmeans, cluster_kmeans)
+        st.session_state.kmeans_centroids = initialize_centroids(st.session_state.kmeans_X, cluster_kmeans)
+        st.session_state.kmeans_labels = assign_clusters(st.session_state.kmeans_X, st.session_state.kmeans_centroids)
+        st.session_state.kmeans_iteration = 0
 
-    if st.button("🔄 Cập nhật vị trí tâm cụm"):
-        st.session_state.labels = assign_clusters(X, st.session_state.centroids)
-        new_centroids = update_centroids(X, st.session_state.labels, cluster_kmeans)
-
-        # Kiểm tra hội tụ với sai số nhỏ
-        if np.allclose(new_centroids, st.session_state.centroids, atol=1e-3):
+    if st.button("🔄 Cập nhật vị trí tâm cụm", key="kmeans_update"):
+        st.session_state.kmeans_labels = assign_clusters(X, st.session_state.kmeans_centroids)
+        new_centroids = update_centroids(X, st.session_state.kmeans_labels, cluster_kmeans)
+        if np.allclose(new_centroids, st.session_state.kmeans_centroids, atol=1e-3):
             st.warning("⚠️ Tâm cụm không thay đổi đáng kể, thuật toán đã hội tụ!")
         else:
-            st.session_state.centroids = new_centroids
-            st.session_state.iteration += 1
+            st.session_state.kmeans_centroids = new_centroids
+            st.session_state.kmeans_iteration += 1
 
-    # 🔥 Thêm thanh trạng thái hiển thị tiến trình
-    st.status(f"Lần cập nhật: {st.session_state.iteration} - Đang phân cụm...", state="running")
+    #st.status(f"Lần cập nhật: {st.session_state.kmeans_iteration}", state="running")
+
     st.markdown("### 📌 Tọa độ tâm cụm hiện tại:")
-    num_centroids = st.session_state.centroids.shape[0]
-    centroid_df = pd.DataFrame(st.session_state.centroids, columns=["X", "Y"])
-    centroid_df.index = [f"Tâm cụm {i}" for i in range(num_centroids)]
-
+    centroid_df = pd.DataFrame(st.session_state.kmeans_centroids, columns=["X", "Y"])
+    centroid_df.index = [f"Tâm cụm {i}" for i in range(len(st.session_state.kmeans_centroids))]
     st.dataframe(centroid_df)
 
-    # Vẽ biểu đồ
-    fig, ax = plt.subplots(figsize=(6, 6))
-    labels = st.session_state.labels
-    centroids = st.session_state.centroids
+    fig_kmeans, ax_kmeans = plt.subplots(figsize=(6, 6))
+    labels = st.session_state.kmeans_labels
+    centroids = st.session_state.kmeans_centroids
 
     for i in range(cluster_kmeans):
-        ax.scatter(X[labels == i][:, 0], X[labels == i][:, 1], label=f"Cụm {i}", alpha=0.6, edgecolors="k")
-
-    ax.scatter(centroids[:, 0], centroids[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
-    ax.set_title(f"K-Means Clustering")
-    ax.legend()
-
-    st.pyplot(fig)
+        ax_kmeans.scatter(X[labels == i][:, 0], X[labels == i][:, 1], label=f"Cụm {i}", alpha=0.6, edgecolors="k")
+    ax_kmeans.scatter(centroids[:, 0], centroids[:, 1], s=200, c="red", marker="X", label="Tâm cụm")
+    ax_kmeans.set_title("K-Means Clustering")
+    ax_kmeans.legend()
+    st.pyplot(fig_kmeans)
 
 
 from sklearn.datasets import make_moons, make_blobs
@@ -545,91 +538,7 @@ import matplotlib.pyplot as plt
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image, ImageOps
 from sklearn.decomposition import PCA
-
-def preprocess_canvas_image(canvas_result):
-    if canvas_result.image_data is not None:
-        img = Image.fromarray(canvas_result.image_data[:, :, 0].astype(np.uint8))
-        img = img.resize((28, 28)).convert("L")  # Resize và chuyển thành grayscale
-        img = np.array(img, dtype=np.float32) / 255.0  # Chuẩn hóa về [0, 1]
-        return img.reshape(1, -1)  # Chuyển thành vector 1D
-    return None
-
-
-def du_doan():
-    st.header("✍️ Vẽ dữ liệu để dự đoán cụm")
-
-    # Kiểm tra danh sách mô hình đã huấn luyện
-    if "models" not in st.session_state or not st.session_state["models"]:
-        st.warning("⚠️ Không có mô hình nào được lưu! Hãy huấn luyện trước.")
-        return
-
-    # Lấy danh sách mô hình đã lưu
-    model_names = [model["name"] for model in st.session_state["models"]]
-
-    # 📌 Chọn mô hình
-    model_option = st.selectbox("🔍 Chọn mô hình đã huấn luyện:", model_names)
-    model = next(m["model"] for m in st.session_state["models"] if m["name"] == model_option)
-
-    # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
-    if "key_value" not in st.session_state:
-        st.session_state.key_value = str(random.randint(0, 1000000))
-
-    if st.button("🔄 Tải lại"):
-        st.session_state.key_value = str(random.randint(0, 1000000))
-        st.rerun()
-
-    # ✍️ Vẽ dữ liệu
-    canvas_result = st_canvas(
-        fill_color="black",
-        stroke_width=10,
-        stroke_color="white",
-        background_color="black",
-        height=150,
-        width=150,
-        drawing_mode="freedraw",
-        key=st.session_state.key_value,
-        update_streamlit=True
-    )
-
-    if st.button("Dự đoán cụm"):
-        img = preprocess_canvas_image(canvas_result)
-
-        if img is not None:
-            X_train = st.session_state["X_train"]
-            # Hiển thị ảnh sau xử lý
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
-
-            pca = PCA(n_components=2)
-            pca.fit(X_train)
-            img_reduced = pca.transform(img.squeeze().reshape(1, -1))  # Sửa lỗi
-
-            # Dự đoán với K-Means hoặc DBSCAN
-            if isinstance(model, KMeans):
-                predicted_cluster = model.predict(img_reduced)[0]  # Dự đoán từ ảnh đã PCA
-                
-                # Tính confidence: khoảng cách đến centroid gần nhất
-                distances = model.transform(img_reduced)[0]  
-                confidence = 1 / (1 + distances[predicted_cluster])  # Đảo ngược khoảng cách thành độ tin cậy
-                
-                st.subheader(f"🔢 Cụm dự đoán: {predicted_cluster}")
-                st.write(f"✅ **Độ tin cậy:** {confidence:.2f}")
-
-            elif isinstance(model, DBSCAN):
-                model.fit(X_train)  # Fit trước với tập huấn luyện
-                predicted_cluster = model.fit_predict(img_reduced)[0]
-
-                if predicted_cluster == -1:
-                    st.subheader("⚠️ Điểm này không thuộc cụm nào!")
-                else:
-                    # Tính độ tin cậy với DBSCAN dựa trên số lượng điểm lân cận
-                    core_samples = model.core_sample_indices_
-                    confidence = len(core_samples) / len(X_train)  # Tỷ lệ điểm cốt lõi trong tập huấn luyện
-                    
-                    st.subheader(f"🔢 Cụm dự đoán: {predicted_cluster}")
-                    st.write(f"✅ **Độ tin cậy:** {confidence:.2f}")
-
-        else:
-            st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
+ 
 
 
 
