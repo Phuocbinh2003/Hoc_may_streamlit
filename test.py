@@ -25,8 +25,7 @@ def explain_nn():
 
     ### 🔰 Kiến trúc cơ bản:
     """)
-    st.image("https://www.researchgate.net/publication/372377465/figure/fig1/AS:11431281141736600@1686735021201/Architecture-of-an-Artificial-Neural-Network-ANN.png", 
-             width=600)
+    st.image("buoi7/img1.webp", caption="", use_container_width=True)
     
     st.markdown("""
     ### 📌 Các thành phần chính:
