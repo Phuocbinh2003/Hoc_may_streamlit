@@ -484,7 +484,7 @@ def show_experiment_selector():
 import mlflow
 import os
 from mlflow.tracking import MlflowClient
-def pca_tsne():
+def Neural_Network():
     #st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
     if "mlflow_initialized" not in st.session_state:   
@@ -501,9 +501,9 @@ def pca_tsne():
     
     # Tạo các tab với tiêu đề tương ứng
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📘 Lý thuyết TRAINING NEURAL NETWORK",
+        "📘 Lý thuyết NEURAL NETWORK",
         "📊 Mẫu dữ liệu",
-        "🧠 TRAINING NEURAL NETWORK",
+        "🧠 Huấn luyện",
         "🖥️ DEMO",
         "🔥 MLflow"
     ])
@@ -529,4 +529,4 @@ def pca_tsne():
 
 
 if __name__ == "__main__":
-    pca_tsne()
+    Neural_Network()
