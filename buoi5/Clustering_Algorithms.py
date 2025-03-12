@@ -717,8 +717,7 @@ def show_experiment_selector():
 
 
 def ClusteringAlgorithms():
-  
-
+    input_mlflow()
     st.title("🖊️ MNIST Classification App")
 
     
