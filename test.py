@@ -55,10 +55,9 @@ def explain_nn():
     Sau khi tính toán $$ z $$, nó sẽ đi qua một **hàm kích hoạt** $$ \sigma(z) $$ để tạo ra giá trị đầu ra.
     """)
 
-    st.markdown("### 🎯 Công thức tính đầu ra sau khi qua hàm kích hoạt:")
-    st.latex(r" a = \sigma(z) ")
+    # st.markdown("### 🎯 Công thức tính đầu ra sau khi qua hàm kích hoạt:")
+    # st.latex(r" a = \sigma(z) ")
 
-    st.markdown("Các hàm kích hoạt phổ biến sẽ được trình bày trong phần tiếp theo.")
 
     
     st.markdown("""
@@ -66,43 +65,44 @@ def explain_nn():
     Hàm kích hoạt giúp mạng học được các tính phi tuyến tính, nhờ đó có thể mô hình hóa các mối quan hệ phức tạp.
     """)
     
-    st.image("buoi7/img2.png", caption="", use_container_width=True)
+    st.image("buoi7/img2.png", caption="Một số hàm kích hoạt cơ bản", use_container_width=True)
     
+    st.markdown("- **Sigmoid:** Chuyển đổi giá trị đầu vào thành khoảng từ 0 đến 1, phù hợp cho bài toán phân loại nhị phân.")
+    st.latex(r"\sigma(z) = \frac{1}{1 + e^{-z}}")
+
+    st.markdown("- **Tanh (Hyperbolic Tangent):** Đầu ra nằm trong khoảng từ -1 đến 1, giúp xử lý dữ liệu có cả giá trị dương và âm.")
+    st.latex(r"\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}")
+
+    st.markdown("- **ReLU (Rectified Linear Unit):** Nếu đầu vào âm thì bằng 0, còn nếu dương thì giữ nguyên giá trị.")
+    st.latex(r"ReLU(z) = \max(0, z)")
+    
+   
+
+    st.markdown("### 🔄 Quá trình huấn luyện Neural Network")
+    st.markdown("Mạng nơ-ron học bằng cách cập nhật các trọng số thông qua hai giai đoạn chính:")
+
+    st.markdown("#### 1️⃣ Lan truyền thuận (Forward Propagation)")
+    st.markdown("- Input đi qua từng lớp nơ-ron, tính toán đầu ra:")
+    st.latex(r"a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)})")
+
+    st.markdown("#### 2️⃣ Tính toán loss")
+    st.markdown("- Hàm mất mát đo lường sai số giữa dự đoán và thực tế.")
+    st.markdown("- Ví dụ: Mean Squared Error (MSE) cho bài toán hồi quy:")
+    st.latex(r"L = \frac{1}{N} \sum (y_{true} - y_{pred})^2")
+
+    st.markdown("- Cross-Entropy Loss cho bài toán phân loại:")
+    st.latex(r"L = - \sum y_{true} \log(y_{pred})")
+
+    st.markdown("#### 3️⃣ Lan truyền ngược (Backpropagation)")
+    st.markdown("- Tính đạo hàm của hàm mất mát theo trọng số.")
+    st.markdown("- Sử dụng thuật toán tối ưu để cập nhật trọng số.")
+
+    st.markdown("#### 4️⃣ Tối ưu hóa")
+    st.markdown("- **Gradient Descent:** Cập nhật trọng số bằng cách đi theo hướng giảm của gradient.")
+    st.markdown("- **Momentum:** Thêm động lượng giúp tối ưu nhanh hơn.")
+    st.markdown("- **Adam (Adaptive Moment Estimation):** Kết hợp Momentum và RMSprop để đạt hiệu suất tối ưu.")
+
     st.markdown("""
-    - **Sigmoid:** Chuyển đổi giá trị đầu vào thành khoảng từ 0 đến 1, phù hợp cho bài toán phân loại nhị phân.
-      \[ \sigma(z) = \frac{1}{1 + e^{-z}} \]
-    
-    - **Tanh (Hyperbolic Tangent):** Đầu ra nằm trong khoảng từ -1 đến 1, giúp xử lý dữ liệu có cả giá trị dương và âm.
-      \[ \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}} \]
-    
-    - **ReLU (Rectified Linear Unit):** Nếu đầu vào âm thì bằng 0, còn nếu dương thì giữ nguyên giá trị.
-      \[ ReLU(z) = \max(0, z) \]
-    """)
-    
-    st.markdown("""
-    ### 🔄 Quá trình huấn luyện Neural Network:
-    Mạng nơ-ron học bằng cách cập nhật các trọng số thông qua hai giai đoạn chính:
-    
-    1. **Lan truyền thuận (Forward Propagation):**
-       - Input đi qua từng lớp nơ-ron, tính toán đầu ra:
-         \[ a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)}) \]
-    
-    2. **Tính toán loss:**
-       - Hàm mất mát đo lường sai số giữa dự đoán và thực tế.
-       - Ví dụ: Mean Squared Error (MSE) cho bài toán hồi quy:
-         \[ L = \frac{1}{N} \sum (y_{true} - y_{pred})^2 \]
-       - Cross-Entropy Loss cho bài toán phân loại:
-         \[ L = - \sum y_{true} \log(y_{pred}) \]
-    
-    3. **Lan truyền ngược (Backpropagation):**
-       - Tính đạo hàm của hàm mất mát theo trọng số.
-       - Sử dụng thuật toán tối ưu để cập nhật trọng số.
-    
-    4. **Tối ưu hóa:**
-       - **Gradient Descent:** Cập nhật trọng số bằng cách đi theo hướng giảm của gradient.
-       - **Momentum:** Thêm động lượng giúp tối ưu nhanh hơn.
-       - **Adam (Adaptive Moment Estimation):** Kết hợp Momentum và RMSprop để đạt hiệu suất tối ưu.
-    
     ### 🔍 Kết Luận
     Neural Network là một mô hình mạnh mẽ trong Machine Learning và Deep Learning, có thể học được các đặc trưng phức tạp từ dữ liệu. Hiểu rõ cách hoạt động giúp ta tối ưu hóa mô hình để đạt hiệu suất cao hơn.
     """)
