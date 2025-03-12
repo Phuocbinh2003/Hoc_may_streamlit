@@ -52,7 +52,7 @@ def explain_nn():
     - $$ b $$ là **bias** (hệ số dịch chuyển).
     - $$ z $$ là tổng có trọng số (**weighted sum**).
 
-    Sau khi tính toán $$ z $$, nó sẽ đi qua một **hàm kích hoạt** \( \sigma(z) \) để tạo ra giá trị đầu ra.
+    Sau khi tính toán $$ z $$, nó sẽ đi qua một **hàm kích hoạt** $$ \sigma(z) $$ để tạo ra giá trị đầu ra.
     """)
 
     st.markdown("### 🎯 Công thức tính đầu ra sau khi qua hàm kích hoạt:")
