@@ -33,7 +33,7 @@ def explain_nn():
     3. **Output Layer**: Lớp đưa ra kết quả dự đoán.
     """)
     
-    st.image("buoi7/img1.webp", caption="", use_container_width=True)
+    st.image("buoi7/img1.webp", caption="Cấu trúc mạng nơ-ron(medium.com)", use_container_width=True)
     
    
 
@@ -45,14 +45,14 @@ def explain_nn():
     st.markdown("### 🎯 Công thức tính giá trị đầu ra của một nơ-ron:")
     st.latex(r" z = \sum_{i=1}^{n} w_i x_i + b ")
 
-    st.markdown("""
+    st.markdown(r"""
     Trong đó:
-    - \( x_i \) là đầu vào (**input features**).
-    - \( w_i \) là **trọng số** (**weights**) kết nối với nơ-ron đó.
-    - \( b \) là **bias** (hệ số dịch chuyển).
-    - \( z \) là tổng có trọng số (**weighted sum**).
+    - $$ x_i $$ là đầu vào (**input features**).
+    - $$ w_i $$ là **trọng số** (**weights**) kết nối với nơ-ron đó.
+    - $$ b $$ là **bias** (hệ số dịch chuyển).
+    - $$ z $$ là tổng có trọng số (**weighted sum**).
 
-    Sau khi tính toán \( z \), nó sẽ đi qua một **hàm kích hoạt** \( \sigma(z) \) để tạo ra giá trị đầu ra.
+    Sau khi tính toán $$ z $$, nó sẽ đi qua một **hàm kích hoạt** \( \sigma(z) \) để tạo ra giá trị đầu ra.
     """)
 
     st.markdown("### 🎯 Công thức tính đầu ra sau khi qua hàm kích hoạt:")
