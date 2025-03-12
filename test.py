@@ -125,7 +125,7 @@ def data():
       """)
 
     st.subheader("Một số hình ảnh từ MNIST Dataset")
-    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width=True)
+    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width ="auto",use_container_width=True)
 
     st.subheader("Ứng dụng thực tế của MNIST")
     st.write("""
