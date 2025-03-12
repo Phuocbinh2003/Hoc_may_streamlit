@@ -193,7 +193,9 @@ def thi_nghiem():
 
             st.session_state["trained_model"] = model
 
-            mlflow.log_artifact("logs/mnist_model.h5")
+            # Log model vào MLflow
+            mlflow.keras.log_model(model, "mnist_model")
+
 
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
@@ -263,7 +265,7 @@ def du_doan():
             st.subheader(f"🔢 Dự đoán: {predicted_number}")
             st.write(f"📊 Mức độ tin cậy: {max_confidence:.2%}")
 
-            # Hiển thị bảng confidence scores
+            # Hiển thị bảng confidence score
             prob_df = pd.DataFrame(prediction.reshape(1, -1), columns=[str(i) for i in range(10)]).T
             prob_df.columns = ["Mức độ tin cậy"]
             st.bar_chart(prob_df)
