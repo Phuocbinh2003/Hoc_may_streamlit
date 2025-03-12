@@ -35,7 +35,7 @@ def explain_nn():
     
     st.image("buoi7/img1.webp", caption="", use_container_width=True)
     
-    import streamlit as st
+   
 
     st.markdown("""
     ## 📌 Công thức toán học trong Neural Network:
