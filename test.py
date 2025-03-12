@@ -35,7 +35,7 @@ def explain_nn():
 
     ### 🎯 Hàm kích hoạt (Activation Functions):
     """)
-    st.image("buoi7/img1.png", caption="", use_container_width=True)
+    st.image("buoi7/img2.png", caption="", use_container_width=True)
     
     st.markdown("""
     ### 🔄 Quá trình lan truyền:
