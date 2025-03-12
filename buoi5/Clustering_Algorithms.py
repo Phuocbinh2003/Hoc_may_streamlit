@@ -454,7 +454,7 @@ def train():
         X_train_pca = pca.fit_transform(X_train_norm)
         model = DBSCAN(eps=eps, min_samples=min_samples)
 
-    input_mlflow()
+    # input_mlflow()
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state["run_name"] = run_name if run_name else "default_run"
 
