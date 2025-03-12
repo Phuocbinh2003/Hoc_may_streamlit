@@ -85,6 +85,13 @@ def explain_nn():
     st.markdown("- Input đi qua từng lớp nơ-ron, tính toán đầu ra:")
     st.latex(r"a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)})")
 
+    st.markdown("Trong đó:")
+    st.markdown("- \( a^{(l)} \): Đầu ra của lớp thứ \( l \).")
+    st.markdown("- \( W^{(l)} \): Ma trận trọng số giữa lớp \( l-1 \) và lớp \( l \).")
+    st.markdown("- \( a^{(l-1)} \): Đầu ra của lớp trước đó (hoặc là đầu vào nếu \( l = 1 \)).")
+    st.markdown("- \( b^{(l)} \): Bias của lớp \( l \).")
+    st.markdown("- \( \sigma(z) \): Hàm kích hoạt (ReLU, Sigmoid, Tanh,...).")
+
     st.markdown("#### 2️⃣ Tính toán loss")
     st.markdown("- Hàm mất mát đo lường sai số giữa dự đoán và thực tế.")
     st.markdown("- Ví dụ: Mean Squared Error (MSE) cho bài toán hồi quy:")
@@ -93,14 +100,43 @@ def explain_nn():
     st.markdown("- Cross-Entropy Loss cho bài toán phân loại:")
     st.latex(r"L = - \sum y_{true} \log(y_{pred})")
 
+    st.markdown("Trong đó:")
+    st.markdown("- \( L \): Giá trị hàm mất mát.")
+    st.markdown("- \( N \): Số lượng mẫu trong tập dữ liệu.")
+    st.markdown("- \( y_{true} \): Nhãn thực tế của dữ liệu.")
+    st.markdown("- \( y_{pred} \): Dự đoán của mô hình.")
+
     st.markdown("#### 3️⃣ Lan truyền ngược (Backpropagation)")
     st.markdown("- Tính đạo hàm của hàm mất mát theo trọng số.")
     st.markdown("- Sử dụng thuật toán tối ưu để cập nhật trọng số.")
 
+    st.markdown("Lan truyền ngược dựa trên công thức:")
+    st.latex(r"\frac{\partial L}{\partial W^{(l)}} = \frac{\partial L}{\partial a^{(l)}} \cdot \frac{\partial a^{(l)}}{\partial z^{(l)}} \cdot \frac{\partial z^{(l)}}{\partial W^{(l)}}")
+
+    st.markdown("Trong đó:")
+    st.markdown("- \( \frac{\partial L}{\partial W^{(l)}} \): Đạo hàm của loss theo trọng số \( W^{(l)} \).")
+    st.markdown("- \( \frac{\partial L}{\partial a^{(l)}} \): Đạo hàm của loss theo đầu ra của lớp \( l \).")
+    st.markdown("- \( \frac{\partial a^{(l)}}{\partial z^{(l)}} \): Đạo hàm của hàm kích hoạt.")
+    st.markdown("- \( \frac{\partial z^{(l)}}{\partial W^{(l)}} \): Đạo hàm của đầu vào trước lớp kích hoạt theo trọng số.")
+
     st.markdown("#### 4️⃣ Tối ưu hóa")
     st.markdown("- **Gradient Descent:** Cập nhật trọng số bằng cách đi theo hướng giảm của gradient.")
+    st.latex(r"W^{(l)} = W^{(l)} - \alpha \frac{\partial L}{\partial W^{(l)}}")
     st.markdown("- **Momentum:** Thêm động lượng giúp tối ưu nhanh hơn.")
+    st.latex(r"v_t = \beta v_{t-1} + (1 - \beta) \frac{\partial L}{\partial W^{(l)}}")
+    st.latex(r"W^{(l)} = W^{(l)} - \alpha v_t")
     st.markdown("- **Adam (Adaptive Moment Estimation):** Kết hợp Momentum và RMSprop để đạt hiệu suất tối ưu.")
+    st.latex(r"m_t = \beta_1 m_{t-1} + (1 - \beta_1) \frac{\partial L}{\partial W^{(l)}}")
+    st.latex(r"v_t = \beta_2 v_{t-1} + (1 - \beta_2) \left(\frac{\partial L}{\partial W^{(l)}}\right)^2")
+    st.latex(r"\hat{m_t} = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v_t} = \frac{v_t}{1 - \beta_2^t}")
+    st.latex(r"W^{(l)} = W^{(l)} - \alpha \frac{\hat{m_t}}{\sqrt{\hat{v_t}} + \epsilon}")
+
+    st.markdown("Trong đó:")
+    st.markdown("- \( \alpha \): Tốc độ học (learning rate).")
+    st.markdown("- \( v_t \): Giá trị động lượng tại thời điểm \( t \).")
+    st.markdown("- \( \beta, \beta_1, \beta_2 \): Hệ số Momentum hoặc Adam.")
+    st.markdown("- \( m_t \), \( v_t \): Trung bình trọng số và phương sai của gradient.")
+    st.markdown("- \( \epsilon \): Số rất nhỏ để tránh chia cho 0.")
 
     st.markdown("""
     ### 🔍 Kết Luận
