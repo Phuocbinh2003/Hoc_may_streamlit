@@ -111,13 +111,13 @@ def explain_nn():
 
 # ======================================
 
-def input_mlflow():
-    DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-    mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-    st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
-    os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-    mlflow.set_experiment("NN")
+# def input_mlflow():
+#     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+#     mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+#     st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
+#     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+#     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+#     mlflow.set_experiment("NN")
 
 import streamlit as st
 import numpy as np
@@ -396,6 +396,16 @@ from mlflow.tracking import MlflowClient
 def pca_tsne():
     #st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
+    if "mlflow_initialized" not in st.session_state:   
+        DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
+        st.session_state['mlflow_url']=DAGSHUB_MLFLOW_URI
+        mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
+
+        os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
+        st.session_state.mlflow_initialized = True
+        mlflow.set_experiment("NN")   
+        
     
     
     tab1, tab2, tab3,tab4 = st.tabs(["📘 Lý thuyết TRAINING NEURAL NETWORK", "📘 TRAINING NEURAL NETWORK", "DEMO","🔥 Mlflow"] )
