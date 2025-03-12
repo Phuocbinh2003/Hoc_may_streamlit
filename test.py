@@ -88,9 +88,9 @@ def explain_nn():
     st.markdown("Trong đó:")
     st.markdown(r"- $$ a^{(l)} $$: Đầu ra của lớp thứ $$l $$.")
     st.markdown(r"- $$ W^{(l)} $$: Ma trận trọng số giữa lớp $$l-1 $$ và lớp $$ l $$.")
-    st.markdown("- \( a^{(l-1)} \): Đầu ra của lớp trước đó (hoặc là đầu vào nếu \( l = 1 \)).")
-    st.markdown("- \( b^{(l)} \): Bias của lớp \( l \).")
-    st.markdown("- \( \sigma(z) \): Hàm kích hoạt (ReLU, Sigmoid, Tanh,...).")
+    st.markdown(r"- $$ a^{(l-1)} $$: Đầu ra của lớp trước đó (hoặc là đầu vào nếu $$ l = 1 $$).")
+    st.markdown(r"- $$b^{(l)} $$: Bias của lớp $$ l $$.")
+    st.markdown(r"- $$ \sigma(z) $$: Hàm kích hoạt (ReLU, Sigmoid, Tanh,...).")
 
     st.markdown("#### 2️⃣ Tính toán loss")
     st.markdown("- Hàm mất mát đo lường sai số giữa dự đoán và thực tế.")
@@ -101,10 +101,10 @@ def explain_nn():
     st.latex(r"L = - \sum y_{true} \log(y_{pred})")
 
     st.markdown("Trong đó:")
-    st.markdown("- \( L \): Giá trị hàm mất mát.")
-    st.markdown("- \( N \): Số lượng mẫu trong tập dữ liệu.")
-    st.markdown("- \( y_{true} \): Nhãn thực tế của dữ liệu.")
-    st.markdown("- \( y_{pred} \): Dự đoán của mô hình.")
+    st.markdown(r"- $$ L $$: Giá trị hàm mất mát.")
+    st.markdown(r"- $$ N $$: Số lượng mẫu trong tập dữ liệu.")
+    st.markdown(r"- $$y_{true} $$: Nhãn thực tế của dữ liệu.")
+    st.markdown(r"- $$y_{pred} $$: Dự đoán của mô hình.")
 
     st.markdown("#### 3️⃣ Lan truyền ngược (Backpropagation)")
     st.markdown("- Tính đạo hàm của hàm mất mát theo trọng số.")
@@ -114,7 +114,7 @@ def explain_nn():
     st.latex(r"\frac{\partial L}{\partial W^{(l)}} = \frac{\partial L}{\partial a^{(l)}} \cdot \frac{\partial a^{(l)}}{\partial z^{(l)}} \cdot \frac{\partial z^{(l)}}{\partial W^{(l)}}")
 
     st.markdown("Trong đó:")
-    st.markdown("- \( \frac{\partial L}{\partial W^{(l)}} \): Đạo hàm của loss theo trọng số \( W^{(l)} \).")
+    st.markdown(r"- $$\frac{\partial L}{\partial W^{(l)}} $$: Đạo hàm của loss theo trọng số $$ W^{(l)} $$.")
     st.markdown("- \( \frac{\partial L}{\partial a^{(l)}} \): Đạo hàm của loss theo đầu ra của lớp \( l \).")
     st.markdown("- \( \frac{\partial a^{(l)}}{\partial z^{(l)}} \): Đạo hàm của hàm kích hoạt.")
     st.markdown("- \( \frac{\partial z^{(l)}}{\partial W^{(l)}} \): Đạo hàm của đầu vào trước lớp kích hoạt theo trọng số.")
