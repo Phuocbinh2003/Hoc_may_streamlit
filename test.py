@@ -117,7 +117,7 @@ def input_mlflow():
     st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-    mlflow.set_experiment("PCA_t-SNE")
+    mlflow.set_experiment("NN")
 
 import streamlit as st
 import numpy as np
@@ -191,7 +191,8 @@ def thi_nghiem():
                 "val_loss": history.history["val_loss"][-1]
             })
 
-            model.save("logs/mnist_model.h5")
+            st.session_state["trained_model"] = model
+
             mlflow.log_artifact("logs/mnist_model.h5")
 
             mlflow.end_run()
@@ -220,21 +221,13 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # 🔹 Danh sách mô hình có sẵn
-    models = {
-        "SVM Linear": "buoi4/svm_mnist_linear.joblib",
-        "SVM Poly": "buoi4/svm_mnist_poly.joblib",
-        "SVM Sigmoid": "buoi4/svm_mnist_sigmoid.joblib",
-        "SVM RBF": "buoi4/svm_mnist_rbf.joblib",
-    }
+    # 📥 Load mô hình đã huấn luyện
+    if "trained_model" in st.session_state:
+        model = st.session_state["trained_model"]
+        st.success("✅ Đã sử dụng mô hình vừa huấn luyện!")
+    else:
+        st.error("⚠️ Chưa có mô hình! Hãy huấn luyện trước.")
 
-    # 📌 Chọn mô hình
-    model_option = st.selectbox("🔍 Chọn mô hình:", list(models.keys()))
-
-    # Load mô hình từ file
-    with st.spinner(f"📥 Đang tải mô hình {model_option}..."):
-        model = joblib.load(models[model_option])
-    st.success(f"✅ Đã tải mô hình: {model_option}")
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
@@ -264,24 +257,20 @@ def du_doan():
 
             # Dự đoán số
             prediction = model.predict(img)
-            confidence_scores = model.decision_function(img)  
-
-            # Chuyển đổi thành xác suất softmax
-            confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores), axis=1, keepdims=True)
-
-            predicted_number = prediction[0]
-            max_confidence = np.max(confidence_scores)
+            predicted_number = np.argmax(prediction, axis=1)[0]
+            max_confidence = np.max(prediction)
 
             st.subheader(f"🔢 Dự đoán: {predicted_number}")
             st.write(f"📊 Mức độ tin cậy: {max_confidence:.2%}")
 
             # Hiển thị bảng confidence scores
-            prob_df = pd.DataFrame(confidence_scores.reshape(1, -1), columns=[str(i) for i in range(10)]).T
+            prob_df = pd.DataFrame(prediction.reshape(1, -1), columns=[str(i) for i in range(10)]).T
             prob_df.columns = ["Mức độ tin cậy"]
             st.bar_chart(prob_df)
 
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
+
     
 from datetime import datetime    
 import streamlit as st
@@ -295,7 +284,7 @@ def show_experiment_selector():
     mlflow.set_tracking_uri("https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow")
     
     # Lấy danh sách tất cả experiments
-    experiment_name = "PCA_t-SNE"
+    experiment_name = "NN"
     experiments = mlflow.search_experiments()
     selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
 
