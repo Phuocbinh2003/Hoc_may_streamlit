@@ -215,7 +215,7 @@ def ly_thuyet_DBSCAN():
     ## 📌 **DBSCAN **
     -**DBSCAN** là một thuật toán phân cụm **không giám sát**, dựa trên **mật độ điểm dữ liệu**, giúp xác định các cụm có hình dạng bất kỳ và phát hiện nhiễu (outliers). 
     
-    -Khác với **K-Means**, **DBSCAN** không yêu cầu xác định số cụm trước mà tự động tìm ra số cụm phù hợp dựa trên mật độ điểm dữ liệu.
+    - ** Khác với ** **K-Means**, **DBSCAN** không yêu cầu xác định số cụm trước mà tự động tìm ra số cụm phù hợp dựa trên mật độ điểm dữ liệu.
     ---
 
 
