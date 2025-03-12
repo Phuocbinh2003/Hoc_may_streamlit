@@ -402,6 +402,7 @@ def pca_tsne():
         explain_nn()
 
     with tab2:
+        split_data()
         thi_nghiem()
     
     with tab3:
