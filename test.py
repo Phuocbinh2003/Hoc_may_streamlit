@@ -35,26 +35,31 @@ def explain_nn():
     
     st.image("buoi7/img1.webp", caption="", use_container_width=True)
     
-    st.markdown(r"""
-    Mỗi nơ-ron trong một lớp nhận tín hiệu từ các nơ-ron lớp trước, nhân với trọng số (weights), cộng với bias, rồi đưa vào một hàm kích hoạt để quyết định tín hiệu truyền đi.
-    
-    ### 📌 Công thức toán học trong Neural Network:
-    Với một nơ-ron, giá trị đầu ra được tính như sau:
-    
-    \[ z = \sum_{i=1}^{n} w_i x_i + b \]
-    
-    Trong đó:
-    - \( x_i \) là đầu vào (input features)
-    - \( w_i \) là trọng số (weights)
-    - \( b \) là bias
-    - \( z \) là tổng có trọng số
-    
-    Sau đó, giá trị \( z \) đi qua hàm kích hoạt \( \sigma(z) \) để tạo đầu ra:
-    
-    \[ a = \sigma(z) \]
-    
-    Các hàm kích hoạt phổ biến sẽ được trình bày trong phần tiếp theo.
+    import streamlit as st
+
+    st.markdown("""
+    ## 📌 Công thức toán học trong Neural Network:
+    Mỗi nơ-ron trong một lớp nhận tín hiệu từ các nơ-ron lớp trước, nhân với trọng số (**weights**), cộng với **bias**, rồi đưa vào một **hàm kích hoạt** để quyết định tín hiệu truyền đi.
     """)
+
+    st.markdown("### 🎯 Công thức tính giá trị đầu ra của một nơ-ron:")
+    st.latex(r" z = \sum_{i=1}^{n} w_i x_i + b ")
+
+    st.markdown("""
+    Trong đó:
+    - \( x_i \) là đầu vào (**input features**).
+    - \( w_i \) là **trọng số** (**weights**) kết nối với nơ-ron đó.
+    - \( b \) là **bias** (hệ số dịch chuyển).
+    - \( z \) là tổng có trọng số (**weighted sum**).
+
+    Sau khi tính toán \( z \), nó sẽ đi qua một **hàm kích hoạt** \( \sigma(z) \) để tạo ra giá trị đầu ra.
+    """)
+
+    st.markdown("### 🎯 Công thức tính đầu ra sau khi qua hàm kích hoạt:")
+    st.latex(r" a = \sigma(z) ")
+
+    st.markdown("Các hàm kích hoạt phổ biến sẽ được trình bày trong phần tiếp theo.")
+
     
     st.markdown("""
     ### 🎯 Hàm Kích Hoạt (Activation Functions)
