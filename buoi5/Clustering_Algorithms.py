@@ -382,7 +382,7 @@ def split_data():
     total_samples = X.shape[0]
 
     # Thanh kéo chọn số lượng ảnh để train
-    num_samples = st.slider("Chọn số lượng ảnh để train:", min_value=1000, max_value=total_samples, value=10000)
+    num_samples = st.slider("Chọn số lượng ảnh để train:", min_value=5000, max_value=total_samples, value=10000)
 
     # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("Chọn tỷ lệ test:", min_value=0.1, max_value=0.5, value=0.2)
