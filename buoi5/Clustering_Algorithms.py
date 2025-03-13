@@ -460,9 +460,19 @@ def train():
     st.session_state["run_name"] = run_name if run_name else "default_run"
 
     if st.button("🚀 Huấn luyện mô hình"):
+        progress_bar = st.progress(0)  # Khởi tạo thanh tiến trình
+        status_text = st.empty()  # Tạo vùng hiển thị trạng thái
+
         with mlflow.start_run(run_name=st.session_state["run_name"]):
             model.fit(X_train_pca)
+            
+            for percent_complete in range(0, 101, 5):  # Tăng dần từ 0 đến 100
+                time.sleep(0.1)  # Giả lập quá trình huấn luyện (có thể bỏ)
+                progress_bar.progress(percent_complete)
+                status_text.text(f"⏳ Đang huấn luyện... {percent_complete}%")
+
             st.success("✅ Huấn luyện thành công!")
+            progress_bar.progress(100)  # Đảm bảo tiến trình đạt 100%
 
             labels = model.labels_
 
@@ -512,10 +522,10 @@ def train():
             st.session_state["models"].append({"name": new_model_name, "model": model})
             st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
             st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
-
 
 
 
