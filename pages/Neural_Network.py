@@ -5,7 +5,7 @@ if "last_page" in st.session_state and st.session_state.last_page != "Neural_Net
 
 st.session_state.last_page = "Neural_Network" 
 
-st.title("🔍 Thuật toán giảm chiều")
+st.title("🔍 TNeural Network")
 
 
 # Gọi hàm ClusteringAlgorithms từ module
