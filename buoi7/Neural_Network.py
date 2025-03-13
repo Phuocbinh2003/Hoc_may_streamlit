@@ -273,6 +273,9 @@ def thi_nghiem():
     num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
+    epochs = st.slider("🕰 Số epochs:", min_value=1, max_value=50, value=20, step=1)
+    learning_rate = st.slider("⚡ Tốc độ học (Learning Rate):", min_value=1e-5, max_value=1e-1, value=1e-3, step=1e-5, format="%.5f")
+
     loss_fn = "sparse_categorical_crossentropy"
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state['run_name'] = run_name
@@ -285,13 +288,15 @@ def thi_nghiem():
                 "num_neurons": num_neurons,
                 "activation": activation,
                 "optimizer": optimizer,
-                "k_folds": k_folds
+                "learning_rate": learning_rate,  # Log learning rate vào MLflow
+                "k_folds": k_folds,
+                "epochs": epochs
             })
 
             kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
             accuracies, losses = [], []
-            progress_bar = st.progress(0)  # Thêm thanh tiến trình
-            status_text = st.empty()  # Thêm văn bản cập nhật trạng thái
+            fold_progress = st.progress(0)
+            fold_status = st.empty()
 
             for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_train, y_train)):
                 X_k_train, X_k_val = X_train[train_idx], X_train[val_idx]
@@ -305,19 +310,32 @@ def thi_nghiem():
                     layers.Dense(10, activation="softmax")
                 ])
 
-                model.compile(optimizer=optimizer, loss=loss_fn, metrics=["accuracy"])
+                # Thêm learning rate vào optimizer
+                if optimizer == "adam":
+                    opt = keras.optimizers.Adam(learning_rate=learning_rate)
+                elif optimizer == "sgd":
+                    opt = keras.optimizers.SGD(learning_rate=learning_rate)
+                else:
+                    opt = keras.optimizers.RMSprop(learning_rate=learning_rate)
+
+                model.compile(optimizer=opt, loss=loss_fn, metrics=["accuracy"])
 
                 start_time = time.time()
-                history = model.fit(X_k_train, y_k_train, epochs=20, validation_data=(X_k_val, y_k_val), verbose=0)
-                elapsed_time = time.time() - start_time
+                epoch_progress = st.progress(0)
+                epoch_status = st.empty()
 
+                for epoch in range(epochs):
+                    history = model.fit(X_k_train, y_k_train, epochs=1, validation_data=(X_k_val, y_k_val), verbose=0)
+
+                    epoch_progress.progress((epoch + 1) / epochs)
+                    epoch_status.text(f"⏳ Huấn luyện Fold {fold_idx + 1}/{k_folds} - Epoch {epoch + 1}/{epochs}...")
+
+                elapsed_time = time.time() - start_time
                 accuracies.append(history.history["val_accuracy"][-1])
                 losses.append(history.history["val_loss"][-1])
 
-                # Cập nhật thanh tiến trình
-                progress = (fold_idx + 1) / k_folds
-                progress_bar.progress(progress)
-                status_text.text(f"Đang huấn luyện Fold {fold_idx + 1}/{k_folds}...")
+                fold_progress.progress((fold_idx + 1) / k_folds)
+                fold_status.text(f"✅ Hoàn thành Fold {fold_idx + 1}/{k_folds}")
 
             avg_val_accuracy = np.mean(accuracies)
             avg_val_loss = np.mean(losses)
@@ -333,8 +351,11 @@ def thi_nghiem():
 
             mlflow.end_run()
             st.session_state["trained_model"] = model
-            progress_bar.progress(1.0)  # Hoàn thành thanh tiến trình
-            status_text.text("✅ Huấn luyện hoàn tất!")
+
+            fold_progress.progress(1.0)
+            fold_status.text("✅ Huấn luyện hoàn tất!")
+            epoch_progress.progress(1.0)
+            epoch_status.text("✅ Toàn bộ epochs đã hoàn tất!")
 
             st.success(f"✅ Huấn luyện hoàn tất!")
             st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
