@@ -260,7 +260,7 @@ def split_data():
 
 def thi_nghiem():
    
-    
+    num=0
     if "X_train" not in st.session_state:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
@@ -332,8 +332,9 @@ def thi_nghiem():
                 # Cập nhật thanh tiến trình chính (theo fold)
                 
                 
-                progress_percent = int((fold_idx + 1 / k_folds)*100)
+                progress_percent = int((num / k_folds)*100)
                 st.write(progress_percent)
+                num =+ 1
                 training_progress.progress(progress_percent)
                 
                             
