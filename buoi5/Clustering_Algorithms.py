@@ -382,7 +382,7 @@ def split_data():
     total_samples = X.shape[0]
 
     # Thanh kéo chọn số lượng ảnh để train
-    num_samples = st.slider("Chọn số lượng ảnh để train:", min_value=5000, max_value=total_samples, value=10000)
+    num_samples = st.slider("Chọn số lượng ảnh để train:", min_value=1000, max_value=total_samples, value=10000)
 
     # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("Chọn tỷ lệ test:", min_value=0.1, max_value=0.5, value=0.2)
@@ -577,47 +577,39 @@ def du_doan():
 
         if img is not None:
             X_train = st.session_state["X_train"]
-            model = st.session_state["trained_model"]  # Lấy mô hình đã lưu
-            
             # Hiển thị ảnh sau xử lý
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
-            # Giảm chiều dữ liệu với PCA
             pca = PCA(n_components=2)
             pca.fit(X_train)
-            img_reduced = pca.transform(img.squeeze().reshape(1, -1))  
-
-            # Dự đoán với K-Means hoặc DBSCAN
+            img_reduced = pca.transform(img.squeeze().reshape(1, -1))  # Sửa lỗi
+            
+             # Dự đoán với K-Means hoặc DBSCAN
             if isinstance(model, KMeans):
-                predicted_cluster = model.predict(img_reduced)[0]  # Dự đoán cụm
-                distances = model.transform(img_reduced)[0]  # Khoảng cách đến các centroid
-
-                # ⚡ Sửa lỗi: Đổi cách tính confidence (chuẩn hóa khoảng cách)
-                max_dist, min_dist = np.max(distances), np.min(distances)
-                norm_distance = (max_dist - distances[predicted_cluster]) / (max_dist - min_dist + 1e-6)
-                confidence = norm_distance * 100  # Chuyển về %
-
+                predicted_cluster = model.predict(img_reduced)[0]  # Dự đoán từ ảnh đã PCA
+                
+                # Tính confidence: khoảng cách đến centroid gần nhất
+                distances = model.transform(img_reduced)[0]  
+                confidence = 1 / (1 + distances[predicted_cluster])  # Đảo ngược khoảng cách thành độ tin cậy
+                
                 st.subheader(f"🔢 Cụm dự đoán: {predicted_cluster}")
-                st.write(f"✅ **Độ tin cậy:** {confidence:.2f}%")
+                st.write(f"✅ **Độ tin cậy:** {confidence:.2f}")
 
             elif isinstance(model, DBSCAN):
-                model.fit(X_train)  # Fit với tập huấn luyện
+                model.fit(X_train)  # Fit trước với tập huấn luyện
                 predicted_cluster = model.fit_predict(img_reduced)[0]
 
                 if predicted_cluster == -1:
                     st.subheader("⚠️ Điểm này không thuộc cụm nào!")
-                    confidence = 0.0
                 else:
-                    # ⚡ Sửa lỗi: Tính khoảng cách đến điểm gần nhất thay vì dựa vào toàn bộ mẫu
-                    nearest_dist = np.min(np.linalg.norm(X_train - img_reduced, axis=1))
-                    confidence = max(0, 100 - nearest_dist * 10)  # Chuyển về %
-
+                    # Tính độ tin cậy với DBSCAN dựa trên số lượng điểm lân cận
+                    core_samples = model.core_sample_indices_
+                    confidence = len(core_samples) / len(X_train)  # Tỷ lệ điểm cốt l
                     st.subheader(f"🔢 Cụm dự đoán: {predicted_cluster}")
-                    st.write(f"✅ **Độ tin cậy:** {confidence:.2f}%")
-
+                    st.write(f"✅ **Độ tin cậy:** {confidence:.2f}")
+                    
             else:
-                st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")  
-  
+                st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")        
                     
 from datetime import datetime    
 import streamlit as st
@@ -632,7 +624,6 @@ def show_experiment_selector():
     
     # Lấy danh sách tất cả experiments
     experiment_name = "Clusterings"
-    
     experiments = mlflow.search_experiments()
     selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
 
