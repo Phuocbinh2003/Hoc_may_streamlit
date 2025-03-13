@@ -332,7 +332,7 @@ def thi_nghiem():
                 # Cập nhật thanh tiến trình chính (theo fold)
                 
                 
-                progress_percent = int((fold_idx + 1 / k_folds))
+                progress_percent = int((fold_idx + 1 / k_folds)*100)
                 training_progress.progress(progress_percent)
                 
                             
