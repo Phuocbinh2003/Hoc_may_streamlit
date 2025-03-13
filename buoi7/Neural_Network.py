@@ -231,7 +231,7 @@ def split_data():
     
     # Đọc dữ liệu
     X, y = load_mnist_data()
-    total_samples = X.shape[0]
+    total_samples = X.shape[0] -1
     
     # Thanh kéo chọn số lượng ảnh để train
     num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
