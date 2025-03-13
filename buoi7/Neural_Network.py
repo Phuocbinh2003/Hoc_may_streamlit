@@ -333,6 +333,7 @@ def thi_nghiem():
                 
                 
                 progress_percent = int((fold_idx + 1 / k_folds)*100)
+                st.write(progress_percent)
                 training_progress.progress(progress_percent)
                 
                             
