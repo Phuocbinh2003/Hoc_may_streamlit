@@ -426,6 +426,13 @@ from scipy.stats import mode
 
     
 
+import streamlit as st
+import numpy as np
+import mlflow
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.decomposition import PCA
+from scipy.stats import mode
+
 def train():
     st.header("⚙️ Chọn mô hình & Huấn luyện")
 
@@ -455,7 +462,6 @@ def train():
         X_train_pca = pca.fit_transform(X_train_norm)
         model = DBSCAN(eps=eps, min_samples=min_samples)
 
-    # input_mlflow()
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state["run_name"] = run_name if run_name else "default_run"
 
@@ -467,6 +473,7 @@ def train():
             labels = model.labels_
 
             if model_choice == "K-Means":
+                # Tạo ánh xạ nhãn
                 label_mapping = {}
                 for i in range(n_clusters):
                     mask = labels == i
@@ -474,7 +481,10 @@ def train():
                         most_common_label = mode(y_train[mask], keepdims=True).mode[0]
                         label_mapping[i] = most_common_label
 
+                # Chuyển đổi nhãn dự đoán
                 predicted_labels = np.array([label_mapping[label] for label in labels])
+
+                # Tính toán độ chính xác
                 accuracy = np.mean(predicted_labels == y_train)
                 st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
 
@@ -499,6 +509,7 @@ def train():
                 mlflow.log_metric("noise_ratio", noise_ratio)
                 mlflow.sklearn.log_model(model, "dbscan_model")
 
+            # Lưu mô hình vào session state
             if "models" not in st.session_state:
                 st.session_state["models"] = []
 
@@ -511,10 +522,17 @@ def train():
 
             st.session_state["models"].append({"name": new_model_name, "model": model})
             st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
-            st.write(f"📋 **Danh sách các mô hình:** {[m['name'] for m in st.session_state['models']]}")
+
+            # Thanh trượt để chọn mô hình đã train
+            model_names = [m["name"] for m in st.session_state["models"]]
+            if model_names:
+                selected_model_name = st.select_slider("📜 Chọn mô hình để xem:", model_names)
+                st.write(f"🔍 **Mô hình đang xem:** `{selected_model_name}`")
+
+            st.write(f"📋 **Danh sách các mô hình:** {model_names}")
             mlflow.end_run()
             st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
-            st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
+
 
 
 
@@ -610,6 +628,13 @@ def du_doan():
                     
             else:
                 st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")        
+                
+                
+                
+                
+                
+                
+                
                     
 from datetime import datetime    
 import streamlit as st
