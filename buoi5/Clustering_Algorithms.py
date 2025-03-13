@@ -474,6 +474,10 @@ def train():
             st.success("✅ Huấn luyện thành công!")
             progress_bar.progress(100)  # Đảm bảo tiến trình đạt 100%
 
+            
+            st.session_state["trained_model"] = model 
+            
+            
             labels = model.labels_
 
             if model_choice == "K-Means":
