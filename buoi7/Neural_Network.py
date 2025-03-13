@@ -234,7 +234,7 @@ def split_data():
     total_samples = X.shape[0] 
     
     # Thanh kéo chọn số lượng ảnh để train
-    num_samples = st.slider("📌 Chọn số lượng ảnh để train:", 1000, total_samples, 10000)
+    num_samples = st.slider("📌 Chọn số lượng ảnh để huấn luyện:", 1000, total_samples, 10000)
     num_samples =num_samples -10
     # Thanh kéo chọn tỷ lệ Train/Test
     test_size = st.slider("📌 Chọn % dữ liệu Test", 10, 50, 20)
@@ -280,39 +280,68 @@ def thi_nghiem():
     if st.button("🚀 Huấn luyện mô hình"):
         with st.spinner("Đang huấn luyện..."):
             mlflow.start_run(run_name=run_name)
-            mlflow.log_params({"num_layers": num_layers, "num_neurons": num_neurons, "activation": activation, "optimizer": optimizer, "k_folds": k_folds})
-            
+            mlflow.log_params({
+                "num_layers": num_layers,
+                "num_neurons": num_neurons,
+                "activation": activation,
+                "optimizer": optimizer,
+                "k_folds": k_folds
+            })
+
             kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
             accuracies, losses = [], []
-            
-            for train_idx, val_idx in kf.split(X_train, y_train):
+            progress_bar = st.progress(0)  # Thêm thanh tiến trình
+            status_text = st.empty()  # Thêm văn bản cập nhật trạng thái
+
+            for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_train, y_train)):
                 X_k_train, X_k_val = X_train[train_idx], X_train[val_idx]
                 y_k_train, y_k_val = y_train[train_idx], y_train[val_idx]
-                
-                model = keras.Sequential([layers.Input(shape=(X_k_train.shape[1],))] + [layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)] + [layers.Dense(10, activation="softmax")])
+
+                model = keras.Sequential([
+                    layers.Input(shape=(X_k_train.shape[1],))
+                ] + [
+                    layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
+                ] + [
+                    layers.Dense(10, activation="softmax")
+                ])
+
                 model.compile(optimizer=optimizer, loss=loss_fn, metrics=["accuracy"])
-                
+
                 start_time = time.time()
                 history = model.fit(X_k_train, y_k_train, epochs=20, validation_data=(X_k_val, y_k_val), verbose=0)
                 elapsed_time = time.time() - start_time
-                
+
                 accuracies.append(history.history["val_accuracy"][-1])
                 losses.append(history.history["val_loss"][-1])
-                
+
+                # Cập nhật thanh tiến trình
+                progress = (fold_idx + 1) / k_folds
+                progress_bar.progress(progress)
+                status_text.text(f"Đang huấn luyện Fold {fold_idx + 1}/{k_folds}...")
+
             avg_val_accuracy = np.mean(accuracies)
             avg_val_loss = np.mean(losses)
-            
-            mlflow.log_metrics({"avg_val_accuracy": avg_val_accuracy, "avg_val_loss": avg_val_loss, "elapsed_time": elapsed_time})
-            
+
+            mlflow.log_metrics({
+                "avg_val_accuracy": avg_val_accuracy,
+                "avg_val_loss": avg_val_loss,
+                "elapsed_time": elapsed_time
+            })
+
             test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
+
             mlflow.end_run()
             st.session_state["trained_model"] = model
+            progress_bar.progress(1.0)  # Hoàn thành thanh tiến trình
+            status_text.text("✅ Huấn luyện hoàn tất!")
+
             st.success(f"✅ Huấn luyện hoàn tất!")
             st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
             st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
-            st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** đã được ghi nhận thành công trong MLflow (Neural_Network)! 🚀")
+            st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** trong MLflow (Neural_Network)! 🚀")
             st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
+
 
             
             
