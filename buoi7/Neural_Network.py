@@ -281,85 +281,85 @@ def thi_nghiem():
     st.session_state['run_name'] = run_name
     
     if st.button("🚀 Huấn luyện mô hình"):
-    with st.spinner("Đang huấn luyện..."):
-        mlflow.start_run(run_name=run_name)
-        mlflow.log_params({
-            "num_layers": num_layers,
-            "num_neurons": num_neurons,
-            "activation": activation,
-            "optimizer": optimizer,
-            "learning_rate": learning_rate,
-            "k_folds": k_folds,
-            "epochs": epochs
-        })
+        with st.spinner("Đang huấn luyện..."):
+            mlflow.start_run(run_name=run_name)
+            mlflow.log_params({
+                "num_layers": num_layers,
+                "num_neurons": num_neurons,
+                "activation": activation,
+                "optimizer": optimizer,
+                "learning_rate": learning_rate,
+                "k_folds": k_folds,
+                "epochs": epochs
+            })
 
-        kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
-        accuracies, losses = [], []
+            kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
+            accuracies, losses = [], []
 
-        # Thanh tiến trình tổng quát cho toàn bộ quá trình huấn luyện
-        training_progress = st.progress(0)
-        training_status = st.empty()
+            # Thanh tiến trình tổng quát cho toàn bộ quá trình huấn luyện
+            training_progress = st.progress(0)
+            training_status = st.empty()
 
-        for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_train, y_train)):
-            X_k_train, X_k_val = X_train[train_idx], X_train[val_idx]
-            y_k_train, y_k_val = y_train[train_idx], y_train[val_idx]
+            for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_train, y_train)):
+                X_k_train, X_k_val = X_train[train_idx], X_train[val_idx]
+                y_k_train, y_k_val = y_train[train_idx], y_train[val_idx]
 
-            model = keras.Sequential([
-                layers.Input(shape=(X_k_train.shape[1],))
-            ] + [
-                layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
-            ] + [
-                layers.Dense(10, activation="softmax")
-            ])
+                model = keras.Sequential([
+                    layers.Input(shape=(X_k_train.shape[1],))
+                ] + [
+                    layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
+                ] + [
+                    layers.Dense(10, activation="softmax")
+                ])
 
-            # Chọn optimizer với learning rate
-            if optimizer == "adam":
-                opt = keras.optimizers.Adam(learning_rate=learning_rate)
-            elif optimizer == "sgd":
-                opt = keras.optimizers.SGD(learning_rate=learning_rate)
-            else:
-                opt = keras.optimizers.RMSprop(learning_rate=learning_rate)
+                # Chọn optimizer với learning rate
+                if optimizer == "adam":
+                    opt = keras.optimizers.Adam(learning_rate=learning_rate)
+                elif optimizer == "sgd":
+                    opt = keras.optimizers.SGD(learning_rate=learning_rate)
+                else:
+                    opt = keras.optimizers.RMSprop(learning_rate=learning_rate)
 
-            model.compile(optimizer=opt, loss=loss_fn, metrics=["accuracy"])
+                model.compile(optimizer=opt, loss=loss_fn, metrics=["accuracy"])
 
-            start_time = time.time()
-            history = model.fit(X_k_train, y_k_train, epochs=epochs, validation_data=(X_k_val, y_k_val), verbose=0)
+                start_time = time.time()
+                history = model.fit(X_k_train, y_k_train, epochs=epochs, validation_data=(X_k_val, y_k_val), verbose=0)
 
-            elapsed_time = time.time() - start_time
-            accuracies.append(history.history["val_accuracy"][-1])
-            losses.append(history.history["val_loss"][-1])
+                elapsed_time = time.time() - start_time
+                accuracies.append(history.history["val_accuracy"][-1])
+                losses.append(history.history["val_loss"][-1])
 
-            # Cập nhật thanh tiến trình chính (theo fold)
-            training_progress.progress((fold_idx + 1) / k_folds)
-            training_status.text(f"⏳ Đang huấn luyện... Fold {fold_idx + 1}/{k_folds}")
+                # Cập nhật thanh tiến trình chính (theo fold)
+                training_progress.progress((fold_idx + 1) / k_folds)
+                training_status.text(f"⏳ Đang huấn luyện... Fold {fold_idx + 1}/{k_folds}")
 
-        avg_val_accuracy = np.mean(accuracies)
-        avg_val_loss = np.mean(losses)
+            avg_val_accuracy = np.mean(accuracies)
+            avg_val_loss = np.mean(losses)
 
-        mlflow.log_metrics({
-            "avg_val_accuracy": avg_val_accuracy,
-            "avg_val_loss": avg_val_loss,
-            "elapsed_time": elapsed_time
-        })
+            mlflow.log_metrics({
+                "avg_val_accuracy": avg_val_accuracy,
+                "avg_val_loss": avg_val_loss,
+                "elapsed_time": elapsed_time
+            })
 
-        test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
-        mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
+            test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
+            mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
 
-        mlflow.end_run()
-        st.session_state["trained_model"] = model
+            mlflow.end_run()
+            st.session_state["trained_model"] = model
 
-        # Hoàn thành tiến trình
-        training_progress.progress(1.0)
-        training_status.text("✅ Huấn luyện hoàn tất!")
+            # Hoàn thành tiến trình
+            training_progress.progress(1.0)
+            training_status.text("✅ Huấn luyện hoàn tất!")
 
-        st.success(f"✅ Huấn luyện hoàn tất!")
-        st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
-        st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
-        st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** trong MLflow (Neural_Network)! 🚀")
-        st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
+            st.success(f"✅ Huấn luyện hoàn tất!")
+            st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
+            st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
+            st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** trong MLflow (Neural_Network)! 🚀")
+            st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
 
-            
+                
             
             
 
