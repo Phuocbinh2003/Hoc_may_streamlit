@@ -68,13 +68,13 @@ def explain_nn():
     st.image("buoi7/img2.png", caption="Một số hàm kích hoạt cơ bản", use_container_width="auto")
     
     st.markdown("- **Sigmoid:** Chuyển đổi giá trị đầu vào thành khoảng từ 0 đến 1, phù hợp cho bài toán phân loại nhị phân.")
-    st.latex(r"\sigma(z) = \frac{1}{1 + e^{-z}}")
+    st.latex(r"f(z) = \sigma(z) = \frac{1}{1 + e^{-z}}")
 
     st.markdown("- **Tanh (Hyperbolic Tangent):** Đầu ra nằm trong khoảng từ -1 đến 1, giúp xử lý dữ liệu có cả giá trị dương và âm.")
-    st.latex(r"\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}")
+    st.latex(r"f(z) = \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}")
 
     st.markdown("- **ReLU (Rectified Linear Unit):** Nếu đầu vào âm thì bằng 0, còn nếu dương thì giữ nguyên giá trị.")
-    st.latex(r"ReLU(z) = \max(0, z)")
+    st.latex(r"f(z) = ReLU(z) = \max(0, z)")
     
    
 
