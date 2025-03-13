@@ -330,7 +330,7 @@ def thi_nghiem():
                 losses.append(history.history["val_loss"][-1])
 
                 # Cập nhật thanh tiến trình chính (theo fold)
-                st.write(fold_idx ,k_folds)
+                
                 
                 progress_percent = int((fold_idx + 1 / k_folds))
                 training_progress.progress(progress_percent)
@@ -338,7 +338,7 @@ def thi_nghiem():
                             
 
                 
-                training_status.text(f"⏳ Đang huấn luyện... {progress_percent*100}%")
+                training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")
 
             avg_val_accuracy = np.mean(accuracies)
             avg_val_loss = np.mean(losses)
