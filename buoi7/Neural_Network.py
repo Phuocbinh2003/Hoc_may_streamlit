@@ -328,7 +328,7 @@ def thi_nghiem():
                     history = model.fit(X_k_train, y_k_train, epochs=1, validation_data=(X_k_val, y_k_val), verbose=0)
 
                     epoch_progress.progress((epoch + 1) / epochs)
-                    epoch_status.text(f"⏳ Huấn luyện Fold {fold_idx + 1}/{k_folds} - Epoch {epoch + 1}/{epochs}...")
+                    epoch_status.text(f"⏳ Huấn luyện Epoch {epoch + 1}/{epochs}...")
 
                 elapsed_time = time.time() - start_time
                 accuracies.append(history.history["val_accuracy"][-1])
