@@ -331,12 +331,14 @@ def thi_nghiem():
 
                 # Cập nhật thanh tiến trình chính (theo fold)
                 st.write(fold_idx ,k_folds)
-                training_progress.progress(((fold_idx + 1) / k_folds)*100)
+                
+                progress_percent = int((fold_idx+1 / k_folds) * 100)
+                training_progress.progress(progress_percent)
                 
                             
 
                 
-                training_status.text(f"⏳ Đang huấn luyện... Fold {fold_idx + 1}/{k_folds}")
+                training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")
 
             avg_val_accuracy = np.mean(accuracies)
             avg_val_loss = np.mean(losses)
