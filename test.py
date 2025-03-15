@@ -61,7 +61,7 @@ def experiment_tab():
     if st.button("Bắt đầu thí nghiệm"):
         with st.spinner("Đang xử lý..."):
             with mlflow.start_run(run_name=run_name):
-                # Log parameters
+                
                 mlflow.log_params({
                     "init_ratio": init_ratio,
                     "threshold": threshold,
