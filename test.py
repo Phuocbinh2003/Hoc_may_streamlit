@@ -9,6 +9,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
+import os
 
 # Hàm khởi tạo MLflow
 def init_mlflow():
@@ -32,9 +33,7 @@ def theory_tab():
     **Công thức chọn pseudo labels:**
     """)
     
-    st.latex(r'''
-    \text{Chọn mẫu } x_i \text{ nếu } \max(p(y|x_i)) \geq \tau
-    ''')
+    st.latex(r'\text{Chọn mẫu } x_i \text{ nếu } \max(p(y|x_i)) \geq \tau')
     st.write("Trong đó τ là ngưỡng tin cậy (ví dụ: 0.95)")
 
 # Tab Thí nghiệm
@@ -72,9 +71,9 @@ def experiment_tab():
                 # Chọn dữ liệu ban đầu (1%)
                 sss = StratifiedShuffleSplit(n_splits=1, test_size=1-init_ratio/100, random_state=42)
                 for train_idx, _ in sss.split(X_train, y_train):
-                    X_labeled = X_train[train_idx]
-                    y_labeled = y_train[train_idx]
-                    X_unlabeled = np.delete(X_train, train_idx, axis=0)
+                    X_labeled = X_train.iloc[train_idx]
+                    y_labeled = y_train.iloc[train_idx]
+                    X_unlabeled = X_train.drop(train_idx)
                 
                 history = {
                     'acc': [],
@@ -133,7 +132,7 @@ def experiment_tab():
                 
                 # Visualization
                 fig1 = px.line(
-                    x=list(range(1, len(history['acc'])+1),
+                    x=list(range(1, len(history['acc'])+1)),
                     y=history['acc'],
                     labels={'x': 'Vòng lặp', 'y': 'Độ chính xác'},
                     title='Độ chính xác qua các vòng lặp'
@@ -141,43 +140,12 @@ def experiment_tab():
                 st.plotly_chart(fig1)
                 
                 fig2 = px.bar(
-                    x=list(range(1, len(history['pseudo_counts'])+1),
+                    x=list(range(1, len(history['pseudo_counts'])+1)),
                     y=history['pseudo_counts'],
                     labels={'x': 'Vòng lặp', 'y': 'Số mẫu thêm vào'},
                     title='Số lượng pseudo labels thêm mỗi vòng'
                 )
                 st.plotly_chart(fig2)
 
-# Tab Demo
-def demo_tab():
-    st.title("🎨 Demo Trực quan")
-    
-    # Load sample data
-    X, y = fetch_openml('mnist_784', version=1, return_X_y=True, parser='auto')
-    sample_idx = np.random.choice(len(X), 5, replace=False)
-    
-    cols = st.columns(5)
-    for i, col in enumerate(cols):
-        with col:
-            plt.imshow(X[sample_idx[i]].reshape(28, 28), cmap='gray')
-            plt.axis('off')
-            st.pyplot(plt)
-            st.write(f"Nhãn thật: {y[sample_idx[i]]}")
-
-# Main App
-def main():
-    st.set_page_config(page_title="Pseudo Labelling MNIST", page_icon="🔖")
-    
-    tab1, tab2, tab3 = st.tabs(["📚 Lý thuyết", "🔬 Thí nghiệm", "🎨 Demo"])
-    
-    with tab1:
-        theory_tab()
-    
-    with tab2:
-        experiment_tab()
-    
-    with tab3:
-        demo_tab()
-
 if __name__ == "__main__":
-    main()
+    experiment_tab()
