@@ -259,13 +259,20 @@ def split_data():
         st.table(summary_df)
 
 def thi_nghiem():
-    
+    num=0
     if "X_train" not in st.session_state:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
     
     X_train, X_val, X_test = [st.session_state[k].reshape(-1, 28 * 28) / 255.0 for k in ["X_train", "X_val", "X_test"]]
     y_train, y_val, y_test = [st.session_state[k] for k in ["y_train", "y_val", "y_test"]]
+    
+    if st.button("✅ Xác nhận dữ liệu cho NN"):
+        st.session_state["data_confirmed"] = True
+    
+    if not st.session_state.get("data_confirmed", False):
+        st.warning("⚠️ Hãy xác nhận dữ liệu trước khi chọn tham số.")
+        return
     
     k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
@@ -276,7 +283,7 @@ def thi_nghiem():
     learning_rate = st.slider("⚡ Tốc độ học (Learning Rate):", min_value=1e-5, max_value=1e-1, value=1e-3, step=1e-5, format="%.5f")
     labeled_ratio = st.slider("📊 Tỉ lệ dữ liệu có nhãn ban đầu (%):", min_value=1, max_value=100, value=10, step=1)
     max_iterations = st.slider("🔄 Số lần lặp tối đa của Pseudo-Labeling:", min_value=1, max_value=10, value=3, step=1)
-
+    
     loss_fn = "sparse_categorical_crossentropy"
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state['run_name'] = run_name
@@ -296,7 +303,6 @@ def thi_nghiem():
                 "max_iterations": max_iterations
             })
 
-            # Chia dữ liệu theo tỉ lệ có nhãn ban đầu
             num_labeled = int(len(X_train) * labeled_ratio / 100)
             labeled_idx = np.random.choice(len(X_train), num_labeled, replace=False)
             unlabeled_idx = np.setdiff1d(np.arange(len(X_train)), labeled_idx)
@@ -309,7 +315,7 @@ def thi_nghiem():
                 accuracies, losses = [], []
                 training_progress = st.progress(0)
                 training_status = st.empty()
-                num=0
+                
                 for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_labeled, y_labeled)):
                     X_k_train, X_k_val = X_labeled[train_idx], X_labeled[val_idx]
                     y_k_train, y_k_val = y_labeled[train_idx], y_labeled[val_idx]
@@ -337,12 +343,10 @@ def thi_nghiem():
                     
                     accuracies.append(history.history["val_accuracy"][-1])
                     losses.append(history.history["val_loss"][-1])
-                    progress_percent = min(int((num / k_folds) * 100), 100)
-
-                    num += 1
+                    progress_percent = min(int(((fold_idx + 1) / k_folds) * 80), 80)
                     training_progress.progress(progress_percent)
                     training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")
-
+                
                 avg_val_accuracy = np.mean(accuracies)
                 avg_val_loss = np.mean(losses)
                 
@@ -352,11 +356,10 @@ def thi_nghiem():
                     "elapsed_time": elapsed_time
                 })
                 
-                # Pseudo-labeling: Gán nhãn cho dữ liệu chưa nhãn nếu confidence cao
                 pseudo_preds = model.predict(X_unlabeled)
                 pseudo_labels = np.argmax(pseudo_preds, axis=1)
                 confidence_scores = np.max(pseudo_preds, axis=1)
-                confident_mask = confidence_scores > 0.95  # Ngưỡng tin cậy
+                confident_mask = confidence_scores > 0.95  
                 
                 X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
                 y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
@@ -369,7 +372,7 @@ def thi_nghiem():
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
             mlflow.end_run()
             st.session_state["trained_model"] = model
-            training_progress.progress(1.0)
+            training_progress.progress(100)
             training_status.text("✅ Huấn luyện hoàn tất!")
 
             st.success(f"✅ Huấn luyện hoàn tất!")
