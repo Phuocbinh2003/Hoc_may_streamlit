@@ -259,7 +259,7 @@ def split_data():
         st.table(summary_df)
 
 def thi_nghiem():
-    num=0
+    
     if "X_train" not in st.session_state:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
@@ -315,7 +315,7 @@ def thi_nghiem():
                 accuracies, losses = [], []
                 training_progress = st.progress(0)
                 training_status = st.empty()
-                
+                num=0
                 for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_labeled, y_labeled)):
                     X_k_train, X_k_val = X_labeled[train_idx], X_labeled[val_idx]
                     y_k_train, y_k_val = y_labeled[train_idx], y_labeled[val_idx]
