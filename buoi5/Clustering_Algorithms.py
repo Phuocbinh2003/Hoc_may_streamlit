@@ -424,14 +424,6 @@ from sklearn.cluster import KMeans, DBSCAN
 from scipy.stats import mode
 
 
-    
-
-import streamlit as st
-import numpy as np
-import mlflow
-from sklearn.cluster import KMeans, DBSCAN
-from sklearn.decomposition import PCA
-from scipy.stats import mode
 
 def train():
     st.header("⚙️ Chọn mô hình & Huấn luyện")
@@ -466,10 +458,19 @@ def train():
     st.session_state["run_name"] = run_name if run_name else "default_run"
 
     if st.button("🚀 Huấn luyện mô hình"):
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
         with mlflow.start_run(run_name=st.session_state["run_name"]):
+            status_text.text("🔄 Đang huấn luyện...")
+            progress_bar.progress(25)
+            
             model.fit(X_train_pca)
+            progress_bar.progress(50)
+            
             st.success("✅ Huấn luyện thành công!")
-
+            progress_bar.progress(75)
+            
             labels = model.labels_
 
             if model_choice == "K-Means":
@@ -531,8 +532,8 @@ def train():
 
             st.write(f"📋 **Danh sách các mô hình:** {model_names}")
             mlflow.end_run()
-            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
-
+            progress_bar.progress(100)
+            status_text.text(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
 
 
 
