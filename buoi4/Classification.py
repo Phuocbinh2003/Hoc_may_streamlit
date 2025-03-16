@@ -414,7 +414,7 @@ def train():
             
             
             # 🏆 **Huấn luyện với Cross Validation**
-            st.write("⏳ Đang chạy Cross-Validation...")
+            # st.write("⏳ Đang chạy Cross-Validation...")
             for fold in range(n_folds):
                 progress_percent = int((num / n_folds) * 99)  # Tính phần trăm tiến trình
                 training_progress.progress(progress_percent)  # Cập nhật thanh tiến trình
@@ -432,6 +432,7 @@ def train():
             y_pred = model.predict(X_test)
             acc = accuracy_score(y_test, y_pred)
             training_progress.progress(100)
+            training_status.text(f"⏳ Đang huấn luyện... {100}%")
             st.success(f"✅ Độ chính xác trên test set: {acc:.4f}")
 
             # 📝 Ghi log vào MLflow
