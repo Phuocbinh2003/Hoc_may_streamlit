@@ -393,6 +393,10 @@ def train():
     st.session_state["run_name"] = run_name if run_name else "default_run"
     
     if st.button("Huấn luyện mô hình"):
+        training_progress = st.progress(0)  # Thanh tiến trình
+        training_status = st.empty()  # Hiển thị trạng thái
+        
+        num = 0
         with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}"):
             
             mlflow.log_param("test_size", st.session_state.test_size)
@@ -411,6 +415,12 @@ def train():
             
             # 🏆 **Huấn luyện với Cross Validation**
             st.write("⏳ Đang chạy Cross-Validation...")
+            for fold in range(n_folds):
+                progress_percent = int((num / n_folds) * 99)  # Tính phần trăm tiến trình
+                training_progress.progress(progress_percent)  # Cập nhật thanh tiến trình
+                training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")  # Cập nhật trạng thái
+                num += 1  # Tăng biến đếm
+            
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
             mean_cv_score = cv_scores.mean()
             std_cv_score = cv_scores.std()
@@ -421,7 +431,7 @@ def train():
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             acc = accuracy_score(y_test, y_pred)
-
+            training_progress.progress(100)
             st.success(f"✅ Độ chính xác trên test set: {acc:.4f}")
 
             # 📝 Ghi log vào MLflow
