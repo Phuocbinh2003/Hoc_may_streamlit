@@ -33,7 +33,7 @@ def explain_nn():
     3. **Output Layer**: Lớp đưa ra kết quả dự đoán.
     """)
     
-    st.image("buoi7/img1.webp", caption="Cấu trúc mạng nơ-ron(medium.com)", use_container_width="auto")
+    st.image("buoi7/img3.webp", caption="Cấu trúc mạng nơ-ron(medium.com)", use_container_width="auto")
     
    
 
