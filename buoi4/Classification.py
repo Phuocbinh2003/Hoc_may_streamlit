@@ -418,7 +418,7 @@ def train():
             for num in range(1, 99):  # Tăng từ 1% đến 99%
                 training_progress.progress(num)
                 training_status.text(f"⏳ Đang huấn luyện... {num}%")
-                time.sleep(1)  # Chờ 1 giây trước khi cập nhật
+                time.sleep(0.1)  # Chờ 1 giây trước khi cập nhật
             
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
             mean_cv_score = cv_scores.mean()
