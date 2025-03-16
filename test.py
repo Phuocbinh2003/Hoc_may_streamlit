@@ -121,6 +121,8 @@ def explain_Pseudo_Labelling():
     st.markdown("### 🔬 **Bước 3: Lọc dữ liệu có độ tin cậy cao**")
     st.write("""
     - Chỉ chọn những ảnh có xác suất dự đoán cao hơn ngưỡng tin cậy (ví dụ: 0.95).  
+    -Ảnh 1, 3, 5 sẽ được gán nhãn giả.
+    -Ảnh 2, 4 bị bỏ qua vì mô hình không tự tin.
     - Những ảnh đạt tiêu chuẩn sẽ được gán nhãn giả.  
     - Ảnh có độ tin cậy thấp sẽ bị loại bỏ.  
     """)
@@ -128,6 +130,7 @@ def explain_Pseudo_Labelling():
     st.markdown("### 🏷️ **Bước 4: Gán nhãn giả cho các dự đoán tin cậy**")
     st.write("""
     - Các mẫu có độ tin cậy cao được gán nhãn theo kết quả dự đoán của mô hình.  
+    - ví dụ 500 được ảnh
     """)
 
     st.markdown("### 📂 **Bước 5: Thêm dữ liệu gán nhãn giả vào tập train**")
