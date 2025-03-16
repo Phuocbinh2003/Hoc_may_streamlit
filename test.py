@@ -259,22 +259,24 @@ def split_data():
         st.table(summary_df)
 
 def thi_nghiem():
+    num = 0
     if "X_train" not in st.session_state:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
-    
+
     X_train, X_val, X_test = [st.session_state[k].reshape(-1, 28 * 28) / 255.0 for k in ["X_train", "X_val", "X_test"]]
     y_train, y_val, y_test = [st.session_state[k] for k in ["y_train", "y_val", "y_test"]]
-    
+
     k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
     num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
-    epochs = st.slider("🕰 Số epochs:", 1, 50, 20, 1)
-    learning_rate = st.slider("⚡ Tốc độ học:", 1e-5, 1e-1, 1e-3, 1e-5, format="%.5f")
-    labeled_ratio = st.slider("📊 Tỉ lệ dữ liệu có nhãn ban đầu (%):", 1, 100, 10, 1)
-    max_iterations = st.slider("🔄 Số lần lặp tối đa của Pseudo-Labeling:", 1, 10, 3, 1)
+    epochs = st.slider("🕰 Số epochs:", min_value=1, max_value=50, value=20, step=1)
+    learning_rate = st.slider("⚡ Tốc độ học (Learning Rate):", min_value=1e-5, max_value=1e-1, value=1e-3, step=1e-5, format="%.5f")
+    labeled_ratio = st.slider("📊 Tỉ lệ dữ liệu có nhãn ban đầu (%):", min_value=1, max_value=100, value=10, step=1)
+    max_iterations = st.slider("🔄 Số lần lặp tối đa của Pseudo-Labeling:", min_value=1, max_value=10, value=3, step=1)
+    confidence_threshold = st.slider("✅ Ngưỡng tin cậy Pseudo Labeling (%):", min_value=50, max_value=99, value=95, step=1) / 100.0
 
     loss_fn = "sparse_categorical_crossentropy"
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
@@ -292,26 +294,27 @@ def thi_nghiem():
                 "k_folds": k_folds,
                 "epochs": epochs,
                 "labeled_ratio": labeled_ratio,
-                "max_iterations": max_iterations
+                "max_iterations": max_iterations,
+                "confidence_threshold": confidence_threshold
             })
 
             num_labeled = int(len(X_train) * labeled_ratio / 100)
             labeled_idx = np.random.choice(len(X_train), num_labeled, replace=False)
             unlabeled_idx = np.setdiff1d(np.arange(len(X_train)), labeled_idx)
-            
+
             X_labeled, y_labeled = X_train[labeled_idx], y_train[labeled_idx]
             X_unlabeled = X_train[unlabeled_idx]
 
-            pseudo_label_counts = []  # Danh sách lưu số lượng mẫu được gán nhãn qua từng iteration
-            
+            total_pseudo_labels = 0  # Tổng số nhãn giả được thêm vào
+
             for iteration in range(max_iterations):
                 kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
                 accuracies, losses = [], []
                 training_progress = st.progress(0)
                 training_status = st.empty()
-                
-                total_steps = k_folds
-                num = 0 
+
+                num = 0
+                total_steps = k_folds * max_iterations
 
                 for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_labeled, y_labeled)):
                     X_k_train, X_k_val = X_labeled[train_idx], X_labeled[val_idx]
@@ -337,42 +340,45 @@ def thi_nghiem():
                     start_time = time.time()
                     history = model.fit(X_k_train, y_k_train, epochs=epochs, validation_data=(X_k_val, y_k_val), verbose=0)
                     elapsed_time = time.time() - start_time
-                    
+
                     accuracies.append(history.history["val_accuracy"][-1])
                     losses.append(history.history["val_loss"][-1])
                     num += 1
-                    progress_percent = int((num / total_steps) * 100)
-                    
+                    progress_percent = int((num / k_folds) * 100)
+
                     training_progress.progress(progress_percent)
                     training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")
-                
+
                 avg_val_accuracy = np.mean(accuracies)
                 avg_val_loss = np.mean(losses)
-                
+
                 mlflow.log_metrics({
                     "avg_val_accuracy": avg_val_accuracy,
                     "avg_val_loss": avg_val_loss,
                     "elapsed_time": elapsed_time
                 })
-                
-                # Pseudo-labeling: Gán nhãn cho dữ liệu chưa nhãn
+
                 pseudo_preds = model.predict(X_unlabeled)
                 pseudo_labels = np.argmax(pseudo_preds, axis=1)
                 confidence_scores = np.max(pseudo_preds, axis=1)
-                confident_mask = confidence_scores > 0.95  
+                confident_mask = confidence_scores > confidence_threshold
 
-                num_new_labels = np.sum(confident_mask)
-                pseudo_label_counts.append(num_new_labels)  # Lưu số lượng mẫu được gán nhãn
-
-                mlflow.log_metric(f"pseudo_labels_added_iteration_{iteration}", num_new_labels)
+                num_pseudo_added = np.sum(confident_mask)
+                total_pseudo_labels += num_pseudo_added
 
                 X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
                 y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
                 X_unlabeled = X_unlabeled[~confident_mask]
-                
+
+                st.write(f"📢 **Vòng lặp {iteration+1}:**")
+                st.write(f"- Số pseudo labels mới thêm: {num_pseudo_added}")
+                st.write(f"- Tổng số pseudo labels: {total_pseudo_labels}")
+                st.write(f"- Số lượng dữ liệu chưa gán nhãn còn lại: {len(X_unlabeled)}")
+                st.write("---")
+
                 if len(X_unlabeled) == 0:
                     break
-            
+
             test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
             mlflow.end_run()
@@ -384,14 +390,7 @@ def thi_nghiem():
             st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
             st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
             st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** trong MLflow! 🚀")
-
-            # Vẽ biểu đồ số lượng pseudo labels được thêm vào qua các vòng lặp
-            fig, ax = plt.subplots()
-            ax.plot(range(1, len(pseudo_label_counts) + 1), pseudo_label_counts, marker='o', linestyle='-')
-            ax.set_xlabel("Iteration")
-            ax.set_ylabel("Pseudo Labels Added")
-            ax.set_title("Số lượng Pseudo Labels được thêm vào qua các vòng lặp")
-            st.pyplot(fig)
+            st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
 
                 
