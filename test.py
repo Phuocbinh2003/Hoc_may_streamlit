@@ -17,198 +17,103 @@ import plotly.express as px
 # ======================================
 # PHẦN 1: LÝ THUYẾT NEURAL NETWORK
 # ======================================
-def explain_nn():
-    st.markdown("""
-    ## 🧠 Neural Network Cơ Bản
 
-    **Neural Network (Mạng nơ-ron nhân tạo - ANN)** là một mô hình tính toán lấy cảm hứng từ cấu trúc và hoạt động của não bộ con người. Mạng bao gồm nhiều nơ-ron nhân tạo kết nối với nhau thành các lớp (layers), giúp mô hình học và nhận diện các mẫu trong dữ liệu.
+import streamlit as st
 
-    ### 🔰 Kiến trúc cơ bản:
-    """)
+def show_prediction_table():
+    st.table({
+        "Ảnh": ["Ảnh 1", "Ảnh 2", "Ảnh 3", "Ảnh 4", "Ảnh 5"],
+        "Dự đoán": [7, 2, 3, 5, 8],
+        "Xác suất": [0.98, 0.85, 0.96, 0.88, 0.97],
+        "Gán nhãn?": ["✅", "❌", "✅", "❌", "✅"]
+    })
+
+def explain_Pseudo_Labelling():
+    st.image("buoi8/img1.png", caption="Các bước Pseudo Labelling", use_column_width=True)
     
-    st.markdown("""
-    ### 📌 Cấu trúc của một mạng nơ-ron nhân tạo gồm ba loại lớp chính:
-    1. **Input Layer**: Lớp tiếp nhận dữ liệu đầu vào.
-    2. **Hidden Layers**: Xử lý thông tin thông qua các trọng số (weights) và hàm kích hoạt.
-    3. **Output Layer**: Lớp đưa ra kết quả dự đoán.
-    """)
-    
-    st.image("buoi7/img1.webp", caption="Cấu trúc mạng nơ-ron(medium.com)", use_container_width="auto")
-    
-   
-
-    st.markdown("""
-    ## 📌 Công thức toán học trong Neural Network:
-    Mỗi nơ-ron trong một lớp nhận tín hiệu từ các nơ-ron lớp trước, nhân với trọng số (**weights**), cộng với **bias**, rồi đưa vào một **hàm kích hoạt** để quyết định tín hiệu truyền đi.
-    """)
-
-    st.markdown("### 🎯 Công thức tính giá trị đầu ra của một nơ-ron:")
-    st.latex(r" z = \sum_{i=1}^{n} w_i x_i + b ")
-
-    st.markdown(r"""
-    Trong đó:
-    - $$ x_i $$ là đầu vào (**input features**).
-    - $$ w_i $$ là **trọng số** (**weights**) kết nối với nơ-ron đó.
-    - $$ b $$ là **bias** (hệ số dịch chuyển).
-    - $$ z $$ là tổng có trọng số (**weighted sum**).
-
-    Sau khi tính toán $$ z $$, nó sẽ đi qua một **hàm kích hoạt** $$ f(z) $$ để tạo ra giá trị đầu ra.
-    """)
-
-    # st.markdown("### 🎯 Công thức tính đầu ra sau khi qua hàm kích hoạt:")
-    # st.latex(r" a = \sigma(z) ")
-
-
-    
-    st.markdown("""
-    ### 🎯 Hàm Kích Hoạt (Activation Functions)
-    Hàm kích hoạt giúp mạng học được các tính phi tuyến tính, nhờ đó có thể mô hình hóa các mối quan hệ phức tạp.
-    """)
-    
-    st.image("buoi7/img2.png", caption="Một số hàm kích hoạt cơ bản", use_container_width="auto")
-    
-    st.markdown("- **Sigmoid:** Chuyển đổi giá trị đầu vào thành khoảng từ 0 đến 1, phù hợp cho bài toán phân loại nhị phân.")
-    st.latex(r"f(z) = \sigma(z) = \frac{1}{1 + e^{-z}}")
-
-    st.markdown("- **Tanh (Hyperbolic Tangent):** Đầu ra nằm trong khoảng từ -1 đến 1, giúp xử lý dữ liệu có cả giá trị dương và âm.")
-    st.latex(r"f(z) = \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}")
-
-    st.markdown("- **ReLU (Rectified Linear Unit):** Nếu đầu vào âm thì bằng 0, còn nếu dương thì giữ nguyên giá trị.")
-    st.latex(r"f(z) = ReLU(z) = \max(0, z)")
-    
-   
-
-    st.markdown("### 🔄 Quá trình huấn luyện Neural Network")
-    st.markdown("Mạng nơ-ron học bằng cách cập nhật các trọng số thông qua hai giai đoạn chính:")
-
-    st.markdown("#### 1️⃣ Lan truyền thuận (Forward Propagation)")
-    st.markdown("- Input đi qua từng lớp nơ-ron, tính toán đầu ra:")
-    st.latex(r"a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)})")
-
-    st.markdown("Trong đó:")
-    st.markdown(r"- $$ a^{(l)} $$: Đầu ra của lớp thứ $$l $$.")
-    st.markdown(r"- $$ W^{(l)} $$: Ma trận trọng số giữa lớp $$l-1 $$ và lớp $$ l $$.")
-    st.markdown(r"- $$ a^{(l-1)} $$: Đầu ra của lớp trước đó (hoặc là đầu vào nếu $$ l = 1 $$).")
-    st.markdown(r"- $$b^{(l)} $$: Bias của lớp $$ l $$.")
-    st.markdown(r"- $$ \sigma(z) $$: Hàm kích hoạt (ReLU, Sigmoid, Tanh,...).")
-
-    st.markdown("#### 2️⃣ Tính toán loss")
-    st.markdown("- Hàm mất mát đo lường sai số giữa dự đoán và thực tế.")
-    st.markdown("- Ví dụ: Mean Squared Error (MSE) cho bài toán hồi quy:")
-    st.latex(r"L = \frac{1}{N} \sum (y_{true} - y_{pred})^2")
-
-    st.markdown("- Cross-Entropy Loss cho bài toán phân loại:")
-    st.latex(r"L = - \sum y_{true} \log(y_{pred})")
-
-    st.markdown("Trong đó:")
-    st.markdown(r"- $$ L $$: Giá trị hàm mất mát.")
-    st.markdown(r"- $$ N $$: Số lượng mẫu trong tập dữ liệu.")
-    st.markdown(r"- $$y_{true} $$: Nhãn thực tế của dữ liệu.")
-    st.markdown(r"- $$y_{pred} $$: Dự đoán của mô hình.")
-
-    st.markdown("#### 3️⃣ Lan truyền ngược (Backpropagation)")
-    st.markdown("- Tính đạo hàm của hàm mất mát theo trọng số.")
-    st.markdown("- Sử dụng thuật toán tối ưu để cập nhật trọng số.")
-
-    st.markdown("Lan truyền ngược dựa trên công thức:")
-    st.latex(r"\frac{\partial L}{\partial W^{(l)}} = \frac{\partial L}{\partial a^{(l)}} \cdot \frac{\partial a^{(l)}}{\partial z^{(l)}} \cdot \frac{\partial z^{(l)}}{\partial W^{(l)}}")
-
-    st.markdown("Trong đó:")
-    st.markdown(r"- $$\frac{\partial L}{\partial W^{(l)}} $$: Đạo hàm của loss theo trọng số $$ W^{(l)} $$.")
-    st.markdown(r"- $$ \frac{\partial L}{\partial a^{(l)}} $$: Đạo hàm của loss theo đầu ra của lớp \( l \).")
-    st.markdown(r"- $$ \frac{\partial a^{(l)}}{\partial z^{(l)}} $$: Đạo hàm của hàm kích hoạt.")
-    st.markdown(r"- $$ \frac{\partial z^{(l)}}{\partial W^{(l)}} $$: Đạo hàm của đầu vào trước lớp kích hoạt theo trọng số.")
-
-    st.markdown("#### 4️⃣ Tối ưu hóa")
-    st.markdown("- **Gradient Descent:** Cập nhật trọng số bằng cách đi theo hướng giảm của gradient.")
-    st.latex(r"W^{(l)} = W^{(l)} - \alpha \frac{\partial L}{\partial W^{(l)}}")
-    st.markdown("- **Momentum:** Thêm động lượng giúp tối ưu nhanh hơn.")
-    st.latex(r"v_t = \beta v_{t-1} + (1 - \beta) \frac{\partial L}{\partial W^{(l)}}")
-    st.latex(r"W^{(l)} = W^{(l)} - \alpha v_t")
-    st.markdown("- **Adam (Adaptive Moment Estimation):** Kết hợp Momentum và RMSprop để đạt hiệu suất tối ưu.")
-    st.latex(r"m_t = \beta_1 m_{t-1} + (1 - \beta_1) \frac{\partial L}{\partial W^{(l)}}")
-    st.latex(r"v_t = \beta_2 v_{t-1} + (1 - \beta_2) \left(\frac{\partial L}{\partial W^{(l)}}\right)^2")
-    st.latex(r"\hat{m_t} = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v_t} = \frac{v_t}{1 - \beta_2^t}")
-    st.latex(r"W^{(l)} = W^{(l)} - \alpha \frac{\hat{m_t}}{\sqrt{\hat{v_t}} + \epsilon}")
-
-    st.markdown("Trong đó:")
-    st.markdown(r"- $$ \alpha $$: Tốc độ học (learning rate).")
-    st.markdown(r"- $$ v_t $$: Giá trị động lượng tại thời điểm $$ t $$.")
-    st.markdown(r"- $$ \beta, \beta_1, \beta_2 $$: Hệ số Momentum hoặc Adam.")
-    st.markdown(r"- $$ m_t $$, $$ v_t $$: Trung bình trọng số và phương sai của gradient.")
-    st.markdown(r"- $$ \epsilon $$: Số rất nhỏ để tránh chia cho 0.")
-
-    st.markdown("""
-    ### 🔍 Kết Luận
-    Neural Network là một mô hình mạnh mẽ trong Machine Learning và Deep Learning, có thể học được các đặc trưng phức tạp từ dữ liệu. Hiểu rõ cách hoạt động giúp ta tối ưu hóa mô hình để đạt hiệu suất cao hơn.
-    """)
-    
-    
-def data():
-    st.header("MNIST Dataset")
+    st.markdown("## 📚 Lý thuyết về Pseudo Labelling")
     st.write("""
-      **MNIST** là một trong những bộ dữ liệu nổi tiếng và phổ biến nhất trong cộng đồng học máy, 
-      đặc biệt là trong các nghiên cứu về nhận diện mẫu và phân loại hình ảnh.
-  
-      - Bộ dữ liệu bao gồm tổng cộng **70.000 ảnh chữ số viết tay** từ **0** đến **9**, 
-        mỗi ảnh có kích thước **28 x 28 pixel**.
-      - Chia thành:
-        - **Training set**: 60.000 ảnh để huấn luyện.
-        - **Test set**: 10.000 ảnh để kiểm tra.
-      - Mỗi hình ảnh là một chữ số viết tay, được chuẩn hóa và chuyển thành dạng grayscale (đen trắng).
-  
-      Dữ liệu này được sử dụng rộng rãi để xây dựng các mô hình nhận diện chữ số.
-      """)
-
-    st.subheader("Một số hình ảnh từ MNIST Dataset")
-    st.image("buoi4/img3.png", caption="Một số hình ảnh từ MNIST Dataset", use_container_width ="auto")
-
-    st.subheader("Ứng dụng thực tế của MNIST")
-    st.write("""
-      Bộ dữ liệu MNIST đã được sử dụng trong nhiều ứng dụng nhận dạng chữ số viết tay, chẳng hạn như:
-      - Nhận diện số trên các hoá đơn thanh toán, biên lai cửa hàng.
-      - Xử lý chữ số trên các bưu kiện gửi qua bưu điện.
-      - Ứng dụng trong các hệ thống nhận diện tài liệu tự động.
-    """)
-
-    st.subheader("Ví dụ về các mô hình học máy với MNIST")
-    st.write("""
-      Các mô hình học máy phổ biến đã được huấn luyện với bộ dữ liệu MNIST bao gồm:
-      - **Logistic Regression**
-      - **Decision Trees**
-      - **K-Nearest Neighbors (KNN)**
-      - **Support Vector Machines (SVM)**
-      - **Convolutional Neural Networks (CNNs)**
-    """)
-
-    st.subheader("📊 Minh họa dữ liệu MNIST")
-
-    # Đọc và hiển thị ảnh GIF minh họa
-    gif_path = "buoi7/g1.gif"  # Thay bằng đường dẫn thực tế
-    st.image(gif_path, caption="Hình ảnh minh họa dữ liệu MNIST", use_container_width="auto")
-
-    # Mô tả về dữ liệu MNIST
-    st.write("""
-    Dữ liệu MNIST bao gồm các hình ảnh chữ số viết tay có kích thước **28x28 pixels**.  
-    Mỗi ảnh là một **ma trận 28x28**, với mỗi pixel có giá trị từ **0 đến 255**.  
-    Khi đưa vào mô hình, ảnh sẽ được biến đổi thành **784 features (28x28)** để làm đầu vào cho mạng nơ-ron.  
-    Mô hình sử dụng các lớp ẩn để học và dự đoán chính xác chữ số từ hình ảnh.
-    """)
-
+    **Pseudo Labelling** là một phương pháp semi-supervised learning giúp kết hợp dữ liệu có nhãn và không nhãn để cải thiện độ chính xác của mô hình. Quá trình này diễn ra qua các bước sau:
     
+    1️⃣ **Huấn luyện mô hình ban đầu** trên một tập dữ liệu nhỏ (~1% tổng số dữ liệu có nhãn).  
+    2️⃣ **Dự đoán nhãn** cho các mẫu chưa được gán nhãn bằng mô hình đã huấn luyện.  
+    3️⃣ **Lọc các dự đoán có độ tin cậy cao** dựa trên ngưỡng xác suất (ví dụ: > 0.95).  
+    4️⃣ **Gán nhãn giả (Pseudo Labels)** cho các mẫu tin cậy.  
+    5️⃣ **Thêm dữ liệu đã gán nhãn giả vào tập train**, mở rộng dữ liệu huấn luyện.  
+    6️⃣ **Huấn luyện lại mô hình** với tập dữ liệu mở rộng (gồm dữ liệu ban đầu + dữ liệu có nhãn giả).  
+    7️⃣ **Lặp lại các bước trên** cho đến khi đạt điều kiện dừng (hội tụ hoặc số lần lặp tối đa).  
+    """)
+
+    st.latex(r'''
+    \text{Chọn mẫu } x_i \text{ nếu } \max(p(y|x_i)) \geq \tau
+    ''')
+    st.write("Trong đó \\(\\tau\\) là ngưỡng tin cậy (ví dụ: 0.95)")
+
+    # Ví dụ minh họa
+    st.markdown("## 🔍 Ví dụ về Pseudo Labelling")
+    st.write("""
+    Giả sử ta có 10.000 ảnh chữ số viết tay (0-9), nhưng chỉ có 1% (100 ảnh) được gán nhãn ban đầu.  
+    → Còn lại 9.900 ảnh không nhãn.
+    """)
+
+    st.markdown("### 🏁 **Bước 1: Huấn luyện mô hình ban đầu**")
+    st.write("""
+    - Mô hình được train trên 100 ảnh có nhãn.  
+    - Do dữ liệu ít, mô hình có độ chính xác thấp.  
+    """)
+
+    st.markdown("### 🧠 **Bước 2: Dự đoán nhãn cho dữ liệu chưa gán nhãn**")
+    st.write("""
+    - Chạy mô hình trên 9.900 ảnh chưa gán nhãn.  
+    - Dự đoán và tính xác suất cho mỗi ảnh.  
+    """)
     
+    show_prediction_table()  # Hiển thị bảng dự đoán mẫu
+
+    st.markdown("### 🔬 **Bước 3: Lọc dữ liệu có độ tin cậy cao**")
+    st.write("""
+    - Chỉ chọn những ảnh có xác suất dự đoán cao hơn ngưỡng tin cậy (ví dụ: 0.95).  
+    - Những ảnh đạt tiêu chuẩn sẽ được gán nhãn giả.  
+    - Ảnh có độ tin cậy thấp sẽ bị loại bỏ.  
+    """)
+
+    st.markdown("### 🏷️ **Bước 4: Gán nhãn giả cho các dự đoán tin cậy**")
+    st.write("""
+    - Các mẫu có độ tin cậy cao được gán nhãn theo kết quả dự đoán của mô hình.  
+    """)
+
+    st.markdown("### 📂 **Bước 5: Thêm dữ liệu gán nhãn giả vào tập train**")
+    st.write("""
+    - Tập train mới = dữ liệu ban đầu + các ảnh có nhãn giả.  
+    - Ví dụ: từ 100 ảnh có nhãn ban đầu, ta có thể mở rộng lên 600 ảnh sau khi thêm nhãn giả.  
+    """)
+
+    st.markdown("### 🔄 **Bước 6: Huấn luyện lại mô hình với tập dữ liệu mở rộng**")
+    st.write("""
+    - Huấn luyện lại mô hình trên tập dữ liệu mới.  
+    - Mô hình sẽ học thêm từ dữ liệu mới và dần cải thiện độ chính xác.  
+    """)
+
+    st.markdown("### 🔁 **Bước 7: Lặp lại quá trình đến khi hội tụ**")
+    st.write("""
+    - Quá trình tiếp tục cho đến khi đạt điều kiện dừng:  
+      - Đạt số lần lặp tối đa  
+      - Mô hình không cải thiện thêm  
+    """)
+
+    st.markdown("## 🎯 **Kết quả cuối cùng**")
+    st.write("""
+    - Ban đầu chỉ có 100 ảnh có nhãn.  
+    - Sau vài vòng lặp, mô hình có thể tự gán nhãn cho hàng ngàn ảnh.  
+    - Độ chính xác tăng dần theo mỗi lần huấn luyện lại.  
+    """)
+
+    st.success("✅ Pseudo Labelling giúp tận dụng dữ liệu chưa có nhãn để cải thiện mô hình AI một cách hiệu quả!")
 
 
 
-# ======================================
 
-# def input_mlflow():
-#     DAGSHUB_MLFLOW_URI = "https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow"
-#     mlflow.set_tracking_uri(DAGSHUB_MLFLOW_URI)
-#     st.session_state['mlflow_url'] = DAGSHUB_MLFLOW_URI
-#     os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
-#     os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
-#     mlflow.set_experiment("NN")
+
 
 import streamlit as st
 import numpy as np
@@ -589,7 +494,7 @@ def Neural_Network():
 
     # Nội dung từng tab
     with tab1:
-        explain_nn()
+        explain_Pseudo_Labelling()
 
     with tab2:
         data()
