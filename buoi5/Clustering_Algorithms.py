@@ -435,7 +435,7 @@ def train():
     X_train = st.session_state["X_train"]
     y_train = st.session_state["y_train"]
 
-    X_train_norm = X_train / 255.0  # Chuẩn hóa
+    X_train_norm = X_train / 255.0
 
     model_choice = st.selectbox("Chọn mô hình:", ["K-Means", "DBSCAN"])
 
@@ -460,36 +460,30 @@ def train():
     if st.button("🚀 Huấn luyện mô hình"):
         progress_bar = st.progress(0)
         status_text = st.empty()
-        
+        k_folds = 4
+        num = 0
+
         with mlflow.start_run(run_name=st.session_state["run_name"]):
             status_text.text("🔄 Đang huấn luyện...")
-            progress_bar.progress(25)
-            
+
+            for _ in range(k_folds):
+                progress_percent = int(((num + 1) / k_folds) * 100)
+                progress_bar.progress(progress_percent)
+                num += 1
+
             model.fit(X_train_pca)
-            progress_bar.progress(50)
-            
-            st.success("✅ Huấn luyện thành công!")
-            progress_bar.progress(75)
-            
             labels = model.labels_
 
             if model_choice == "K-Means":
-                # Tạo ánh xạ nhãn
                 label_mapping = {}
                 for i in range(n_clusters):
                     mask = labels == i
                     if np.sum(mask) > 0:
                         most_common_label = mode(y_train[mask], keepdims=True).mode[0]
                         label_mapping[i] = most_common_label
-
-                # Chuyển đổi nhãn dự đoán
                 predicted_labels = np.array([label_mapping[label] for label in labels])
-
-                # Tính toán độ chính xác
                 accuracy = np.mean(predicted_labels == y_train)
                 st.write(f"🎯 **Độ chính xác của mô hình:** `{accuracy * 100:.2f}%`")
-
-                # Log vào MLflow
                 mlflow.log_param("model", "K-Means")
                 mlflow.log_param("n_clusters", n_clusters)
                 mlflow.log_metric("accuracy", accuracy)
@@ -501,8 +495,6 @@ def train():
                 noise_ratio = np.sum(labels == -1) / len(labels)
                 st.write(f"🔍 **Số cụm tìm thấy:** `{n_clusters_found}`")
                 st.write(f"🚨 **Tỉ lệ nhiễu:** `{noise_ratio * 100:.2f}%`")
-
-                # Log vào MLflow
                 mlflow.log_param("model", "DBSCAN")
                 mlflow.log_param("eps", eps)
                 mlflow.log_param("min_samples", min_samples)
@@ -510,7 +502,6 @@ def train():
                 mlflow.log_metric("noise_ratio", noise_ratio)
                 mlflow.sklearn.log_model(model, "dbscan_model")
 
-            # Lưu mô hình vào session state
             if "models" not in st.session_state:
                 st.session_state["models"] = []
 
@@ -524,7 +515,6 @@ def train():
             st.session_state["models"].append({"name": new_model_name, "model": model})
             st.write(f"🔹 **Mô hình đã được lưu với tên:** `{new_model_name}`")
 
-            # Thanh trượt để chọn mô hình đã train
             model_names = [m["name"] for m in st.session_state["models"]]
             if model_names:
                 selected_model_name = st.select_slider("📜 Chọn mô hình để xem:", model_names)
@@ -534,6 +524,7 @@ def train():
             mlflow.end_run()
             progress_bar.progress(100)
             status_text.text(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+
 
 
 
