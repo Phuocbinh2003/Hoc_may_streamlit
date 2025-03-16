@@ -80,7 +80,7 @@ def show_prediction_table():
     })
 
 def explain_Pseudo_Labelling():
-    st.image("buoi8/img1.png", caption="Các bước Pseudo Labelling", use_container_width ="auto")
+    
     
     st.markdown("## 📚 Lý thuyết về Pseudo Labelling")
     st.write("""
@@ -95,10 +95,7 @@ def explain_Pseudo_Labelling():
     7️⃣ **Lặp lại các bước trên** cho đến khi đạt điều kiện dừng (hội tụ hoặc số lần lặp tối đa).  
     """)
 
-    st.latex(r'''
-    \text{Chọn mẫu } x_i \text{ nếu } \max(p(y|x_i)) \geq \tau
-    ''')
-    st.write("Trong đó \\(\\tau\\) là ngưỡng tin cậy (ví dụ: 0.95)")
+    st.image("buoi8/img1.png", caption="Các bước Pseudo Labelling", use_container_width ="auto")
 
     # Ví dụ minh họa
     st.markdown("## 🔍 Ví dụ về Pseudo Labelling")
