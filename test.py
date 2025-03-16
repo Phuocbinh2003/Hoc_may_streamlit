@@ -159,7 +159,7 @@ def explain_Pseudo_Labelling():
     - Độ chính xác tăng dần theo mỗi lần huấn luyện lại.  
     """)
 
-    st.success("✅ Pseudo Labelling giúp tận dụng dữ liệu chưa có nhãn để cải thiện mô hình AI một cách hiệu quả!")
+    # st.success("✅ Pseudo Labelling giúp tận dụng dữ liệu chưa có nhãn để cải thiện mô hình AI một cách hiệu quả!")
 
 
 
