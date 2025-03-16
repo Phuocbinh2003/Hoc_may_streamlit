@@ -259,7 +259,6 @@ def split_data():
         st.table(summary_df)
 
 def thi_nghiem():
-    num=0
     if "X_train" not in st.session_state:
         st.error("⚠️ Chưa có dữ liệu! Hãy chia dữ liệu trước.")
         return
@@ -281,106 +280,93 @@ def thi_nghiem():
     run_name = st.text_input("🔹 Nhập tên Run:", "Default_Run")
     st.session_state['run_name'] = run_name
     
-    if st.button("🚀 Huấn luyện mô hình"):
-        with st.spinner("Đang huấn luyện..."):
-            mlflow.start_run(run_name=run_name)
-            mlflow.log_params({
-                "num_layers": num_layers,
-                "num_neurons": num_neurons,
-                "activation": activation,
-                "optimizer": optimizer,
-                "learning_rate": learning_rate,
-                "k_folds": k_folds,
-                "epochs": epochs,
-                "labeled_ratio": labeled_ratio,
-                "max_iterations": max_iterations
-            })
+    if st.button("🚀 Xác nhận dữ liệu"):
+        st.session_state['confirmed'] = True
+        st.success("✅ Dữ liệu đã được xác nhận! Hãy chọn tham số cho Pseudo Labeling.")
+    
+    if "confirmed" in st.session_state and st.session_state['confirmed']:
+        if st.button("🚀 Huấn luyện mô hình"):
+            with st.spinner("Đang huấn luyện..."):
+                mlflow.start_run(run_name=run_name)
+                mlflow.log_params({
+                    "num_layers": num_layers,
+                    "num_neurons": num_neurons,
+                    "activation": activation,
+                    "optimizer": optimizer,
+                    "learning_rate": learning_rate,
+                    "k_folds": k_folds,
+                    "epochs": epochs,
+                    "labeled_ratio": labeled_ratio,
+                    "max_iterations": max_iterations
+                })
 
-            # Chia dữ liệu theo tỉ lệ có nhãn ban đầu
-            num_labeled = int(len(X_train) * labeled_ratio / 100)
-            labeled_idx = np.random.choice(len(X_train), num_labeled, replace=False)
-            unlabeled_idx = np.setdiff1d(np.arange(len(X_train)), labeled_idx)
-            
-            X_labeled, y_labeled = X_train[labeled_idx], y_train[labeled_idx]
-            X_unlabeled = X_train[unlabeled_idx]
-            
-            for iteration in range(max_iterations):
-                kf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
-                accuracies, losses = [], []
+                num_labeled = int(len(X_train) * labeled_ratio / 100)
+                labeled_idx = np.random.choice(len(X_train), num_labeled, replace=False)
+                unlabeled_idx = np.setdiff1d(np.arange(len(X_train)), labeled_idx)
+                
+                X_labeled, y_labeled = X_train[labeled_idx], y_train[labeled_idx]
+                X_unlabeled = X_train[unlabeled_idx]
+                
                 training_progress = st.progress(0)
                 training_status = st.empty()
-                
-                num = 0  # Reset số vòng lặp trong từng iteration
                 total_steps = k_folds * max_iterations
 
-                for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X_labeled, y_labeled)):
-                    X_k_train, X_k_val = X_labeled[train_idx], X_labeled[val_idx]
-                    y_k_train, y_k_val = y_labeled[train_idx], y_labeled[val_idx]
+                for iteration in range(max_iterations):
+                    num=0
+                    for fold_idx, (train_idx, val_idx) in enumerate(StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42).split(X_labeled, y_labeled)):
+                        X_k_train, X_k_val = X_labeled[train_idx], X_labeled[val_idx]
+                        y_k_train, y_k_val = y_labeled[train_idx], y_labeled[val_idx]
 
-                    model = keras.Sequential([
-                        layers.Input(shape=(X_k_train.shape[1],))
-                    ] + [
-                        layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
-                    ] + [
-                        layers.Dense(10, activation="softmax")
-                    ])
+                        model = keras.Sequential([
+                            layers.Input(shape=(X_k_train.shape[1],))
+                        ] + [
+                            layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
+                        ] + [
+                            layers.Dense(10, activation="softmax")
+                        ])
 
-                    if optimizer == "adam":
-                        opt = keras.optimizers.Adam(learning_rate=learning_rate)
-                    elif optimizer == "sgd":
-                        opt = keras.optimizers.SGD(learning_rate=learning_rate)
-                    else:
-                        opt = keras.optimizers.RMSprop(learning_rate=learning_rate)
-
-                    model.compile(optimizer=opt, loss=loss_fn, metrics=["accuracy"])
-
-                    start_time = time.time()
-                    history = model.fit(X_k_train, y_k_train, epochs=epochs, validation_data=(X_k_val, y_k_val), verbose=0)
-                    elapsed_time = time.time() - start_time
+                        opt = keras.optimizers.Adam(learning_rate=learning_rate) if optimizer == "adam" else (
+                            keras.optimizers.SGD(learning_rate=learning_rate) if optimizer == "sgd" else keras.optimizers.RMSprop(learning_rate=learning_rate)
+                        )
+                        
+                        model.compile(optimizer=opt, loss=loss_fn, metrics=["accuracy"])
+                        model.fit(X_k_train, y_k_train, epochs=epochs, validation_data=(X_k_val, y_k_val), verbose=0)
+                        
+                        progress_percent = int((num / k_folds)*100)
+                        training_progress.progress(progress_percent)
+                        training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")
                     
-                    accuracies.append(history.history["val_accuracy"][-1])
-                    losses.append(history.history["val_loss"][-1])
-                    num += 1
-                    progress_percent = int((num / k_folds)*100)
+                    pseudo_preds = model.predict(X_unlabeled)
+                    pseudo_labels = np.argmax(pseudo_preds, axis=1)
+                    confidence_scores = np.max(pseudo_preds, axis=1)
+                    confident_mask = confidence_scores > 0.95
                     
-                 
-                    training_progress.progress(progress_percent)
-                    training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")
-                    st.write(num,k_folds,progress_percent)
-                avg_val_accuracy = np.mean(accuracies)
-                avg_val_loss = np.mean(losses)
+                    X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
+                    y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
+                    X_unlabeled = X_unlabeled[~confident_mask]
+                    
+                    training_progress.progress(100)
+                    training_status.text("✅ Vòng lặp hoàn tất! Đang chuyển sang vòng tiếp theo...")
+                    time.sleep(1)
+                    training_progress.progress(0)
+                    
+                    if len(X_unlabeled) == 0:
+                        break
                 
-                mlflow.log_metrics({
-                    "avg_val_accuracy": avg_val_accuracy,
-                    "avg_val_loss": avg_val_loss,
-                    "elapsed_time": elapsed_time
-                })
+                test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
+                mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
+                mlflow.end_run()
+                st.session_state["trained_model"] = model
+                training_progress.progress(100)
+                training_status.text("✅ Huấn luyện hoàn tất!")
                 
-                # Pseudo-labeling: Gán nhãn cho dữ liệu chưa nhãn nếu confidence cao
-                pseudo_preds = model.predict(X_unlabeled)
-                pseudo_labels = np.argmax(pseudo_preds, axis=1)
-                confidence_scores = np.max(pseudo_preds, axis=1)
-                confident_mask = confidence_scores > 0.95  # Ngưỡng tin cậy
-                
-                X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
-                y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
-                X_unlabeled = X_unlabeled[~confident_mask]
-                
-                if len(X_unlabeled) == 0:
-                    break
-            
-            test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
-            mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
-            mlflow.end_run()
-            st.session_state["trained_model"] = model
-            training_progress.progress(100)
-            training_status.text("✅ Huấn luyện hoàn tất!")
-
-            st.success(f"✅ Huấn luyện hoàn tất!")
-            st.write(f"📊 **Độ chính xác trung bình trên tập validation:** {avg_val_accuracy:.4f}")
-            st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
-            st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** trong MLflow (Neural_Network)! 🚀")
-            st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
+                st.success(f"✅ Huấn luyện hoàn tất!")
+                st.write(f"📊 **Độ chính xác trên tập validation:** {np.mean(test_accuracy):.4f}")
+                st.write(f"📊 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
+                st.write(f"📊 **Tỷ lệ mẫu gán nhãn giả thành công:** {len(y_labeled) / (len(y_labeled) + len(X_unlabeled)):.4f}")
+                st.write(f"📊 **Độ tin cậy trung bình của nhãn giả:** {np.mean(confidence_scores[confident_mask]) if confident_mask.any() else 0:.4f}")
+                st.success(f"✅ Đã log dữ liệu cho **{st.session_state['run_name']}** trong MLflow (Neural_Network)! 🚀")
+                st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
 
                 
