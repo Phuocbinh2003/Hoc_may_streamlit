@@ -322,6 +322,12 @@ def thi_nghiem():
                 num_pseudo_added = np.sum(confident_mask)
                 total_pseudo_labels += num_pseudo_added
 
+                # Đánh giá độ chính xác của nhãn giả
+                if num_pseudo_added > 0:
+                    pseudo_accuracy = np.mean(pseudo_labels[confident_mask] == y_train[unlabeled_idx][confident_mask])
+                else:
+                    pseudo_accuracy = 0.0
+
                 X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
                 y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
                 X_unlabeled = X_unlabeled[~confident_mask]
@@ -329,8 +335,10 @@ def thi_nghiem():
                 st.write(f"📢 **Vòng lặp {iteration+1}:**")
                 st.write(f"- Số pseudo labels mới thêm: {num_pseudo_added}")
                 st.write(f"- Tổng số pseudo labels: {total_pseudo_labels}")
+                st.write(f"- Độ chính xác của pseudo labels: {pseudo_accuracy:.4f}")
                 st.write(f"- Số lượng dữ liệu chưa gán nhãn còn lại: {len(X_unlabeled)}")
                 st.write("---")
+
 
                 if len(X_unlabeled) == 0:
                     break
