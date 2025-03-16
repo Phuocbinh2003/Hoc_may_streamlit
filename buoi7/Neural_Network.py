@@ -83,12 +83,12 @@ def explain_nn():
 
     st.markdown("#### 1️⃣ Lan truyền thuận (Forward Propagation)")
     st.markdown("- Input đi qua từng lớp nơ-ron, tính toán đầu ra:")
-    st.latex(r"a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)})")
+    st.latex(r"f^{(l)} = \sigma(W^{(l)} f^{(l-1)} + b^{(l)})")
 
     st.markdown("Trong đó:")
-    st.markdown(r"- $$ a^{(l)} $$: Đầu ra của lớp thứ $$l $$.")
+    st.markdown(r"- $$ f^{(l)} $$: Đầu ra của lớp thứ $$l $$.")
     st.markdown(r"- $$ W^{(l)} $$: Ma trận trọng số giữa lớp $$l-1 $$ và lớp $$ l $$.")
-    st.markdown(r"- $$ a^{(l-1)} $$: Đầu ra của lớp trước đó (hoặc là đầu vào nếu $$ l = 1 $$).")
+    st.markdown(r"- $$ f^{(l-1)} $$: Đầu ra của lớp trước đó (hoặc là đầu vào nếu $$ l = 1 $$).")
     st.markdown(r"- $$b^{(l)} $$: Bias của lớp $$ l $$.")
     st.markdown(r"- $$ \sigma(z) $$: Hàm kích hoạt (ReLU, Sigmoid, Tanh,...).")
 
