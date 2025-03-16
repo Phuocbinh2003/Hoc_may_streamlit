@@ -415,11 +415,10 @@ def train():
             
             # 🏆 **Huấn luyện với Cross Validation**
             # st.write("⏳ Đang chạy Cross-Validation...")
-            for fold in range(n_folds):
-                progress_percent = int((num / n_folds) * 99)  # Tính phần trăm tiến trình
-                training_progress.progress(progress_percent)  # Cập nhật thanh tiến trình
-                training_status.text(f"⏳ Đang huấn luyện... {progress_percent}%")  # Cập nhật trạng thái
-                num += 1  # Tăng biến đếm
+            for num in range(1, 99):  # Tăng từ 1% đến 99%
+                training_progress.progress(num)
+                training_status.text(f"⏳ Đang huấn luyện... {num}%")
+                time.sleep(1)  # Chờ 1 giây trước khi cập nhật
             
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
             mean_cv_score = cv_scores.mean()
