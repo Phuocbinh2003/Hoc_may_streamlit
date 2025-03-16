@@ -80,7 +80,7 @@ def show_prediction_table():
     })
 
 def explain_Pseudo_Labelling():
-    st.image("buoi8/img1.png", caption="Các bước Pseudo Labelling", use_container_width =True)
+    st.image("buoi8/img1.png", caption="Các bước Pseudo Labelling", use_container_width ="auto")
     
     st.markdown("## 📚 Lý thuyết về Pseudo Labelling")
     st.write("""
