@@ -185,14 +185,14 @@ def explain_tsne():
          - t-SNE liên tục điều chỉnh tọa độ của các điểm $$ y_i $$ trong không gian giảm chiều để giảm KL divergence, giúp bảo toàn cấu trúc dữ liệu.
 
     ---
-     ### 📊 **Trực quan hóa quá trình t-SNE**  
-    Dưới đây là minh họa cách t-SNE biến đổi dữ liệu từ không gian gốc sang không gian giảm chiều:  
+         ### 📊 **Trực quan hóa quá trình t-SNE**  
+        Dưới đây là minh họa cách t-SNE biến đổi dữ liệu từ không gian gốc sang không gian giảm chiều:  
     
 
-    # Hiển thị hình minh họa về t-SNE
-    st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
+        # Hiển thị hình minh họa về t-SNE
+   
        """)
-    
+     st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
 
 
 
