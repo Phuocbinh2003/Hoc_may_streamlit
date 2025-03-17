@@ -397,6 +397,20 @@ def train():
         training_status = st.empty()  # Hiển thị trạng thái
         
         num = 0
+        stop_flag = False 
+        def update_progress():
+            """Cập nhật progress trong một luồng riêng."""
+            nonlocal num
+            while num < 99 and not stop_flag:
+                num += 1
+                training_progress.progress(num)
+                training_status.text(f"⏳ Đang huấn luyện... {num}%")
+                time.sleep(1)  # Cập nhật mỗi giây
+    
+        # Khởi động luồng chạy progress song song với việc huấn luyện
+        progress_thread = threading.Thread(target=update_progress)
+        progress_thread.start()
+        
         with mlflow.start_run(run_name=f"Train_{st.session_state['run_name']}"):
             
             mlflow.log_param("test_size", st.session_state.test_size)
@@ -415,10 +429,10 @@ def train():
             
             # 🏆 **Huấn luyện với Cross Validation**
             # st.write("⏳ Đang chạy Cross-Validation...")
-            for num in range(1, 99):  # Tăng từ 1% đến 99%
-                training_progress.progress(num)
-                training_status.text(f"⏳ Đang huấn luyện... {num}%")
-                time.sleep(0.1)  # Chờ 1 giây trước khi cập nhật
+            # for num in range(1, 99):  # Tăng từ 1% đến 99%
+            #     training_progress.progress(num)
+            #     training_status.text(f"⏳ Đang huấn luyện... {num}%")
+            #     time.sleep(0.1)  # Chờ 1 giây trước khi cập nhật
             
             cv_scores = cross_val_score(model, X_train, y_train, cv=n_folds)
             mean_cv_score = cv_scores.mean()
@@ -430,6 +444,8 @@ def train():
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             acc = accuracy_score(y_test, y_pred)
+
+            
             training_progress.progress(100)
             training_status.text(f"⏳ Đang huấn luyện... {100}%")
             st.success(f"✅ Độ chính xác trên test set: {acc:.4f}")
