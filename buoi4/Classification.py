@@ -582,11 +582,13 @@ def du_doan():
             prediction = model.predict(img)
     
             # 🔍 Kiểm tra model có `predict_proba()` không
-            if hasattr(model, "predict_proba"):
-                confidence_scores = model.predict_proba(img)
-            else:
-                confidence_scores = np.ones((1, 10)) / 10  # Nếu không có, gán xác suất đều
-    
+            if hasattr(model, "predict_proba"):  
+                confidence_scores = model.predict_proba(img)  # Decision Tree
+            elif hasattr(model, "decision_function"):  
+                confidence_scores = model.decision_function(img)  # SVM
+                confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores))  # Softmax
+
+                
             predicted_number = prediction[0]
             max_confidence = np.max(confidence_scores)
     
