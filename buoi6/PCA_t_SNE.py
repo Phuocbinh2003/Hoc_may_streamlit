@@ -194,34 +194,34 @@ def explain_tsne():
     # # Hiển thị hình minh họa về t-SNE
     # st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
 
-    # Dữ liệu MNIST cho t-SNE
-    st.write("### 📊 Trực quan hóa t-SNE trên dữ liệu MNIST")
-    st.write("Dữ liệu MNIST gồm 70,000 ảnh chữ số viết tay (0-9). Chúng ta sẽ giảm chiều từ 784 xuống 2D bằng t-SNE.")
+    # # Dữ liệu MNIST cho t-SNE
+    # st.write("### 📊 Trực quan hóa t-SNE trên dữ liệu MNIST")
+    # st.write("Dữ liệu MNIST gồm 70,000 ảnh chữ số viết tay (0-9). Chúng ta sẽ giảm chiều từ 784 xuống 2D bằng t-SNE.")
 
-    mnist = fetch_openml('mnist_784', version=1)
-    X = mnist.data.astype(np.float32)
-    y = mnist.target.astype(int)
+    # mnist = fetch_openml('mnist_784', version=1)
+    # X = mnist.data.astype(np.float32)
+    # y = mnist.target.astype(int)
 
-    # Chuẩn hóa dữ liệu
-    X = StandardScaler().fit_transform(X)
+    # # Chuẩn hóa dữ liệu
+    # X = StandardScaler().fit_transform(X)
 
-    # Giảm chiều trước với PCA để tăng tốc độ
-    pca = PCA(n_components=50)
-    X_pca = pca.fit_transform(X)
+    # # Giảm chiều trước với PCA để tăng tốc độ
+    # pca = PCA(n_components=50)
+    # X_pca = pca.fit_transform(X)
 
-    # Áp dụng t-SNE
-    tsne = TSNE(n_components=2, perplexity=30, random_state=42)
-    X_tsne = tsne.fit_transform(X_pca[:5000])  # Lấy 5000 điểm để tăng tốc
+    # # Áp dụng t-SNE
+    # tsne = TSNE(n_components=2, perplexity=30, random_state=42)
+    # X_tsne = tsne.fit_transform(X_pca[:5000])  # Lấy 5000 điểm để tăng tốc
 
-    # Vẽ biểu đồ
-    fig, ax = plt.subplots(figsize=(8, 6))
-    scatter = ax.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y[:5000], cmap='tab10', alpha=0.6)
-    legend = ax.legend(*scatter.legend_elements(), title="Chữ số", loc="best")
-    ax.add_artist(legend)
-    ax.set_title("Biểu diễn t-SNE của bộ dữ liệu MNIST")
+    # # Vẽ biểu đồ
+    # fig, ax = plt.subplots(figsize=(8, 6))
+    # scatter = ax.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y[:5000], cmap='tab10', alpha=0.6)
+    # legend = ax.legend(*scatter.legend_elements(), title="Chữ số", loc="best")
+    # ax.add_artist(legend)
+    # ax.set_title("Biểu diễn t-SNE của bộ dữ liệu MNIST")
 
-    # Hiển thị hình ảnh trong Streamlit
-    st.pyplot(fig)
+    # # Hiển thị hình ảnh trong Streamlit
+    # st.pyplot(fig)
 
     # Kết luận
     st.markdown(r"""
