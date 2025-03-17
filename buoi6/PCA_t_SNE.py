@@ -5,7 +5,6 @@ import plotly.express as px
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.datasets import fetch_openml
-
 def explain_pca():
     st.markdown("## 🧠 PCA ")
 
