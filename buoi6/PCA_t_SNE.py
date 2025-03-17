@@ -192,7 +192,7 @@ def explain_tsne():
         # Hiển thị hình minh họa về t-SNE
    
        """)
-     st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
+    st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
 
 
 
