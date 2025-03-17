@@ -141,9 +141,12 @@ def explain_pca():
     
 
 import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.manifold import TSNE
+from sklearn.datasets import fetch_openml
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 def explain_tsne():
     st.markdown(r"""
     ## 🌌 t-Distributed Stochastic Neighbor Embedding (t-SNE)
