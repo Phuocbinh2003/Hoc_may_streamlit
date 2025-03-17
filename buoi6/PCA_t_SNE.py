@@ -323,7 +323,7 @@ def thi_nghiem():
             mlflow.log_artifact(f"logs/{method}_X_reduced.npy")
             
             mlflow.end_run()
-            st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
+            st.success(f"✅ Đã log dữ liệu cho Experiments PCA_t-SNE Name **Train_{st.session_state['run_name']}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
             st.success("Hoàn thành!")
 
