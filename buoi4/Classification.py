@@ -580,10 +580,15 @@ def du_doan():
 
             # Dự đoán số
             prediction = model.predict(img)
-            confidence_scores = model.decision_function(img)  # Lấy điểm số tin cậy
+            if hasattr(model, "decision_function"):
+                confidence_scores = model.decision_function(img)
+                confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores))  
+            else:
+                confidence_scores = model.predict_proba(img)
+            # confidence_scores = model.decision_function(img)  # Lấy điểm số tin cậy
 
             # Chuyển đổi điểm số tin cậy thành xác suất tương đối
-            confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores)) 
+            # confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores)) 
 
             predicted_number = prediction[0]
             max_confidence = np.max(confidence_scores)
