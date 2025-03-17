@@ -446,9 +446,7 @@ def train():
             acc = accuracy_score(y_test, y_pred)
 
             
-            training_progress.progress(100)
-            training_status.text(f"⏳ Đang huấn luyện... {100}%")
-            st.success(f"✅ Độ chính xác trên test set: {acc:.4f}")
+            
 
             # 📝 Ghi log vào MLflow
             mlflow.log_param("model", model_choice)
@@ -481,7 +479,11 @@ def train():
                 new_model_name = f"{model_name}_{count}"
             model_name = new_model_name
             st.warning(f"⚠️ Mô hình được lưu với tên: {model_name}")
-
+            
+        training_progress.progress(100)
+        training_status.text(f"⏳ Đang huấn luyện... {100}%")
+        st.success(f"✅ Độ chính xác trên test set: {acc:.4f}
+        
         st.session_state["models"].append({"name": model_name, "model": model})
         st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
         st.write(f"Tổng số mô hình hiện tại: {len(st.session_state['models'])}")
@@ -491,6 +493,10 @@ def train():
         model_names = [model["name"] for model in st.session_state["models"]]
         st.write(", ".join(model_names))
 
+        
+
+
+        
         st.success(f"✅ Đã log dữ liệu cho **Train_{st.session_state['run_name']}**!")
         st.markdown(f"🔗 [Truy cập MLflow UI]({st.session_state['mlflow_url']})")
 
