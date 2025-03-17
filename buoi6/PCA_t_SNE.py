@@ -146,13 +146,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 def explain_tsne():
-    
     st.markdown(r"""
     ## 🌌 t-Distributed Stochastic Neighbor Embedding (t-SNE)
     t-SNE là một phương pháp giảm chiều mạnh mẽ, giúp hiển thị dữ liệu đa chiều trên mặt phẳng 2D hoặc không gian 3D bằng cách bảo toàn mối quan hệ giữa các điểm gần nhau.
 
     ---
-    
+
     ### 🔹 **Nguyên lý hoạt động của t-SNE**
     
     1️⃣ **Tính xác suất điểm gần nhau trong không gian gốc**  
@@ -163,51 +162,88 @@ def explain_tsne():
        - Trong đó:
          - $$ \sigma $$ là độ lệch chuẩn (bandwidth) của Gaussian Kernel.
          - Xác suất này phản ánh mức độ gần gũi của các điểm dữ liệu trong không gian ban đầu.
-      
+         - **Ý nghĩa:** Nếu hai điểm gần nhau trong dữ liệu gốc, xác suất $$ p_{j|i} $$ sẽ lớn.
+
     2️⃣ **Tính xác suất trong không gian giảm chiều (2D/3D)**  
        - Trong không gian giảm chiều, t-SNE sử dụng phân phối t-Student với một mức độ tự do để giữ khoảng cách giữa các điểm:  
        $$ 
        q_{j|i} = \frac{(1 + \| y_i - y_j \|^2)^{-1}}{\sum_{k \neq i} (1 + \| y_i - y_k \|^2)^{-1}}
        $$  
-       - Ý nghĩa:
-         - Phân phối t-Student giúp giảm tác động của các điểm xa nhau, tạo ra cụm dữ liệu rõ hơn.
-      
+       - **Ý nghĩa:**  
+         - Phân phối t-Student có đuôi dài hơn so với Gaussian, giúp dữ liệu bị kéo xa nhau một cách tự nhiên.
+         - Điều này giúp tạo ra cụm dữ liệu tách biệt rõ ràng hơn.
+
     3️⃣ **Tối ưu hóa khoảng cách giữa $$ p_{j|i} $$ và $$ q_{j|i} $$**  
        - t-SNE cố gắng làm cho phân phối xác suất trong không gian gốc gần bằng trong không gian mới bằng cách tối thiểu hóa **hàm mất mát Kullback-Leibler (KL divergence)**:  
        $$ 
        KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
        $$  
-       - Ý nghĩa:
-         - Nếu $$ P $$và $$ Q $$ giống nhau, KL divergence sẽ nhỏ.
-         - t-SNE cập nhật tọa độ $$y_i $$ để giảm KL divergence, giúp bảo toàn cấu trúc dữ liệu.
+       - **Ý nghĩa:**  
+         - Nếu phân phối $$ P $$ (không gian gốc) và $$ Q $$ (không gian t-SNE) giống nhau, KL divergence sẽ nhỏ.  
+         - t-SNE liên tục điều chỉnh tọa độ của các điểm $$ y_i $$ trong không gian giảm chiều để giảm KL divergence, giúp bảo toàn cấu trúc dữ liệu.
 
     ---
-    
+
     ### 📊 **Trực quan hóa quá trình t-SNE**  
     Dưới đây là minh họa cách t-SNE biến đổi dữ liệu từ không gian gốc sang không gian giảm chiều:  
     """)
 
-    # Trực quan hóa bằng biểu đồ matplotlib
-    
+    # Hiển thị hình minh họa về t-SNE
+    st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
 
-    
-    st.image("buoi6/img2.png")  # Đường dẫn cần đúng
+    # Dữ liệu MNIST cho t-SNE
+    st.write("### 📊 Trực quan hóa t-SNE trên dữ liệu MNIST")
+    st.write("Dữ liệu MNIST gồm 70,000 ảnh chữ số viết tay (0-9). Chúng ta sẽ giảm chiều từ 784 xuống 2D bằng t-SNE.")
 
+    mnist = fetch_openml('mnist_784', version=1)
+    X = mnist.data.astype(np.float32)
+    y = mnist.target.astype(int)
+
+    # Chuẩn hóa dữ liệu
+    X = StandardScaler().fit_transform(X)
+
+    # Giảm chiều trước với PCA để tăng tốc độ
+    pca = PCA(n_components=50)
+    X_pca = pca.fit_transform(X)
+
+    # Áp dụng t-SNE
+    tsne = TSNE(n_components=2, perplexity=30, random_state=42)
+    X_tsne = tsne.fit_transform(X_pca[:5000])  # Lấy 5000 điểm để tăng tốc
+
+    # Vẽ biểu đồ
+    fig, ax = plt.subplots(figsize=(8, 6))
+    scatter = ax.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y[:5000], cmap='tab10', alpha=0.6)
+    legend = ax.legend(*scatter.legend_elements(), title="Chữ số", loc="best")
+    ax.add_artist(legend)
+    ax.set_title("Biểu diễn t-SNE của bộ dữ liệu MNIST")
+
+    # Hiển thị hình ảnh trong Streamlit
+    st.pyplot(fig)
+
+    # Kết luận
     st.markdown(r"""
     ---
     
     ### ✅ **Ưu điểm của t-SNE**
     - Tạo cụm dữ liệu rõ ràng, dễ quan sát.
     - Giữ được mối quan hệ phi tuyến tính trong dữ liệu.
+    - Hiệu quả trong việc **trực quan hóa dữ liệu nhiều chiều**.
 
     ### ❌ **Nhược điểm của t-SNE**
     - Chạy chậm hơn PCA, đặc biệt với dữ liệu lớn.
     - Nhạy cảm với tham số **perplexity** (nếu chọn sai có thể gây méo mó dữ liệu).
+    - Không bảo toàn khoảng cách toàn cục (chỉ bảo toàn quan hệ giữa các điểm gần nhau).
 
     ---
-    
+
     📌 **Ghi nhớ:**  
-    - t-SNE phù hợp để **trực quan hóa dữ liệu**, nhưng **không phù hợp cho giảm chiều phục vụ mô hình học máy** (do không bảo toàn cấu trúc tổng thể của dữ liệu).  
+    - t-SNE **không phù hợp cho các bài toán giảm chiều trước khi huấn luyện mô hình học máy**, vì nó **không bảo toàn cấu trúc tổng thể của dữ liệu**.  
+    - Nó chủ yếu dùng để **trực quan hóa dữ liệu nhiều chiều**, giúp con người hiểu rõ hơn về cấu trúc của dữ liệu.
+
+    🎯 **Ứng dụng thực tế:**  
+    - Trực quan hóa dữ liệu hình ảnh (MNIST, CIFAR).  
+    - Phân cụm dữ liệu văn bản.  
+    - Phát hiện bất thường (anomaly detection).  
     """)
 
 import mlflow
