@@ -482,7 +482,7 @@ def train():
             
         training_progress.progress(100)
         training_status.text(f"⏳ Đang huấn luyện... {100}%")
-        st.success(f"✅ Độ chính xác trên test set: {acc:.4f}
+        st.success(f"✅ Độ chính xác trên test set: {acc:.4f}")
         
         st.session_state["models"].append({"name": model_name, "model": model})
         st.write(f"🔹 Mô hình đã được lưu với tên: {model_name}")
