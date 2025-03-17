@@ -577,22 +577,19 @@ def du_doan():
 
         if img is not None:
             st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
-
+    
             # Dự đoán số
             prediction = model.predict(img)
-            if hasattr(model, "decision_function"):
-                confidence_scores = model.decision_function(img)
-                confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores))  
-            else:
+    
+            # 🔍 Kiểm tra model có `predict_proba()` không
+            if hasattr(model, "predict_proba"):
                 confidence_scores = model.predict_proba(img)
-            # confidence_scores = model.decision_function(img)  # Lấy điểm số tin cậy
-
-            # Chuyển đổi điểm số tin cậy thành xác suất tương đối
-            # confidence_scores = np.exp(confidence_scores) / np.sum(np.exp(confidence_scores)) 
-
+            else:
+                confidence_scores = np.ones((1, 10)) / 10  # Nếu không có, gán xác suất đều
+    
             predicted_number = prediction[0]
             max_confidence = np.max(confidence_scores)
-
+    
             st.subheader(f"🔢 Dự đoán: {predicted_number}")
             st.write(f"📊 Mức độ tin cậy (ước lượng): {max_confidence:.2%}")
 
