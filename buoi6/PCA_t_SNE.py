@@ -433,6 +433,7 @@ def pca_tsne():
         explain_tsne()
     
     with tab3:
+        input_mlflow()
         thi_nghiem()
     with tab4:
         show_experiment_selector()
