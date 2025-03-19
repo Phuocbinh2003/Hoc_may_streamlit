@@ -352,7 +352,7 @@ def thi_nghiem():
                 st.write(f"Số lượng dữ liệu chưa gán nhãn còn lại sau vòng {iteration+1}: {len(X_unlabeled)}")
 
                 st.write(f"📢 **Vòng lặp {iteration+1}:**")
-                
+                st.write(f"- Số pseudo labels mới thêm: {num_pseudo_added}")
                 st.write(f"- Tổng số pseudo labels: {total_pseudo_labels}")
                 
                 # st.write(f"- 🔥 **Độ chính xác trên tập validation:** {val_accuracy:.4f}")
