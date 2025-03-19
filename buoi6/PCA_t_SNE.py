@@ -162,7 +162,7 @@ def explain_tsne():
     Trong không gian ban đầu (high-dimensional space), t-SNE sử dụng phân phối Gaussian để xác định mức độ gần gũi giữa các điểm dữ liệu.  
     
         """)
-    st.image("buoi6/download (10).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
+    st.image("buoi6/download (10).png", caption="Minh họa quá trình t-SNE", use_container_width =True)
     st.markdown(r"""
     - Với mỗi điểm \( x_i \), xác suất có điều kiện giữa \( x_i \) và \( x_j \) được tính theo công thức:  
     \[
@@ -193,7 +193,7 @@ def explain_tsne():
     """)
     
     
-    st.image("buoi6/download (11).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
+    st.image("buoi6/download (11).png", caption="Minh họa quá trình t-SNE", use_container_width =True)
     st.markdown(r"""
     \[
     KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
@@ -213,7 +213,7 @@ def explain_tsne():
     Hình dưới đây minh họa cách dữ liệu được biến đổi từ không gian nhiều chiều về không gian thấp hơn trong quá trình tối ưu hóa:  
     """)
 
-    st.image("buoi6/download (12).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
+    st.image("buoi6/download (12).png", caption="Minh họa quá trình t-SNE", use_container_width =True)
 
     st.markdown(r"""
     ---
