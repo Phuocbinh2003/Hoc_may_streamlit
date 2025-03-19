@@ -323,6 +323,12 @@ def thi_nghiem():
 
                 num_pseudo_added = np.sum(confident_mask)
                 total_pseudo_labels += num_pseudo_added
+                
+                
+                
+                # Lưu các mẫu pseudo-labels để visualize
+                X_pseudo = X_unlabeled[confident_mask][:10]  # Lấy 10 mẫu có độ tin cậy cao nhất
+                y_pseudo = pseudo_labels[confident_mask][:10]
 
                 X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
                 y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
@@ -331,11 +337,24 @@ def thi_nghiem():
                 # Đánh giá mô hình trên tập validation và test sau khi gán nhãn giả
                 #val_loss, val_accuracy = model.evaluate(X_val, y_val, verbose=0)
                 test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
+                st.write(f"Số lượng mẫu pseudo-label có độ tin cậy cao: {len(X_pseudo)}")
+                
+                if len(X_pseudo) > 0:
+                    fig, axes = plt.subplots(2, 5, figsize=(10, 4))
+                    for i, ax in enumerate(axes.flat[:len(X_pseudo)]):
+                        ax.imshow(X_pseudo[i].reshape(28, 28), cmap='gray')
+                        ax.set_title(f"Label: {y_pseudo[i]}")
+                        ax.axis("off")
+                    st.pyplot(fig)
+                else:
+                    st.warning("⚠️ Không có mẫu pseudo-label nào đạt ngưỡng tin cậy để hiển thị.")
+                
+                st.write(f"Số lượng dữ liệu chưa gán nhãn còn lại sau vòng {iteration+1}: {len(X_unlabeled)}")
 
                 st.write(f"📢 **Vòng lặp {iteration+1}:**")
-                st.write(f"- Số pseudo labels mới thêm: {num_pseudo_added}")
+                
                 st.write(f"- Tổng số pseudo labels: {total_pseudo_labels}")
-                st.write(f"- Số lượng dữ liệu chưa gán nhãn còn lại: {len(X_unlabeled)}")
+                
                 # st.write(f"- 🔥 **Độ chính xác trên tập validation:** {val_accuracy:.4f}")
                 st.write(f"- 🚀 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
                 st.write("---")
@@ -351,7 +370,8 @@ def thi_nghiem():
             test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
             mlflow.end_run()
-            st.session_state["trained_model"] = model
+            st.session_state[f"trained_model_{st.session_state['run_name']}"] = model
+
             training_progress.progress(100)
             training_status.text("✅ Huấn luyện hoàn tất!")
 
@@ -389,13 +409,19 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # 📥 Load mô hình đã huấn luyện
-    if "trained_model" in st.session_state:
-        model = st.session_state["trained_model"]
-        st.success("✅ Đã sử dụng mô hình vừa huấn luyện!")
-    else:
-        st.error("⚠️ Chưa có mô hình! Hãy huấn luyện trước.")
+    # 📥 Danh sách các mô hình đã train
+    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")]
 
+    if trained_models:
+        selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
+
+        # Tải mô hình được chọn
+        model = st.session_state[selected_model_key]
+        st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
+
+    else:
+        st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
+        return  # Thoát nếu chưa có mô hình nào
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
