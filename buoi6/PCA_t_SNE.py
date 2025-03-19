@@ -165,9 +165,9 @@ def explain_tsne():
     st.image("buoi6/download (10).png", caption="Minh họa quá trình t-SNE", use_container_width =True)
     st.markdown(r"""
     - Với mỗi điểm $$ x_i $$, xác suất có điều kiện giữa $$ x_i $$ và $$ x_j $$ được tính dựa trên khoảng cách Gaussian:  
-       $$ 
-        $$ 
        
+       
+        $$ 
        p_{j|i} = \frac{\exp(-\| x_i - x_j \|^2 / 2\sigma^2)}{\sum_{k \neq i} \exp(-\| x_i - x_k \|^2 / 2\sigma^2)} 
        $$  
     
