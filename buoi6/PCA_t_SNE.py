@@ -40,7 +40,7 @@ def explain_pca():
         
         
     """)  
-    st.image("buoi6/img3.png",use_container_width ="auto", caption="Trung bình dữ liệu")   
+    st.image("buoi6/img3.png",use_container_width ="auto", caption="Trung bình dữ liệu(machinelearningcoban.com)")   
 
         
     st.markdown(r"""
@@ -51,7 +51,7 @@ def explain_pca():
     $$  
     - Khi đó, dữ liệu sẽ có giá trị trung bình bằng 0.
     """)
-    st.image("buoi6/img4.png", caption="Dịch chuyển dữ liệu về gốc tọa độ") 
+    st.image("buoi6/img4.png", caption="Dịch chuyển dữ liệu về gốc tọa độ(machinelearningcoban.com)") 
     st.markdown(r"""
     3️⃣ **Tính ma trận hiệp phương sai**  
     - Ma trận hiệp phương sai giúp đo lường mức độ biến thiên giữa các đặc trưng:  
@@ -85,7 +85,7 @@ def explain_pca():
     $$  
     - Các vector này tạo thành hệ trực giao và giúp ta biểu diễn dữ liệu tối ưu trong không gian mới.
     """)
-    st.image("buoi6/img5.png",caption="Chọn không gian con với các vector riêng") 
+    st.image("buoi6/img5.png",caption="Chọn không gian con với các vector riêng(machinelearningcoban.com)") 
     st.markdown(r"""
     6️⃣ **Chiếu dữ liệu vào không gian mới**  
     - Biểu diễn dữ liệu trong hệ trục mới bằng cách nhân dữ liệu chuẩn hóa với ma trận $$( U_K )$$:  
@@ -94,14 +94,14 @@ def explain_pca():
     $$  
     - Dữ liệu mới $$ X_{\text{new}} $$ có số chiều ít hơn nhưng vẫn giữ được nhiều thông tin quan trọng.
     """)
-    st.image("buoi6/img6.png", caption="Chiếu dữ liệu vào không gian mới") 
+    st.image("buoi6/img6.png", caption="Chiếu dữ liệu vào không gian mới(machinelearningcoban.com)") 
 
     st.markdown(r"""
     7️⃣ **Dữ liệu mới chính là tọa độ của các điểm trong không gian mới.**  
     - Mỗi điểm dữ liệu giờ đây được biểu diễn bằng các thành phần chính thay vì các đặc trưng ban đầu.
 
     """)
-    st.image("buoi6/img7.png", caption="Dữ liệu mới sau PCA") 
+    st.image("buoi6/img7.png", caption="Dữ liệu mới sau PCA(machinelearningcoban.com)") 
     
 
 
@@ -153,46 +153,75 @@ def explain_tsne():
     t-SNE là một phương pháp giảm chiều mạnh mẽ, giúp hiển thị dữ liệu đa chiều trên mặt phẳng 2D hoặc không gian 3D bằng cách bảo toàn mối quan hệ giữa các điểm gần nhau.
 
     ---
+    """)
+    st.markdown(r"""
+    # 🔹 Nguyên lý hoạt động của t-SNE
 
-    ### 🔹 **Nguyên lý hoạt động của t-SNE**
+    ## 1️⃣ Tính xác suất lân cận trong không gian gốc  
     
-    1️⃣ **Tính xác suất điểm gần nhau trong không gian gốc**  
-       - Với mỗi điểm $$ x_i $$, xác suất có điều kiện giữa $$ x_i $$ và $$ x_j $$ được tính dựa trên khoảng cách Gaussian:  
-       $$ 
-       p_{j|i} = \frac{\exp(-\| x_i - x_j \|^2 / 2\sigma^2)}{\sum_{k \neq i} \exp(-\| x_i - x_k \|^2 / 2\sigma^2)} 
-       $$  
-       - Trong đó:
-         - $$ \sigma $$ là độ lệch chuẩn (bandwidth) của Gaussian Kernel.
-         - Xác suất này phản ánh mức độ gần gũi của các điểm dữ liệu trong không gian ban đầu.
-         - **Ý nghĩa:** Nếu hai điểm gần nhau trong dữ liệu gốc, xác suất $$ p_{j|i} $$ sẽ lớn.
+    Trong không gian ban đầu (high-dimensional space), t-SNE sử dụng phân phối Gaussian để xác định mức độ gần gũi giữa các điểm dữ liệu.  
+    
+        """)
+    st.image("buoi6/download (10).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
+    st.markdown(r"""
+    - Với mỗi điểm \( x_i \), xác suất có điều kiện giữa \( x_i \) và \( x_j \) được tính theo công thức:  
+    \[
+    p_{j|i} = \frac{\exp(-\| x_i - x_j \|^2 / 2\sigma^2)}{\sum_{k \neq i} \exp(-\| x_i - x_k \|^2 / 2\sigma^2)}
+    \]
+    
+    Trong đó:  
+    - \( \sigma \) là độ lệch chuẩn (bandwidth) của Gaussian Kernel, điều chỉnh phạm vi ảnh hưởng của mỗi điểm.  
+    - Xác suất này phản ánh mức độ gần gũi của các điểm dữ liệu trong không gian ban đầu.  
 
-    2️⃣ **Tính xác suất trong không gian giảm chiều (2D/3D)**  
-       - Trong không gian giảm chiều, t-SNE sử dụng phân phối t-Student với một mức độ tự do để giữ khoảng cách giữa các điểm:  
-       $$ 
-       q_{j|i} = \frac{(1 + \| y_i - y_j \|^2)^{-1}}{\sum_{k \neq i} (1 + \| y_i - y_k \|^2)^{-1}}
-       $$  
-       - **Ý nghĩa:**  
-         - Phân phối t-Student có đuôi dài hơn so với Gaussian, giúp dữ liệu bị kéo xa nhau một cách tự nhiên.
-         - Điều này giúp tạo ra cụm dữ liệu tách biệt rõ ràng hơn.
+    **Ý nghĩa:**  
+    - Nếu hai điểm gần nhau, xác suất \( p_{j|i} \) sẽ cao.  
+    - Ngược lại, nếu hai điểm xa nhau, xác suất này sẽ nhỏ.  
 
-    3️⃣ **Tối ưu hóa khoảng cách giữa $$ p_{j|i} $$ và $$ q_{j|i} $$**  
-       - t-SNE cố gắng làm cho phân phối xác suất trong không gian gốc gần bằng trong không gian mới bằng cách tối thiểu hóa **hàm mất mát Kullback-Leibler (KL divergence)**:  
-       $$ 
-       KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
-       $$  
-       - **Ý nghĩa:**  
-         - Nếu phân phối $$ P $$ (không gian gốc) và $$ Q $$ (không gian t-SNE) giống nhau, KL divergence sẽ nhỏ.  
-         - t-SNE liên tục điều chỉnh tọa độ của các điểm $$ y_i $$ trong không gian giảm chiều để giảm KL divergence, giúp bảo toàn cấu trúc dữ liệu.
+    ## 2️⃣ Tính xác suất trong không gian giảm chiều (2D/3D)  
+    Sau khi chọn số chiều mục tiêu (thường là 2D hoặc 3D để trực quan hóa), t-SNE xây dựng một phân phối xác suất mới dựa trên tọa độ của điểm dữ liệu trong không gian giảm chiều. Tuy nhiên, thay vì sử dụng phân phối Gaussian, t-SNE sử dụng phân phối **t-Student với một bậc tự do**:  
+
+    \[
+    q_{j|i} = \frac{(1 + \| y_i - y_j \|^2)^{-1}}{\sum_{k \neq i} (1 + \| y_i - y_k \|^2)^{-1}}
+    \]
+
+    **Tại sao dùng t-Student thay vì Gaussian?**  
+    - Phân phối t-Student có đuôi dài hơn so với Gaussian. Điều này giúp duy trì khoảng cách xa giữa các điểm, tránh hiện tượng co cụm dữ liệu quá mức.  
+    - Nhờ đó, các cụm dữ liệu tách biệt rõ ràng hơn, giúp trực quan hóa trở nên trực quan hơn.  
+
+    ## 3️⃣ Giảm thiểu sai số giữa hai phân phối \( P \) và \( Q \)  
+    Mục tiêu của t-SNE là làm cho phân phối trong không gian mới **giống với phân phối trong không gian ban đầu**. Để đo độ chênh lệch giữa hai phân phối này, t-SNE sử dụng hàm mất mát **Kullback-Leibler divergence (KL divergence)**:  
+    """)
+    
+    st.image("buoi6/download (11).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
+    st.markdown(r"""
+    \[
+    KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
+    \]
+
+    Trong đó:  
+    - \( P \) là phân phối trong không gian gốc.  
+    - \( Q \) là phân phối trong không gian t-SNE.  
+
+    **Ý nghĩa:**  
+    - Nếu \( P \) và \( Q \) giống nhau, KL divergence sẽ nhỏ.  
+    - t-SNE liên tục cập nhật vị trí của các điểm \( y_i \) để giảm KL divergence, giúp bảo toàn cấu trúc cục bộ của dữ liệu.  
 
     ---
-         ### 📊 **Trực quan hóa quá trình t-SNE**  
-        Dưới đây là minh họa cách t-SNE biến đổi dữ liệu từ không gian gốc sang không gian giảm chiều:  
-    
 
-        # Hiển thị hình minh họa về t-SNE
-   
-       """)
-    st.image("buoi6/img2.png")  # Đảm bảo đường dẫn ảnh đúng
+    ## 📊 Trực quan hóa quá trình t-SNE  
+    Hình dưới đây minh họa cách dữ liệu được biến đổi từ không gian nhiều chiều về không gian thấp hơn trong quá trình tối ưu hóa:  
+    """)
+
+    st.image("buoi6/download (12).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
+
+    st.markdown(r"""
+    ---
+
+    🔥 **Tóm tắt:**  
+    - t-SNE chuyển đổi dữ liệu từ không gian nhiều chiều sang không gian thấp hơn bằng cách tối ưu hóa sự tương đồng giữa các điểm.  
+    - Nó sử dụng **Gaussian Kernel** trong không gian gốc và **t-Student distribution** trong không gian giảm chiều.  
+    - Quá trình tối ưu hóa dựa trên **KL divergence** giúp duy trì cấu trúc cục bộ của dữ liệu, làm cho các cụm điểm trở nên rõ ràng hơn.  
+    """)
 
 
 
@@ -323,7 +352,7 @@ def thi_nghiem():
             mlflow.log_artifact(f"logs/{method}_X_reduced.npy")
             
             mlflow.end_run()
-            st.success(f"✅ Đã log dữ liệu cho Experiments PCA_t-SNE Name **Train_{st.session_state['run_name']}**!")
+            st.success(f"✅ Đã log dữ liệu cho Experiments PCA_t-SNE với Name: **Train_{st.session_state['run_name']}**!")
             st.markdown(f"### 🔗 [Truy cập MLflow DAGsHub]({st.session_state['mlflow_url']})")
             st.success("Hoàn thành!")
 
