@@ -192,6 +192,7 @@ def explain_tsne():
     Mục tiêu của t-SNE là làm cho phân phối trong không gian mới **giống với phân phối trong không gian ban đầu**. Để đo độ chênh lệch giữa hai phân phối này, t-SNE sử dụng hàm mất mát **Kullback-Leibler divergence (KL divergence)**:  
     """)
     
+    
     st.image("buoi6/download (11).png", caption="Minh họa quá trình t-SNE", use_column_width=True)
     st.markdown(r"""
     \[
