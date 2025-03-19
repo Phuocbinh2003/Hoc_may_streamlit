@@ -211,7 +211,7 @@ def explain_tsne():
 
     ---
 
-    ## 📊 Trực quan hóa quá trình t-SNE  
+    ## 📊 Kết quả quá trình t-SNE giảm chiều  
     Hình dưới đây minh họa cách dữ liệu được biến đổi từ không gian nhiều chiều về không gian thấp hơn trong quá trình tối ưu hóa:  
     """)
 
