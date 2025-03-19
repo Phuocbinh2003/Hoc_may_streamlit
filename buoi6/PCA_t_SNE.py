@@ -164,25 +164,27 @@ def explain_tsne():
         """)
     st.image("buoi6/download (10).png", caption="Minh họa quá trình t-SNE", use_container_width =True)
     st.markdown(r"""
-    - Với mỗi điểm \( x_i \), xác suất có điều kiện giữa \( x_i \) và \( x_j \) được tính theo công thức:  
-    \[
-    p_{j|i} = \frac{\exp(-\| x_i - x_j \|^2 / 2\sigma^2)}{\sum_{k \neq i} \exp(-\| x_i - x_k \|^2 / 2\sigma^2)}
-    \]
+    - Với mỗi điểm $$ x_i $$, xác suất có điều kiện giữa $$ x_i $$ và $$ x_j $$ được tính dựa trên khoảng cách Gaussian:  
+       $$ 
+        $$ 
+       
+       p_{j|i} = \frac{\exp(-\| x_i - x_j \|^2 / 2\sigma^2)}{\sum_{k \neq i} \exp(-\| x_i - x_k \|^2 / 2\sigma^2)} 
+       $$  
     
     Trong đó:  
-    - \( \sigma \) là độ lệch chuẩn (bandwidth) của Gaussian Kernel, điều chỉnh phạm vi ảnh hưởng của mỗi điểm.  
+    -  $$ \sigma $$ là độ lệch chuẩn (bandwidth) của Gaussian Kernel, điều chỉnh phạm vi ảnh hưởng của mỗi điểm.  
     - Xác suất này phản ánh mức độ gần gũi của các điểm dữ liệu trong không gian ban đầu.  
 
     **Ý nghĩa:**  
-    - Nếu hai điểm gần nhau, xác suất \( p_{j|i} \) sẽ cao.  
+    - Nếu hai điểm gần nhau, xác suất $$ p_{j|i} $$ sẽ cao.  
     - Ngược lại, nếu hai điểm xa nhau, xác suất này sẽ nhỏ.  
 
     ## 2️⃣ Tính xác suất trong không gian giảm chiều (2D/3D)  
     Sau khi chọn số chiều mục tiêu (thường là 2D hoặc 3D để trực quan hóa), t-SNE xây dựng một phân phối xác suất mới dựa trên tọa độ của điểm dữ liệu trong không gian giảm chiều. Tuy nhiên, thay vì sử dụng phân phối Gaussian, t-SNE sử dụng phân phối **t-Student với một bậc tự do**:  
 
-    \[
-    q_{j|i} = \frac{(1 + \| y_i - y_j \|^2)^{-1}}{\sum_{k \neq i} (1 + \| y_i - y_k \|^2)^{-1}}
-    \]
+    $$ 
+       q_{j|i} = \frac{(1 + \| y_i - y_j \|^2)^{-1}}{\sum_{k \neq i} (1 + \| y_i - y_k \|^2)^{-1}}
+       $$  
 
     **Tại sao dùng t-Student thay vì Gaussian?**  
     - Phân phối t-Student có đuôi dài hơn so với Gaussian. Điều này giúp duy trì khoảng cách xa giữa các điểm, tránh hiện tượng co cụm dữ liệu quá mức.  
@@ -195,17 +197,17 @@ def explain_tsne():
     
     st.image("buoi6/download (11).png", caption="Minh họa quá trình t-SNE", use_container_width =True)
     st.markdown(r"""
-    \[
-    KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
-    \]
+         $$ 
+       KL(P||Q) = \sum_{i \neq j} p_{ij} \log \frac{p_{ij}}{q_{ij}}
+       $$  
 
     Trong đó:  
-    - \( P \) là phân phối trong không gian gốc.  
-    - \( Q \) là phân phối trong không gian t-SNE.  
+    - $$ P $$  là phân phối trong không gian gốc.  
+    -  $$ Q $$ là phân phối trong không gian t-SNE.  
 
     **Ý nghĩa:**  
-    - Nếu \( P \) và \( Q \) giống nhau, KL divergence sẽ nhỏ.  
-    - t-SNE liên tục cập nhật vị trí của các điểm \( y_i \) để giảm KL divergence, giúp bảo toàn cấu trúc cục bộ của dữ liệu.  
+    - Nếu $$ P $$  và  $$ Q $$ giống nhau, KL divergence sẽ nhỏ.  
+    - t-SNE liên tục cập nhật vị trí của các điểm $$ y_i $$  để giảm KL divergence, giúp bảo toàn cấu trúc cục bộ của dữ liệu.  
 
     ---
 
