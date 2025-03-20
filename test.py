@@ -457,9 +457,10 @@ def du_doan():
     if trained_models:
         selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
 
+        if selected_model_key in st.session_state():
         # Tải mô hình được chọn
-        model = st.session_state[selected_model_key]
-        st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
+            model = st.session_state[selected_model_key]
+            st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
 
     else:
         st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
