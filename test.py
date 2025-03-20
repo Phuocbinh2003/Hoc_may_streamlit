@@ -474,7 +474,7 @@ def du_doan():
 
     # 📥 Lấy danh sách mô hình đã train từ MLflow
     client = mlflow.tracking.MlflowClient()
-    runs = client.search_runs(experiment_ids=['0'], order_by=["start_time DESC"], max_results=5)
+    runs = client.search_runs(experiment_ids=['9'], order_by=["start_time DESC"], max_results=5)
     trained_models = {run.info.run_id: run.data.tags.get("mlflow.runName", "Unknown") for run in runs}
 
     if trained_models:
