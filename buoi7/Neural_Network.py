@@ -359,7 +359,7 @@ def thi_nghiem():
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
 
             mlflow.end_run()
-            st.session_state["trained_model"] = model
+            st.session_state[f"trained_model_{st.session_state['run_name']}"] = model
 
             # Hoàn thành tiến trình
             training_progress.progress(1.0)
@@ -400,13 +400,19 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # 📥 Load mô hình đã huấn luyện
-    if "trained_model" in st.session_state:
-        model = st.session_state["trained_model"]
-        st.success("✅ Đã sử dụng mô hình vừa huấn luyện!")
-    else:
-        st.error("⚠️ Chưa có mô hình! Hãy huấn luyện trước.")
+    # 📥 Danh sách các mô hình đã train
+    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")]
 
+    if trained_models:
+        selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
+
+        # Tải mô hình được chọn
+        model = st.session_state[selected_model_key]
+        st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
+
+    else:
+        st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
+        return  # Thoát nếu chưa có mô hình nào
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
