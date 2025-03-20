@@ -271,10 +271,10 @@ def thi_nghiem():
     k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
     # num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
-    layer_neurons = []
+    neurons_per_layer = []
     for i in range(num_layers):
-        neurons = st.number_input(f"Số neuron lớp {i+1}:", 32, 512, 128, 32)
-        layer_neurons.append(neurons)
+        neurons_per_layer.append(st.slider(f"Số neuron lớp {i+1}:", 32, 512, 128, 32))
+        
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
     epochs = st.slider("🕰 Số epochs:", min_value=1, max_value=50, value=20, step=1)
@@ -289,7 +289,7 @@ def thi_nghiem():
             mlflow.start_run(run_name=run_name)
             mlflow.log_params({
                 "num_layers": num_layers,
-                "num_neurons": num_neurons,
+                "num_neurons": neurons_per_layer,
                 "activation": activation,
                 "optimizer": optimizer,
                 "learning_rate": learning_rate,
