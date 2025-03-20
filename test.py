@@ -460,6 +460,7 @@ def du_doan():
 
     selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
 
+    # ✅ Đã sửa lỗi "not callable" ở đây
     if selected_model_key not in st.session_state:
         st.error("⚠️ Mô hình không tồn tại trong session! Hãy huấn luyện lại.")
         return
