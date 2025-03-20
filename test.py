@@ -470,7 +470,7 @@ def preprocess_canvas_image(canvas_result):
     return img
 
 def du_doan():
-    st.header("✍️ Vẽ số để dự đoán")
+    st.header("✍️ Vẽ số để dự đoá")
 
     # 📥 Lấy danh sách mô hình đã train từ MLflow
     client = mlflow.tracking.MlflowClient()
