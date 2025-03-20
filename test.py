@@ -225,7 +225,9 @@ def thi_nghiem():
     st.title(f"Chọn tham số cho Neural Network ")
     k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
-    num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
+    neurons_per_layer = []
+    for i in range(num_layers):
+        neurons_per_layer.append(st.slider(f"Số neuron lớp {i+1}:", 32, 512, 128, 32))
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
     epochs = st.slider("🕰 Số epochs:", min_value=1, max_value=50, value=20, step=1)
@@ -245,7 +247,7 @@ def thi_nghiem():
             mlflow.start_run(run_name=run_name)
             mlflow.log_params({
                 "num_layers": num_layers,
-                "num_neurons": num_neurons,
+                "num_neurons": neurons_per_layer,
                 "activation": activation,
                 "optimizer": optimizer,
                 "learning_rate": learning_rate,
@@ -281,7 +283,7 @@ def thi_nghiem():
                     model = keras.Sequential([
                         layers.Input(shape=(X_k_train.shape[1],))
                     ] + [
-                        layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
+                        layers.Dense(neurons_per_layer[i], activation=activation) for i in range(num_layers)
                     ] + [
                         layers.Dense(10, activation="softmax")
                     ])
@@ -323,6 +325,12 @@ def thi_nghiem():
 
                 num_pseudo_added = np.sum(confident_mask)
                 total_pseudo_labels += num_pseudo_added
+                
+                
+                
+                # Lưu các mẫu pseudo-labels để visualize
+                X_pseudo = X_unlabeled[confident_mask][:10]  # Lấy 10 mẫu có độ tin cậy cao nhất
+                y_pseudo = pseudo_labels[confident_mask][:10]
 
                 X_labeled = np.concatenate([X_labeled, X_unlabeled[confident_mask]])
                 y_labeled = np.concatenate([y_labeled, pseudo_labels[confident_mask]])
@@ -331,11 +339,24 @@ def thi_nghiem():
                 # Đánh giá mô hình trên tập validation và test sau khi gán nhãn giả
                 #val_loss, val_accuracy = model.evaluate(X_val, y_val, verbose=0)
                 test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
+                st.write(f"Số lượng mẫu pseudo-label có độ tin cậy cao: {len(X_pseudo)}")
+                
+                if len(X_pseudo) > 0:
+                    fig, axes = plt.subplots(2, 5, figsize=(10, 4))
+                    for i, ax in enumerate(axes.flat[:len(X_pseudo)]):
+                        ax.imshow(X_pseudo[i].reshape(28, 28), cmap='gray')
+                        ax.set_title(f"Label: {y_pseudo[i]}")
+                        ax.axis("off")
+                    st.pyplot(fig)
+                else:
+                    st.warning("⚠️ Không có mẫu pseudo-label nào đạt ngưỡng tin cậy để hiển thị.")
+                
+                st.write(f"Số lượng dữ liệu chưa gán nhãn còn lại sau vòng {iteration+1}: {len(X_unlabeled)}")
 
                 st.write(f"📢 **Vòng lặp {iteration+1}:**")
                 st.write(f"- Số pseudo labels mới thêm: {num_pseudo_added}")
                 st.write(f"- Tổng số pseudo labels: {total_pseudo_labels}")
-                st.write(f"- Số lượng dữ liệu chưa gán nhãn còn lại: {len(X_unlabeled)}")
+                
                 # st.write(f"- 🔥 **Độ chính xác trên tập validation:** {val_accuracy:.4f}")
                 st.write(f"- 🚀 **Độ chính xác trên tập test:** {test_accuracy:.4f}")
                 st.write("---")
@@ -347,11 +368,52 @@ def thi_nghiem():
                 })
                 if len(X_unlabeled) == 0:
                     break
+            
+            # Sau khi hoàn thành Pseudo Labeling, huấn luyện lại mô hình với dữ liệu đã gán nhãn
+            st.write("🔄 **Huấn luyện lại mô hình với toàn bộ dữ liệu đã gán nhãn**...")
 
+            model_final = keras.Sequential([
+                layers.Input(shape=(X_labeled.shape[1],))
+            ] + [
+                layers.Dense(neurons_per_layer[i], activation=activation) for i in range(num_layers)
+            ] + [
+                layers.Dense(10, activation="softmax")
+            ])
+
+            if optimizer == "adam":
+                opt = keras.optimizers.Adam(learning_rate=learning_rate)
+            elif optimizer == "sgd":
+                opt = keras.optimizers.SGD(learning_rate=learning_rate)
+            else:
+                opt = keras.optimizers.RMSprop(learning_rate=learning_rate)
+
+            model_final.compile(optimizer=opt, loss=loss_fn, metrics=["accuracy"])
+
+            with st.spinner("🔁 Đang huấn luyện lại mô hình..."):
+                history_final = model_final.fit(X_labeled, y_labeled, epochs=epochs, validation_data=(X_val, y_val), verbose=0)
+
+            final_test_loss, final_test_accuracy = model_final.evaluate(X_test, y_test, verbose=0)
+
+            # Log kết quả sau huấn luyện lại
+            mlflow.log_metrics({
+                "final_test_accuracy": final_test_accuracy,
+                "final_test_loss": final_test_loss
+            })
+
+            
+            st.write(f"📊 **Độ chính xác cuối cùng trên tập test:** {final_test_accuracy:.4f}")
+
+            # Lưu mô hình đã huấn luyện lại vào session_state
+            st.session_state[f"trained_model_{st.session_state['run_name']}"] = model_final
+
+            st.success(f"✅ Mô hình cuối cùng đã được lưu vào session_state với tên `{st.session_state['run_name']}`!")
+            
+            
             test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
             mlflow.end_run()
-            st.session_state["trained_model"] = model
+            st.session_state[f"trained_model_{st.session_state['run_name']}"] = model
+
             training_progress.progress(100)
             training_status.text("✅ Huấn luyện hoàn tất!")
 
@@ -389,13 +451,19 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # 📥 Load mô hình đã huấn luyện
-    if "trained_model" in st.session_state:
-        model = st.session_state["trained_model"]
-        st.success("✅ Đã sử dụng mô hình vừa huấn luyện!")
-    else:
-        st.error("⚠️ Chưa có mô hình! Hãy huấn luyện trước.")
+    # 📥 Danh sách các mô hình đã train
+    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")] 
 
+    if trained_models:
+        selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
+
+        # Tải mô hình được chọn
+        model = st.session_state[selected_model_key]
+        st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
+
+    else:
+        st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
+        return  # Thoát nếu chưa có mô hình nào
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
@@ -532,7 +600,7 @@ def show_experiment_selector():
 import mlflow
 import os
 from mlflow.tracking import MlflowClient
-def Neural_Network():
+def Semi_supervised():
     #st.title("🚀 MLflow DAGsHub Tracking với Streamlit")
     
     if "mlflow_initialized" not in st.session_state:   
@@ -577,4 +645,4 @@ def Neural_Network():
 
 
 if __name__ == "__main__":
-    Neural_Network()
+    Semi_supervised()
