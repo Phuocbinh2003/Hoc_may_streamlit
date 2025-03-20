@@ -452,25 +452,27 @@ def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
     # 📥 Danh sách các mô hình đã train
-    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")] 
+    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")]
 
-    if trained_models:
-        selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
-
-        if selected_model_key in st.session_state():
-        # Tải mô hình được chọn
-            model = st.session_state[selected_model_key]
-            st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
-
-    else:
+    if not trained_models:
         st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
-        return  # Thoát nếu chưa có mô hình nào
+        return
+
+    selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
+
+    if selected_model_key not in st.session_state:
+        st.error("⚠️ Mô hình không tồn tại trong session! Hãy huấn luyện lại.")
+        return
+
+    # Tải mô hình được chọn
+    model = st.session_state[selected_model_key]
+    st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
         st.session_state.key_value = str(random.randint(0, 1000000))  
 
-    if st.button("🔄 Tải lại nếu không thấy canvas"):
+    if st.button("🔄 Tải lại canvas"):
         st.session_state.key_value = str(random.randint(0, 1000000))  
 
     # ✍️ Vẽ số
@@ -490,10 +492,11 @@ def du_doan():
         img = preprocess_canvas_image(canvas_result)
 
         if img is not None:
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), 
+                     caption="Ảnh sau xử lý", width=100)
 
             # Dự đoán số
-            prediction = model.predict(img)
+            prediction = model.predict(img, verbose=0)
             predicted_number = np.argmax(prediction, axis=1)[0]
             max_confidence = np.max(prediction)
 
@@ -501,10 +504,10 @@ def du_doan():
             st.write(f"📊 Mức độ tin cậy: {max_confidence:.2%}")
 
             # Hiển thị bảng confidence score
-            prob_df = pd.DataFrame(prediction.reshape(1, -1), columns=[str(i) for i in range(10)]).T
+            prob_df = pd.DataFrame(prediction.reshape(1, -1), 
+                                 columns=[str(i) for i in range(10)]).T
             prob_df.columns = ["Mức độ tin cậy"]
             st.bar_chart(prob_df)
-
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
 
