@@ -404,6 +404,7 @@ def thi_nghiem():
             st.write(f"📊 **Độ chính xác cuối cùng trên tập test:** {final_test_accuracy:.4f}")
 
             # Lưu mô hình đã huấn luyện lại vào session_state
+            
             st.session_state[f"trained_model_{st.session_state['run_name']}"] = model_final
 
             st.success(f"✅ Mô hình cuối cùng đã được lưu vào session_state với tên `{st.session_state['run_name']}`!")
@@ -461,7 +462,7 @@ def du_doan():
     selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
 
     # ✅ Đã sửa lỗi "not callable" ở đây
-    if selected_model_key not in st.session_state:
+    if selected_model_key not in st.session_state():
         st.error("⚠️ Mô hình không tồn tại trong session! Hãy huấn luyện lại.")
         return
 
