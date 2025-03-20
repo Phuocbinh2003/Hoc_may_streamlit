@@ -311,7 +311,7 @@ def thi_nghiem():
                 model = keras.Sequential([
                     layers.Input(shape=(X_k_train.shape[1],))
                 ] + [
-                    layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
+                    layers.Dense(neurons_per_layer[i], activation=activation) for i in range(num_layers)
                 ] + [
                     layers.Dense(10, activation="softmax")
                 ])
