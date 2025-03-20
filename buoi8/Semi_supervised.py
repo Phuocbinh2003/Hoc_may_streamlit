@@ -225,7 +225,9 @@ def thi_nghiem():
     st.title(f"Chọn tham số cho Neural Network ")
     k_folds = st.slider("Số fold cho Cross-Validation:", 3, 10, 5)
     num_layers = st.slider("Số lớp ẩn:", 1, 5, 2)
-    num_neurons = st.slider("Số neuron mỗi lớp:", 32, 512, 128, 32)
+    neurons_per_layer = []
+    for i in range(num_layers):
+        neurons_per_layer.append(st.slider(f"Số neuron lớp {i+1}:", 32, 512, 128, 32))
     activation = st.selectbox("Hàm kích hoạt:", ["relu", "sigmoid", "tanh"])
     optimizer = st.selectbox("Optimizer:", ["adam", "sgd", "rmsprop"])
     epochs = st.slider("🕰 Số epochs:", min_value=1, max_value=50, value=20, step=1)
@@ -245,7 +247,7 @@ def thi_nghiem():
             mlflow.start_run(run_name=run_name)
             mlflow.log_params({
                 "num_layers": num_layers,
-                "num_neurons": num_neurons,
+                "num_neurons": neurons_per_layer,
                 "activation": activation,
                 "optimizer": optimizer,
                 "learning_rate": learning_rate,
@@ -281,7 +283,7 @@ def thi_nghiem():
                     model = keras.Sequential([
                         layers.Input(shape=(X_k_train.shape[1],))
                     ] + [
-                        layers.Dense(num_neurons, activation=activation) for _ in range(num_layers)
+                        layers.Dense(neurons_per_layer[i], activation=activation) for i in range(num_layers)
                     ] + [
                         layers.Dense(10, activation="softmax")
                     ])
