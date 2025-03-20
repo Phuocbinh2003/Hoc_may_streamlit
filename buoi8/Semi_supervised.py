@@ -339,7 +339,7 @@ def thi_nghiem():
                 # Đánh giá mô hình trên tập validation và test sau khi gán nhãn giả
                 #val_loss, val_accuracy = model.evaluate(X_val, y_val, verbose=0)
                 test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
-                st.write(f"Số lượng mẫu pseudo-label có độ tin cậy cao: {len(X_pseudo)}")
+                st.write(f"{len(X_pseudo)} mẫu pseudo-label có độ tin cậy cao:  ")
                 
                 if len(X_pseudo) > 0:
                     fig, axes = plt.subplots(2, 5, figsize=(10, 4))
@@ -412,7 +412,7 @@ def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
     # 📥 Danh sách các mô hình đã train
-    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")]
+    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")] 
 
     if trained_models:
         selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
