@@ -472,31 +472,27 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # Lấy danh sách model từ session state
-    model_keys = [k for k in st.session_state if k.startswith("trained_model_")]
+    # 📥 Lấy danh sách mô hình đã train từ MLflow
+    client = mlflow.tracking.MlflowClient()
+    runs = client.search_runs(experiment_ids=['0'], order_by=["start_time DESC"], max_results=5)
+    trained_models = {run.info.run_id: run.data.tags.get("mlflow.runName", "Unknown") for run in runs}
 
-    if not model_keys:
-        st.error("⚠️ Chưa có model nào được train!")
-        return
+    if trained_models:
+        selected_run_id = st.selectbox("🔍 Chọn mô hình đã train:", list(trained_models.keys()), format_func=lambda x: trained_models[x])
 
-    selected_key = st.selectbox("🔍 Chọn model đã train:", model_keys)
-
-    # Load model từ session state
-    model = st.session_state.get(selected_key)
-    if model:
-        st.success(f"✅ Đã load model: `{selected_key}`")
+        # Tải mô hình được chọn từ MLflow
+        model_uri = f"runs:/{selected_run_id}/model"
+        model = mlflow.keras.load_model(model_uri)
+        st.success(f"✅ Đã tải mô hình `{trained_models[selected_run_id]}` từ MLflow!")
     else:
-        st.error(f"⚠️ Không tìm thấy model `{selected_key}`!")
-
-    # Tải mô hình được chọn
-    # model = st.session_state[selected_model_key]
-    # st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
+        st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
+        return  # Thoát nếu chưa có mô hình nào
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
         st.session_state.key_value = str(random.randint(0, 1000000))  
 
-    if st.button("🔄 Tải lại canvas"):
+    if st.button("🔄 Tải lại nếu không thấy canvas"):
         st.session_state.key_value = str(random.randint(0, 1000000))  
 
     # ✍️ Vẽ số
@@ -516,11 +512,10 @@ def du_doan():
         img = preprocess_canvas_image(canvas_result)
 
         if img is not None:
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), 
-                     caption="Ảnh sau xử lý", width=100)
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
 
             # Dự đoán số
-            prediction = model.predict(img, verbose=0)
+            prediction = model.predict(img)
             predicted_number = np.argmax(prediction, axis=1)[0]
             max_confidence = np.max(prediction)
 
@@ -528,98 +523,13 @@ def du_doan():
             st.write(f"📊 Mức độ tin cậy: {max_confidence:.2%}")
 
             # Hiển thị bảng confidence score
-            prob_df = pd.DataFrame(prediction.reshape(1, -1), 
-                                 columns=[str(i) for i in range(10)]).T
+            prob_df = pd.DataFrame(prediction.reshape(1, -1), columns=[str(i) for i in range(10)]).T
             prob_df.columns = ["Mức độ tin cậy"]
             st.bar_chart(prob_df)
+
         else:
             st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
 
-    
-from datetime import datetime    
-import streamlit as st
-import mlflow
-from datetime import datetime
-
-def show_experiment_selector():
-    st.title("📊 MLflow")
-    
-    # Kết nối với DAGsHub MLflow Tracking
-    mlflow.set_tracking_uri("https://dagshub.com/Phuocbinh2003/Hoc_may_python.mlflow")
-    
-    # Lấy danh sách tất cả experiments
-    experiment_name = "Neural_Network"
-    experiments = mlflow.search_experiments()
-    selected_experiment = next((exp for exp in experiments if exp.name == experiment_name), None)
-
-    if not selected_experiment:
-        st.error(f"❌ Experiment '{experiment_name}' không tồn tại!")
-        return
-
-    st.subheader(f"📌 Experiment: {experiment_name}")
-    st.write(f"**Experiment ID:** {selected_experiment.experiment_id}")
-    st.write(f"**Trạng thái:** {'Active' if selected_experiment.lifecycle_stage == 'active' else 'Deleted'}")
-    st.write(f"**Vị trí lưu trữ:** {selected_experiment.artifact_location}")
-
-    # Lấy danh sách runs trong experiment
-    runs = mlflow.search_runs(experiment_ids=[selected_experiment.experiment_id])
-
-    if runs.empty:
-        st.warning("⚠ Không có runs nào trong experiment này.")
-        return
-
-    st.write("### 🏃‍♂️ Các Runs gần đây:")
-    
-    # Lấy danh sách run_name từ params
-    run_info = []
-    for _, run in runs.iterrows():
-        run_id = run["run_id"]
-        run_tags = mlflow.get_run(run_id).data.tags
-        run_name = run_tags.get("mlflow.runName", f"Run {run_id[:8]}")  # Lấy từ tags
-        run_info.append((run_name, run_id))
-    
-    # Tạo dictionary để map run_name -> run_id
-    run_name_to_id = dict(run_info)
-    run_names = list(run_name_to_id.keys())
-    
-    # Chọn run theo run_name
-    selected_run_name = st.selectbox("🔍 Chọn một run:", run_names)
-    selected_run_id = run_name_to_id[selected_run_name]
-
-    # Hiển thị thông tin chi tiết của run được chọn
-    selected_run = mlflow.get_run(selected_run_id)
-
-    if selected_run:
-        st.subheader(f"📌 Thông tin Run: {selected_run_name}")
-        st.write(f"**Run ID:** {selected_run_id}")
-        st.write(f"**Trạng thái:** {selected_run.info.status}")
-        
-        start_time_ms = selected_run.info.start_time  # Thời gian lưu dưới dạng milliseconds
-        if start_time_ms:
-            start_time = datetime.fromtimestamp(start_time_ms / 1000).strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            start_time = "Không có thông tin"
-        
-        st.write(f"**Thời gian chạy:** {start_time}")
-
-        # Hiển thị thông số đã log
-        params = selected_run.data.params
-        metrics = selected_run.data.metrics
-
-        if params:
-            st.write("### ⚙️ Parameters:")
-            st.json(params)
-
-        if metrics:
-            st.write("### 📊 Metrics:")
-            st.json(metrics)
-
-        # Kiểm tra và hiển thị dataset artifact
-        dataset_path = f"{selected_experiment.artifact_location}/{selected_run_id}/artifacts/dataset.npy"
-        st.write("### 📂 Dataset:")
-        st.write(f"📥 [Tải dataset]({dataset_path})")
-    else:
-        st.warning("⚠ Không tìm thấy thông tin cho run này.")
 
         
         
