@@ -412,7 +412,7 @@ def thi_nghiem():
             test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
             mlflow.log_metrics({"test_accuracy": test_accuracy, "test_loss": test_loss})
             mlflow.end_run()
-            st.session_state[f"trained_model_{st.session_state['run_name']}"] = model
+            #st.session_state[f"trained_model_{st.session_state['run_name']}"] = model
 
             training_progress.progress(100)
             training_status.text("✅ Huấn luyện hoàn tất!")
