@@ -404,8 +404,27 @@ def thi_nghiem():
             st.write(f"📊 **Độ chính xác cuối cùng trên tập test:** {final_test_accuracy:.4f}")
 
             # Lưu mô hình đã huấn luyện lại vào session_state
-            
-            st.session_state[f"trained_model_{st.session_state['run_name']}"] = model_final
+            # ====== SAU KHI TRAIN XONG ======
+            if 'run_name' not in st.session_state:
+                st.error("⚠️ Tên run không tồn tại!")
+                return
+
+            model_key = f"trained_model_{st.session_state['run_name']}"
+
+            # Kiểm tra trùng lặp key
+            if model_key in st.session_state:
+                st.warning(f"⚠️ Model `{model_key}` đã tồn tại và sẽ bị ghi đè!")
+
+            # Kiểm tra model hợp lệ trước khi lưu
+            try:
+                dummy_pred = model_final.predict(X_test[:1], verbose=0)
+                st.session_state[model_key] = model_final
+                st.success(f"✅ Đã lưu model thành công với key: `{model_key}`")
+                
+                # Debug: Hiển thị tất cả keys
+                st.write("📌 Các keys trong session state:", list(st.session_state.keys()))
+            except Exception as e:
+                st.error(f"❌ Lỗi khi lưu model: {str(e)}")
 
             st.success(f"✅ Mô hình cuối cùng đã được lưu vào session_state với tên `{st.session_state['run_name']}`!")
             
@@ -451,24 +470,27 @@ def preprocess_canvas_image(canvas_result):
 
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
-
-    # 📥 Danh sách các mô hình đã train
-    trained_models = [key for key in st.session_state.keys() if key.startswith("trained_model_")]
-
-    if not trained_models:
-        st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
+    
+    # Kiểm tra model tồn tại
+    model_keys = [k for k in st.session_state.keys() if k.startswith("trained_model_")]
+    
+    if not model_keys:
+        st.error("⚠️ Chưa có model nào được train!")
         return
 
-    selected_model_key = st.selectbox("🔍 Chọn mô hình đã train:", trained_models)
-
-    # ✅ Đã sửa lỗi "not callable" ở đây
-    if selected_model_key not in st.session_state():
-        st.error("⚠️ Mô hình không tồn tại trong session! Hãy huấn luyện lại.")
+    selected_key = st.selectbox("🔍 Chọn model đã train:", model_keys)
+    
+    # Load model từ session state
+    try:
+        model = st.session_state[selected_key]
+        st.success(f"✅ Đã load model: `{selected_key}`")
+    except KeyError:
+        st.error(f"⚠️ Không tìm thấy model `{selected_key}`!")
         return
 
     # Tải mô hình được chọn
-    model = st.session_state[selected_model_key]
-    st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
+    # model = st.session_state[selected_model_key]
+    # st.success(f"✅ Đã sử dụng mô hình `{selected_model_key}`!")
 
     # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
     if "key_value" not in st.session_state:
