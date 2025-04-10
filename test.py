@@ -470,66 +470,91 @@ def preprocess_canvas_image(canvas_result):
     return img
 
 def du_doan():
-    st.header("✍️ Vẽ số để dự đoá")
+    st.header("✍️ Vẽ số để dự đoán")
 
-    # 📥 Lấy danh sách mô hình đã train từ MLflow
+    # 📥 Lấy danh sách mô hình từ MLflow
     client = mlflow.tracking.MlflowClient()
     runs = client.search_runs(experiment_ids=['9'], order_by=["start_time DESC"], max_results=5)
-    trained_models = {run.info.run_id: run.data.tags.get("mlflow.runName", "Unknown") for run in runs}
+    
+    # Tạo dictionary ánh xạ tên mô hình sang run_id
+    model_dict = {run.data.tags.get("mlflow.runName", "Unknown"): run.info.run_id for run in runs}
 
-    if trained_models:
-        selected_run_id = st.selectbox("🔍 Chọn mô hình đã train:", list(trained_models.keys()), format_func=lambda x: trained_models[x])
-
-        # Tải mô hình được chọn từ MLflow
-        model_uri = f"runs:/{selected_run_id}/model"
-        model = mlflow.keras.load_model(model_uri)
-        st.success(f"✅ Đã tải mô hình `{trained_models[selected_run_id]}` từ MLflow!")
-    else:
+    if not model_dict:
         st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
-        return  # Thoát nếu chưa có mô hình nào
+        return
 
-    # 🆕 Cập nhật key cho canvas khi nhấn "Tải lại"
-    if "key_value" not in st.session_state:
-        st.session_state.key_value = str(random.randint(0, 1000000))  
+    # 🔍 Dropdown chọn model theo tên
+    selected_model = st.selectbox(
+        "🔍 Chọn mô hình đã train:",
+        options=list(model_dict.keys())
+    )
 
-    if st.button("🔄 Tải lại nếu không thấy canvas"):
-        st.session_state.key_value = str(random.randint(0, 1000000))  
+    # 🚨 Nút tải model
+    if st.button("⬇️ Tải model"):
+        try:
+            with st.spinner("Đang tải model..."):
+                model_uri = f"runs:/{model_dict[selected_model]}/model"
+                st.session_state.model = mlflow.keras.load_model(model_uri)
+                st.session_state.model_loaded = True
+                st.success(f"✅ Đã tải thành công model: {selected_model}")
+        except Exception as e:
+            st.error(f"❌ Lỗi khi tải model: {str(e)}")
+            return
 
-    # ✍️ Vẽ số
+    # Chỉ hiển thị canvas khi model đã được load
+    if 'model_loaded' not in st.session_state:
+        st.info("👉 Vui lòng chọn model và nhấn nút [Tải model] trước")
+        return
+
+    # 🎨 Khởi tạo canvas key
+    if "canvas_key" not in st.session_state:
+        st.session_state.canvas_key = 0
+
+    # 🔄 Nút reset canvas
+    if st.button("🔄 Tạo canvas mới"):
+        st.session_state.canvas_key += 1
+
+    # ✍️ Vùng vẽ số
     canvas_result = st_canvas(
         fill_color="black",
-        stroke_width=10,
+        stroke_width=15,
         stroke_color="white",
         background_color="black",
-        height=150,
-        width=150,
+        height=200,
+        width=200,
         drawing_mode="freedraw",
-        key=st.session_state.key_value,
+        key=f"canvas_{st.session_state.canvas_key}",
         update_streamlit=True
     )
 
-    if st.button("Dự đoán số"):
-        img = preprocess_canvas_image(canvas_result)
+    # 🎯 Nút dự đoán
+    if st.button("🔮 Dự đoán"):
+        if canvas_result.image_data is not None:
+            # Tiền xử lý ảnh
+            img = preprocess_canvas_image(canvas_result)
+            
+            # Hiển thị ảnh đã xử lý
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8), 
+                    caption="Ảnh đã xử lý", width=150))
 
-        if img is not None:
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)), caption="Ảnh sau xử lý", width=100)
+            # Dự đoán
+            prediction = st.session_state.model.predict(img)
+            predicted_num = np.argmax(prediction)
+            confidence = np.max(prediction)
 
-            # Dự đoán số
-            prediction = model.predict(img)
-            predicted_number = np.argmax(prediction, axis=1)[0]
-            max_confidence = np.max(prediction)
+            # Hiển thị kết quả
+            st.subheader(f"📊 Kết quả: {predicted_num}")
+            st.metric(label="Độ tin cậy", value=f"{confidence:.2%}")
 
-            st.subheader(f"🔢 Dự đoán: {predicted_number}")
-            st.write(f"📊 Mức độ tin cậy: {max_confidence:.2%}")
-
-            # Hiển thị bảng confidence score
-            prob_df = pd.DataFrame(prediction.reshape(1, -1), columns=[str(i) for i in range(10)]).T
-            prob_df.columns = ["Mức độ tin cậy"]
-            st.bar_chart(prob_df)
-
+            # Biểu đồ xác suất
+            prob_df = pd.DataFrame({
+                'Số': range(10),
+                'Xác suất': prediction[0]
+            })
+            st.bar_chart(prob_df, x='Số', y='Xác suất')
+            
         else:
-            st.error("⚠️ Hãy vẽ một số trước khi bấm Dự đoán!")
-
+            st.warning("⚠️ Vui lòng vẽ số vào canvas trước khi dự đoán")
 
         
         
@@ -549,7 +574,7 @@ def Semi_supervised():
         os.environ["MLFLOW_TRACKING_USERNAME"] = "Phuocbinh2003"
         os.environ["MLFLOW_TRACKING_PASSWORD"] = "c1495823c8f9156923b06f15899e989db7e62052"
         st.session_state.mlflow_initialized = True
-        mlflow.set_experiment("Neural_Network")   
+        mlflow.set_experiment("Semi_supervised")   
         
     
     
