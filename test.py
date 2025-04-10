@@ -1,88 +1,96 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from io import BytesIO
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from scipy.stats import zscore
+import matplotlib.pyplot as plt
 
-# Hàm tiền xử lý dữ liệu từ file .npy
-def tien_xu_ly_du_lieu_from_npy(X_file, y_file):
-    # Tải dữ liệu từ các file .npy (đọc từ bộ nhớ)
-    X = np.load(BytesIO(X_file.getvalue()), allow_pickle=True)
-    y = np.load(BytesIO(y_file.getvalue()), allow_pickle=True)
-    
-    # Kiểm tra xem dữ liệu X có 3 chiều không (đối với hình ảnh)
+def preprocess_alphabet_data(X, y):
+    # Tiền xử lý cho dữ liệu ảnh chữ cái
     if X.ndim == 3:
-        # Làm phẳng dữ liệu 3 chiều (mỗi hình ảnh trở thành một vector)
-        X = X.reshape(X.shape[0], -1)  # Chuyển từ (10000, 28, 28) thành (10000, 784)
+        X = X.reshape(X.shape[0], -1)  # Flatten ảnh 28x28 -> 784 pixels
     
-    # Chuyển dữ liệu NumPy thành DataFrame để dễ xử lý
-    df = pd.DataFrame(X, columns=["Feature_" + str(i) for i in range(X.shape[1])])
-    df['Target'] = y
+    # Tạo DataFrame
+    df = pd.DataFrame(X, columns=[f"pixel_{i}" for i in range(X.shape[1])])
+    df['label'] = y  # Giả sử nhãn là các chữ cái A-Z
     
-    # Hiển thị thông tin dữ liệu gốc
-    st.write("📊 **Dữ liệu gốc**:")
-    st.write(df.head(10))
-
-    # Kiểm tra các giá trị thiếu
-    missing_values = df.isnull().sum()
-    st.write("🔍 **Kiểm tra giá trị thiếu**:")
-    st.write(missing_values)
-
-    # Kiểm tra dữ liệu trùng lặp
-    duplicate_count = df.duplicated().sum()
-    st.write(f"🔁 **Số lượng dòng bị trùng lặp**: {duplicate_count}")
-
-    # Kiểm tra outliers (Sử dụng Z-score)
-    outlier_count = {
-        col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
-        for col in df.select_dtypes(include=['number']).columns
-    }
-    st.write("🚨 **Outliers** (Z-score > 3):")
-    st.write(outlier_count)
-
-    # Xử lý các cột kiểu chữ (alphabet) bằng LabelEncoder
-    label_encoder = LabelEncoder()
-    for column in df.select_dtypes(include=['object']).columns:
-        df[column] = label_encoder.fit_transform(df[column])
-
-    # Tiền xử lý các giá trị thiếu
-    df['Target'] = df['Target'].fillna(df['Target'].mode()[0])  # Điền giá trị thiếu bằng giá trị mode
-    df.dropna(inplace=True)  # Loại bỏ các dòng chứa giá trị thiếu nếu cần
-
-    # Chuẩn hóa dữ liệu số
-    scaler = StandardScaler()
-    df[df.select_dtypes(include=[np.number]).columns] = scaler.fit_transform(df.select_dtypes(include=[np.number]))
-
-    # Hiển thị dữ liệu sau khi tiền xử lý
-    st.write("✅ **Dữ liệu sau khi tiền xử lý**:")
-    st.write(df.head(10))
-
-    return df
-
-# Hàm để hiển thị và tiền xử lý
-def show_preprocessing_tab():
-    st.title("🔍 Tiền xử lý Dữ liệu - Alphabet (từ .npy)")
-
-    # Chọn tệp .npy
-    X_file = st.file_uploader("📂 Tải lên tệp dữ liệu X (.npy)", type=["npy"])
-    y_file = st.file_uploader("📂 Tải lên tệp dữ liệu y (.npy)", type=["npy"])
+    # Hiển thị thống kê
+    st.write("📊 **Thông tin dataset**:")
+    st.write(f"- Số lượng mẫu: {len(df)}")
+    st.write(f"- Số lớp: {len(np.unique(y))}")
     
-    # Nếu người dùng tải lên cả X và y, thực hiện tiền xử lý
-    if X_file is not None and y_file is not None:
-        # Gọi hàm tiền xử lý dữ liệu từ các tệp .npy (lấy từ bộ nhớ)
-        df = tien_xu_ly_du_lieu_from_npy(X_file, y_file)
-        
-        # Cung cấp tùy chọn để người dùng tải lại dữ liệu đã xử lý
-        st.download_button(
-            label="Tải xuống dữ liệu đã xử lý",
-            data=df.to_csv(index=False).encode('utf-8'),
-            file_name="processed_data.csv",
-            mime="text/csv"
-        )
+    # Hiển thị ví dụ ảnh
+    st.write("🖼️ **Ví dụ dữ liệu ảnh**:")
+    sample_idx = np.random.randint(0, len(X))
+    plt.imshow(X[sample_idx].reshape(28, 28), cmap='gray')
+    plt.axis('off')
+    st.pyplot(plt)
+    
+    # Xử lý nhãn chữ cái
+    le = LabelEncoder()
+    df['label'] = le.fit_transform(df['label'])
+    
+    # Lưu ánh xạ nhãn
+    label_mapping = dict(zip(le.classes_, le.transform(le.classes_)))
+    st.write("🔡 **Ánh xạ nhãn**:", label_mapping)
+
+    # Chuẩn hóa pixel values về [0, 1]
+    scaler = MinMaxScaler()
+    pixel_columns = [col for col in df.columns if col.startswith('pixel')]
+    df[pixel_columns] = scaler.fit_transform(df[pixel_columns])
+    
+    # Phát hiện outliers (đặc thù ảnh)
+    st.write("🔍 **Phân tích pixel**:")
+    pixel_stats = df[pixel_columns].agg(['mean', 'std', 'min', 'max'])
+    st.write(pixel_stats)
+    
+    # Loại bỏ ảnh hỏng (nếu có)
+    corrupted_images = df[(df[pixel_columns] < 0).any(axis=1) | (df[pixel_columns] > 1).any(axis=1)]
+    if not corrupted_images.empty:
+        st.warning(f"⚠️ Phát hiện {len(corrupted_images)} ảnh hỏng, đang loại bỏ...")
+        df = df.drop(corrupted_images.index)
+    
+    return df, le
+
+def main():
+    st.title("🎯 Tiền xử lý Ảnh Chữ cái")
+    
+    # Tải lên dữ liệu
+    col1, col2 = st.columns(2)
+    with col1:
+        X_file = st.file_uploader("Tải lên file ảnh (.npy)", type="npy")
+    with col2:
+        y_file = st.file_uploader("Tải lên file nhãn (.npy)", type="npy")
+    
+    if X_file and y_file:
+        try:
+            X = np.load(X_file)
+            y = np.load(y_file)
+            
+            # Kiểm tra kích thước
+            if len(X) != len(y):
+                st.error("Lỗi: Số lượng ảnh và nhãn không khớp!")
+                return
+                
+            # Xử lý dữ liệu
+            df, label_encoder = preprocess_alphabet_data(X, y)
+            
+            # Hiển thị kết quả
+            st.write("✅ **Dữ liệu đã xử lý**:")
+            st.dataframe(df.head())
+            
+            # Tải xuống
+            st.download_button(
+                label="📥 Tải xuống dữ liệu",
+                data=df.to_csv().encode(),
+                file_name="alphabet_processed.csv",
+                mime="text/csv"
+            )
+            
+        except Exception as e:
+            st.error(f"Lỗi xử lý: {str(e)}")
     else:
-        st.warning("⚠️ Vui lòng tải lên cả hai tệp dữ liệu X và y!")
+        st.info("ℹ️ Vui lòng tải lên cả file ảnh và file nhãn")
 
-# Gọi hàm trong Streamlit
 if __name__ == "__main__":
-    show_preprocessing_tab()
+    main()
