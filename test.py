@@ -3,7 +3,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
-from scipy.stats import zscore
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 
 # Hàm hiển thị giải thích từng bước
 def show_explanations():
@@ -60,7 +63,8 @@ def analyze_pixel_distribution(data):
     st.pyplot(plt)
 
 def main():
-    st.title("🔠 Tiền Xử lý Ảnh Chữ cái Nâng cao")
+    st.title("🔠 Tiền Xử lý Ảnh Chữ cái Nâng cao + Huấn luyện")
+
     show_explanations()
 
     # Tải lên dữ liệu
@@ -77,66 +81,75 @@ def main():
             X = np.load(X_file)
             y = np.load(y_file).astype(str)
 
-            # Validation
             if len(X) != len(y):
-                st.error(f"Lỗi: Số lượng ảnh ({len(X)}) và nhãn ({len(y)}) không khớp!")
+                st.error("❌ Số lượng ảnh và nhãn không khớp!")
                 return
 
-            # Hiển thị thông tin cơ bản
-            st.subheader("📦 Thông tin Dataset")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Tổng số mẫu", len(X))
-            with col2:
-                st.metric("Kích thước ảnh", f"{X.shape[1:] if X.ndim == 3 else X.shape[1]}")
-            with col3:
-                unique_labels = np.unique(y)
-                st.metric("Số lớp", len(unique_labels))
+            # Tiền xử lý
+            X_flat = X.reshape(X.shape[0], -1)
+            le = LabelEncoder()
+            y_encoded = le.fit_transform(y)
+            scaler = MinMaxScaler()
+            X_scaled = scaler.fit_transform(X_flat)
 
-            # Hiển thị ảnh mẫu
-            display_sample_images(X, y)
+            df = pd.DataFrame(X_scaled, columns=[f"pixel_{i}" for i in range(X_scaled.shape[1])])
+            df['label'] = y_encoded
 
-            # Phân tích phân phối pixel
-            analyze_pixel_distribution(X.reshape(X.shape[0], -1))
+            # Tabs
+            tab1, tab2, tab3, tab4 = st.tabs(["🖼️ Ảnh & Phân tích", "📊 Dữ liệu", "🔤 Nhãn", "🤖 Huấn luyện"])
 
-            # Xử lý dữ liệu
-            with st.status("⏳ Đang xử lý dữ liệu...", expanded=True) as status:
-                st.write("1. Làm phẳng ảnh...")
-                X_flat = X.reshape(X.shape[0], -1)
-
-                st.write("2. Mã hóa nhãn...")
-                le = LabelEncoder()
-                y_encoded = le.fit_transform(y)
-
-                st.write("3. Chuẩn hóa pixel...")
-                scaler = MinMaxScaler()
-                X_scaled = scaler.fit_transform(X_flat)
-
-                st.write("4. Kiểm tra chất lượng...")
-                df = pd.DataFrame(X_scaled, columns=[f"pixel_{i}" for i in range(X_scaled.shape[1])])
-                df['label'] = y_encoded
-
-                status.update(label="Xử lý hoàn tất!", state="complete")
-
-            # Hiển thị kết quả
-            st.subheader("✅ Kết quả Xử lý")
-            tab1, tab2, tab3 = st.tabs(["Dữ liệu", "Nhãn", "Thống kê"])
-
+            # Ảnh và phân phối
             with tab1:
-                st.dataframe(df.head(), use_container_width=True)
+                st.subheader("Thông tin Dataset")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Tổng số mẫu", len(X))
+                with col2:
+                    st.metric("Kích thước ảnh", f"{X.shape[1:] if X.ndim == 3 else X.shape[1]}")
+                with col3:
+                    st.metric("Số lớp", len(np.unique(y)))
+
+                display_sample_images(X, y)
+                analyze_pixel_distribution(X_flat)
 
             with tab2:
+                st.dataframe(df.head(), use_container_width=True)
+
+            with tab3:
                 label_map = pd.DataFrame({
                     "Ký tự": le.classes_,
                     "Mã số": le.transform(le.classes_)
                 })
                 st.dataframe(label_map, hide_index=True)
 
-            with tab3:
-                st.write("**Phân phối lớp:**")
-                label_dist = pd.Series(y).value_counts().reset_index()
-                label_dist.columns = ['Ký tự', 'Số lượng']
-                st.bar_chart(label_dist.set_index('Ký tự'))
+            with tab4:
+                st.subheader("🤖 Huấn luyện mô hình")
+
+                # Chọn thuật toán
+                algo = st.selectbox("Chọn thuật toán", ["Logistic Regression", "KNN"])
+
+                test_size = st.slider("Tỷ lệ test", 0.1, 0.5, 0.2, 0.05)
+                X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=test_size, random_state=42)
+
+                if algo == "Logistic Regression":
+                    model = LogisticRegression(max_iter=1000)
+                else:
+                    k = st.slider("Số lượng hàng xóm (k)", 1, 15, 3)
+                    model = KNeighborsClassifier(n_neighbors=k)
+
+                if st.button("🚀 Huấn luyện"):
+                    model.fit(X_train, y_train)
+                    y_pred = model.predict(X_test)
+                    acc = accuracy_score(y_test, y_pred)
+
+                    st.success(f"🎯 Độ chính xác: {acc * 100:.2f}%")
+
+                    # Ma trận nhầm lẫn
+                    fig, ax = plt.subplots(figsize=(8, 6))
+                    cm = confusion_matrix(y_test, y_pred)
+                    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=le.classes_)
+                    disp.plot(ax=ax, cmap="Blues", xticks_rotation=45)
+                    st.pyplot(fig)
 
             # Tải xuống
             st.download_button(
