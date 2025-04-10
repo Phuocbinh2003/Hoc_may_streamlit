@@ -4,18 +4,16 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from scipy.stats import zscore
 
-# Hàm tiền xử lý dữ liệu
-def tien_xu_ly_du_lieu(updates_file=None):
-    if updates_file is not None:
-        # Đọc file upload từ người dùng
-        df = pd.read_csv(updates_file)
-    else:
-        # Giả sử bạn có dữ liệu mặc định
-        X = np.load('/mnt/data/alphabet_X.npy', allow_pickle=True)
-        y = np.load('/mnt/data/alphabet_y.npy', allow_pickle=True)
-        df = pd.DataFrame(X, columns=["Feature_" + str(i) for i in range(X.shape[1])])
-        df['Target'] = y
-
+# Hàm tiền xử lý dữ liệu từ file .npy
+def tien_xu_ly_du_lieu_from_npy(X_file, y_file):
+    # Tải dữ liệu từ các file .npy
+    X = np.load(X_file, allow_pickle=True)
+    y = np.load(y_file, allow_pickle=True)
+    
+    # Chuyển dữ liệu NumPy thành DataFrame để dễ xử lý
+    df = pd.DataFrame(X, columns=["Feature_" + str(i) for i in range(X.shape[1])])
+    df['Target'] = y
+    
     # Hiển thị thông tin dữ liệu gốc
     st.write("📊 **Dữ liệu gốc**:")
     st.write(df.head(10))
@@ -58,14 +56,24 @@ def tien_xu_ly_du_lieu(updates_file=None):
 
 # Hàm để hiển thị và tiền xử lý
 def show_preprocessing_tab():
-    st.title("🔍 Tiền xử lý Dữ liệu - Alphabet")
+    st.title("🔍 Tiền xử lý Dữ liệu - Alphabet (từ .npy)")
 
-    # Upload file dữ liệu
-    uploaded_file = st.file_uploader("📂 Chọn file dữ liệu (.csv hoặc .txt)", type=["csv", "txt"])
-    if uploaded_file is not None:
-        df = tien_xu_ly_du_lieu(uploaded_file)
+    # Chọn tệp .npy
+    X_file = st.file_uploader("📂 Tải lên tệp dữ liệu X (.npy)", type=["npy"])
+    y_file = st.file_uploader("📂 Tải lên tệp dữ liệu y (.npy)", type=["npy"])
+    
+    # Nếu người dùng tải lên cả X và y, thực hiện tiền xử lý
+    if X_file is not None and y_file is not None:
+        # Lưu tệp tải lên tạm thời
+        with open("/mnt/data/X_data.npy", "wb") as f:
+            f.write(X_file.getbuffer())
+        with open("/mnt/data/y_data.npy", "wb") as f:
+            f.write(y_file.getbuffer())
+
+        # Gọi hàm tiền xử lý dữ liệu từ các tệp .npy
+        df = tien_xu_ly_du_lieu_from_npy("/mnt/data/X_data.npy", "/mnt/data/y_data.npy")
     else:
-        st.warning("⚠️ Vui lòng tải lên tệp dữ liệu để tiến hành tiền xử lý!")
+        st.warning("⚠️ Vui lòng tải lên cả hai tệp dữ liệu X và y!")
 
 # Gọi hàm trong Streamlit
 if __name__ == "__main__":
