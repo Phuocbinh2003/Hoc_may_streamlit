@@ -44,7 +44,7 @@ def analyze_pixel_distribution(df):
     
     # Trước chuẩn hóa
     plt.subplot(1, 2, 1)
-    plt.hist(df.values.flatten(), bins=50, color='blue', alpha=0.7))
+    plt.hist(df.values.flatten(), bins=50, color='blue', alpha=0.7)
     plt.title('Phân phối gốc')
     plt.xlabel('Giá trị pixel')
     plt.ylabel('Tần suất')
@@ -53,7 +53,7 @@ def analyze_pixel_distribution(df):
     plt.subplot(1, 2, 2)
     scaler = MinMaxScaler()
     scaled_data = scaler.fit_transform(df.values)
-    plt.hist(scaled_data.flatten(), bins=50, color='green', alpha=0.7))
+    plt.hist(scaled_data.flatten(), bins=50, color='green', alpha=0.7)
     plt.title('Sau chuẩn hóa')
     plt.xlabel('Giá trị pixel (0-1)')
     
