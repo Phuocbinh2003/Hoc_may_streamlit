@@ -70,9 +70,9 @@ def show_preprocessing_tab():
     # Nếu người dùng tải lên cả X và y, thực hiện tiền xử lý
     if X_file is not None and y_file is not None:
         # Lưu tệp tải lên tạm thời
-        with open("/mnt/data/X_data.npy", "wb") as f:
+        with open("buoicuoi/alphabet_X.npy", "wb") as f:
             f.write(X_file.getbuffer())
-        with open("/mnt/data/y_data.npy", "wb") as f:
+        with open("buoicuoi/alphabet_X.npy", "wb") as f:
             f.write(y_file.getbuffer())
 
         # Gọi hàm tiền xử lý dữ liệu từ các tệp .npy
