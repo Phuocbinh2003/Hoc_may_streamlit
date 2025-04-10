@@ -260,7 +260,7 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
         return final_w, avg_mse, scaler
 
-    def main():
+    def kthp():
         uploaded_file = "buoi2/data.txt"
         try:
             df = pd.read_csv(uploaded_file, delimiter=",")
@@ -501,4 +501,4 @@ with mlflow.start_run(experiment_id=exp.experiment_id):
 
     
 if __name__ == "__main__":
-    main()
+    kthp()
