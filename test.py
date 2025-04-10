@@ -4,82 +4,82 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from scipy.stats import zscore
 
-# Hàm tiền xử lý dữ liệu từ file .npy
-def tien_xu_ly_du_lieu_from_npy(X_file, y_file):
-    # Tải dữ liệu từ các file .npy
-    X = np.load(X_file, allow_pickle=True)
-    y = np.load(y_file, allow_pickle=True)
-    
-    # Kiểm tra xem dữ liệu X có 3 chiều không (đối với hình ảnh)
+# Hàm tiền xử lý dữ liệu trực tiếp từ mảng NumPy
+def tien_xu_ly_du_lieu(X, y):
+    # Kiểm tra và làm phẳng dữ liệu ảnh
     if X.ndim == 3:
-        # Làm phẳng dữ liệu 3 chiều (mỗi hình ảnh trở thành một vector)
-        X = X.reshape(X.shape[0], -1)  # Chuyển từ (10000, 28, 28) thành (10000, 784)
+        X = X.reshape(X.shape[0], -1)
     
-    # Chuyển dữ liệu NumPy thành DataFrame để dễ xử lý
-    df = pd.DataFrame(X, columns=["Feature_" + str(i) for i in range(X.shape[1])])
+    # Tạo DataFrame
+    df = pd.DataFrame(X, columns=[f"Feature_{i}" for i in range(X.shape[1])])
     df['Target'] = y
     
-    # Hiển thị thông tin dữ liệu gốc
-    st.write("📊 **Dữ liệu gốc**:")
+    # Hiển thị thông tin
+    st.write("📊 **Dữ liệu gốc:**")
     st.write(df.head(10))
 
-    # Kiểm tra các giá trị thiếu
-    missing_values = df.isnull().sum()
-    st.write("🔍 **Kiểm tra giá trị thiếu**:")
-    st.write(missing_values)
+    # Kiểm tra giá trị thiếu
+    st.write("🔍 **Giá trị thiếu:**")
+    st.write(df.isnull().sum())
 
-    # Kiểm tra dữ liệu trùng lặp
-    duplicate_count = df.duplicated().sum()
-    st.write(f"🔁 **Số lượng dòng bị trùng lặp**: {duplicate_count}")
+    # Kiểm tra trùng lặp
+    st.write(f"🔁 **Dòng trùng lặp:** {df.duplicated().sum()}")
 
-    # Kiểm tra outliers (Sử dụng Z-score)
-    outlier_count = {
-        col: (abs(zscore(df[col], nan_policy='omit')) > 3).sum()
-        for col in df.select_dtypes(include=['number']).columns
-    }
-    st.write("🚨 **Outliers** (Z-score > 3):")
-    st.write(outlier_count)
+    # Phát hiện outliers
+    numeric_cols = df.select_dtypes(include='number').columns.drop('Target', errors='ignore')
+    outliers = {col: (np.abs(zscore(df[col], nan_policy='omit')) > 3).sum() for col in numeric_cols}
+    st.write("🚨 **Outliers (Z-score > 3):**")
+    st.write(outliers)
 
-    # Xử lý các cột kiểu chữ (alphabet) bằng LabelEncoder
-    label_encoder = LabelEncoder()
-    for column in df.select_dtypes(include=['object']).columns:
-        df[column] = label_encoder.fit_transform(df[column])
+    # Xử lý dữ liệu phân loại
+    for col in df.select_dtypes(include='object').columns:
+        df[col] = LabelEncoder().fit_transform(df[col])
 
-    # Tiền xử lý các giá trị thiếu
-    df['Target'] = df['Target'].fillna(df['Target'].mode()[0])  # Điền giá trị thiếu bằng giá trị mode
-    df.dropna(inplace=True)  # Loại bỏ các dòng chứa giá trị thiếu nếu cần
+    # Xử lý giá trị thiếu
+    df['Target'] = df['Target'].fillna(df['Target'].mode()[0])
+    df.dropna(inplace=True)
 
-    # Chuẩn hóa dữ liệu số
-    scaler = StandardScaler()
-    df[df.select_dtypes(include=[np.number]).columns] = scaler.fit_transform(df.select_dtypes(include=[np.number]))
+    # Chuẩn hóa dữ liệu (không bao gồm target)
+    if len(numeric_cols) > 0:
+        scaler = StandardScaler()
+        df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 
-    # Hiển thị dữ liệu sau khi tiền xử lý
-    st.write("✅ **Dữ liệu sau khi tiền xử lý**:")
+    st.write("✅ **Dữ liệu sau xử lý:**")
     st.write(df.head(10))
-
+    
     return df
 
-# Hàm để hiển thị và tiền xử lý
+# Giao diện chính
 def show_preprocessing_tab():
     st.title("🔍 Tiền xử lý Dữ liệu - Alphabet (từ .npy)")
-
-    # Chọn tệp .npy
-    X_file = st.file_uploader("📂 Tải lên tệp dữ liệuX (.npy)", type=["npy"])
-    y_file = st.file_uploader("📂 Tải lên tệp dữ liệu y (.npy)", type=["npy"])
     
-    # Nếu người dùng tải lên cả X và y, thực hiện tiền xử lý
-    if X_file is not None and y_file is not None:
-        # Lưu tệp tải lên tạm thời
-        with open("buoicuoi/alphabet_X.npy", "wb") as f:
-            f.write(X_file.getbuffer())
-        with open("buoicuoi/alphabet_X.npy", "wb") as f:
-            f.write(y_file.getbuffer())
-
-        # Gọi hàm tiền xử lý dữ liệu từ các tệp .npy
-        df = tien_xu_ly_du_lieu_from_npy("buoicuoi/alphabet_X.npy", "buoicuoi/alphabet_X.npy")
+    # Tải lên file
+    X_file = st.file_uploader("📂 Tải lên file X (.npy)", type="npy")
+    y_file = st.file_uploader("📂 Tải lên file y (.npy)", type="npy")
+    
+    if X_file and y_file:
+        try:
+            # Đọc trực tiếp từ file upload
+            X = np.load(X_file, allow_pickle=True)
+            y = np.load(y_file, allow_pickle=True)
+            
+            # Xử lý và hiển thị
+            if y.ndim > 1:
+                y = y.squeeze()
+            df = tien_xu_ly_du_lieu(X, y)
+            
+            # Thêm tính năng download
+            st.download_button(
+                label="📥 Tải xuống dữ liệu đã xử lý",
+                data=df.to_csv().encode(),
+                file_name="processed_data.csv",
+                mime="text/csv"
+            )
+            
+        except Exception as e:
+            st.error(f"Lỗi: {str(e)}")
     else:
-        st.warning("⚠️ Vui lòng tải lên cả hai tệp dữ liệu X và y!")
+        st.warning("⚠️ Vui lòng tải lên cả 2 file!")
 
-# Gọi hàm trong Streamlit
 if __name__ == "__main__":
     show_preprocessing_tab()
