@@ -472,24 +472,25 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
- 
-    client = mlflow.tracking.MlflowClient()
-    runs = client.search_runs(experiment_ids=['9'], order_by=["start_time DESC"], max_results=5)
-    
-    # Tạo dictionary ánh xạ tên mô hình sang run_i
-    model_dict = {run.data.tags.get("mlflow.runName", "Unknown"): run.info.run_id for run in runs}
+    # 🚀 Lấy danh sách các run từ experiment ID
+    try:
+        client = mlflow.tracking.MlflowClient()
+        runs = client.search_runs(experiment_ids=['9'], order_by=["start_time DESC"], max_results=5)
+    except Exception as e:
+        st.error(f"Không thể kết nối tới MLflow: {e}")
+        return
+
+    model_dict = {
+        run.data.tags.get("mlflow.runName", f"Run {i+1}"): run.info.run_id 
+        for i, run in enumerate(runs)
+    }
 
     if not model_dict:
         st.error("⚠️ Chưa có mô hình nào! Hãy huấn luyện trước.")
         return
 
-    # 🔍 Dropdown chọn model theo tên
-    selected_model = st.selectbox(
-        "🔍 Chọn mô hình đã train:",
-        options=list(model_dict.keys())
-    )
+    selected_model = st.selectbox("🔍 Chọn mô hình đã train:", options=list(model_dict.keys()))
 
-    # 🚨 Nút tải model
     if st.button("⬇️ Tải model"):
         try:
             with st.spinner("Đang tải model..."):
@@ -498,23 +499,19 @@ def du_doan():
                 st.session_state.model_loaded = True
                 st.success(f"✅ Đã tải thành công model: {selected_model}")
         except Exception as e:
-            st.error(f"❌ Lỗi khi tải model: {str(e)}")
+            st.error(f"❌ Lỗi khi tải model:\n{str(e)}")
             return
 
-    # Chỉ hiển thị canvas khi model đã được load
-    if 'model_loaded' not in st.session_state:
+    if not st.session_state.get('model_loaded', False):
         st.info("👉 Vui lòng chọn model và nhấn nút [Tải model] trước")
         return
 
-    # 🎨 Khởi tạo canvas key
     if "canvas_key" not in st.session_state:
         st.session_state.canvas_key = 0
 
-    # 🔄 Nút reset canvas
     if st.button("🔄 Tạo canvas mới"):
         st.session_state.canvas_key += 1
 
-    # ✍️ Vùng vẽ số
     canvas_result = st_canvas(
         fill_color="black",
         stroke_width=15,
@@ -527,34 +524,27 @@ def du_doan():
         update_streamlit=True
     )
 
-    # 🎯 Nút dự đoán
     if st.button("🔮 Dự đoán"):
         if canvas_result.image_data is not None:
-            # Tiền xử lý ảnh
             img = preprocess_canvas_image(canvas_result)
-            
-            # Hiển thị ảnh đã xử lý
-            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8), 
-                    caption="Ảnh đã xử lý", width=150))
+            st.image(Image.fromarray((img.reshape(28, 28) * 255).astype(np.uint8)),
+                     caption="Ảnh đã xử lý", width=150)
 
-            # Dự đoán
-            prediction = st.session_state.model.predict(img)
-            predicted_num = np.argmax(prediction)
-            confidence = np.max(prediction)
+            try:
+                prediction = st.session_state.model.predict(img)
+                predicted_num = np.argmax(prediction)
+                confidence = np.max(prediction)
 
-            # Hiển thị kết quả
-            st.subheader(f"📊 Kết quả: {predicted_num}")
-            st.metric(label="Độ tin cậy", value=f"{confidence:.2%}")
+                st.subheader(f"📊 Kết quả: {predicted_num}")
+                st.metric(label="Độ tin cậy", value=f"{confidence:.2%}")
 
-            # Biểu đồ xác suất
-            prob_df = pd.DataFrame({
-                'Số': range(10),
-                'Xác suất': prediction[0]
-            })
-            st.bar_chart(prob_df, x='Số', y='Xác suất')
-            
+                prob_df = pd.DataFrame({'Số': range(10), 'Xác suất': prediction[0]})
+                st.bar_chart(prob_df.set_index('Số'))
+
+            except Exception as e:
+                st.error(f"❌ Lỗi khi dự đoán: {e}")
         else:
-            st.warning("⚠️ Vui lòng vẽ số vào canvas trước khi dự đoán")
+            st.warning("⚠️ Vui lòng vẽ số vào canvas trước khi dự đoán.")
 
 from datetime import datetime   
 def show_experiment_selector():
@@ -563,7 +553,7 @@ def show_experiment_selector():
     # Kết nối với DAGsHub MLflow Tracking
     
     # Lấy danh sách tất cả experiments
-    experiment_name = "Semi_supervised"
+    experiment_name = "Neural_Network"
     
     # Tìm experiment theo tên
     experiments = mlflow.search_experiments()
