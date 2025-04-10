@@ -76,7 +76,7 @@ def show_preprocessing_tab():
             f.write(y_file.getbuffer())
 
         # Gọi hàm tiền xử lý dữ liệu từ các tệp .npy
-        df = tien_xu_ly_du_lieu_from_npy("/mnt/data/X_data.npy", "/mnt/data/y_data.npy")
+        df = tien_xu_ly_du_lieu_from_npy("buoicuoi/alphabet_X.npy", "buoicuoi/alphabet_X.npy")
     else:
         st.warning("⚠️ Vui lòng tải lên cả hai tệp dữ liệu X và y!")
 
