@@ -563,7 +563,7 @@ def show_experiment_selector():
     # Kết nối với DAGsHub MLflow Tracking
     
     # Lấy danh sách tất cả experiments
-    experiment_name = "Classification"
+    experiment_name = "Semi_supervised"
     
     # Tìm experiment theo tên
     experiments = mlflow.search_experiments()
