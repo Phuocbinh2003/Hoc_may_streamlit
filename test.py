@@ -64,7 +64,7 @@ def show_preprocessing_tab():
     st.title("🔍 Tiền xử lý Dữ liệu - Alphabet (từ .npy)")
 
     # Chọn tệp .npy
-    X_file = st.file_uploader("📂 Tải lên tệp dữ liệu X (.npy)", type=["npy"])
+    X_file = st.file_uploader("📂 Tải lên tệp dữ liệuX (.npy)", type=["npy"])
     y_file = st.file_uploader("📂 Tải lên tệp dữ liệu y (.npy)", type=["npy"])
     
     # Nếu người dùng tải lên cả X và y, thực hiện tiền xử lý
