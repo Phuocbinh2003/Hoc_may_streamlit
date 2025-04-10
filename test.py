@@ -476,7 +476,7 @@ def du_doan():
     client = mlflow.tracking.MlflowClient()
     runs = client.search_runs(experiment_ids=['9'], order_by=["start_time DESC"], max_results=5)
     
-    # Tạo dictionary ánh xạ tên mô hình sang run_id
+    # Tạo dictionary ánh xạ tên mô hình sang run_i
     model_dict = {run.data.tags.get("mlflow.runName", "Unknown"): run.info.run_id for run in runs}
 
     if not model_dict:
