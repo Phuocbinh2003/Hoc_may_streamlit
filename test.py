@@ -10,6 +10,11 @@ def tien_xu_ly_du_lieu_from_npy(X_file, y_file):
     X = np.load(X_file, allow_pickle=True)
     y = np.load(y_file, allow_pickle=True)
     
+    # Kiểm tra xem dữ liệu X có 3 chiều không (đối với hình ảnh)
+    if X.ndim == 3:
+        # Làm phẳng dữ liệu 3 chiều (mỗi hình ảnh trở thành một vector)
+        X = X.reshape(X.shape[0], -1)  # Chuyển từ (10000, 28, 28) thành (10000, 784)
+    
     # Chuyển dữ liệu NumPy thành DataFrame để dễ xử lý
     df = pd.DataFrame(X, columns=["Feature_" + str(i) for i in range(X.shape[1])])
     df['Target'] = y
