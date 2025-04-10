@@ -472,7 +472,7 @@ def preprocess_canvas_image(canvas_result):
 def du_doan():
     st.header("✍️ Vẽ số để dự đoán")
 
-    # 📥 Lấy danh sách mô hình từ MLflow
+ 
     client = mlflow.tracking.MlflowClient()
     runs = client.search_runs(experiment_ids=['9'], order_by=["start_time DESC"], max_results=5)
     
