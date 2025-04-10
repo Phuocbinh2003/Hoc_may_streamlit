@@ -7,26 +7,21 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+import joblib  # Lưu mô hình
 
-# Hàm hiển thị giải thích từng bước
 def show_explanations():
     st.markdown("""
     ## 📚 Giải thích Quy trình Tiền xử lý
-    
     1. **Tải dữ liệu**: Nhập tập tin ảnh (.npy) và nhãn tương ứng  
     2. **Kiểm tra kích thước**: Đảm bảo số lượng ảnh và nhãn khớp nhau  
     3. **Làm phẳng ảnh**: Chuyển ảnh 2D (28x28) thành vector 1D (784 pixel)  
     4. **Mã hóa nhãn**: Chuyển đổi nhãn chữ cái thành số nguyên  
     5. **Chuẩn hóa dữ liệu**: Đưa giá trị pixel về khoảng [0,1]  
-    6. **Phân tích chất lượng**: Kiểm tra outliers và ảnh hỏng  
-    7. **Trực quan hóa**: Hiển thị kết quả xử lý  
     """)
 
-# Hàm hiển thị ảnh mẫu
 def display_sample_images(X, y, n_rows=3, n_cols=5):
     st.subheader("🖼️ Gallery Ảnh Mẫu")
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 8))
-    
     for i in range(n_rows * n_cols):
         row = i // n_cols
         col = i % n_cols
@@ -34,24 +29,19 @@ def display_sample_images(X, y, n_rows=3, n_cols=5):
         axes[row, col].imshow(X[idx].reshape(28, 28), cmap='gray')
         axes[row, col].set_title(f"Label: {y[idx]}", fontsize=8)
         axes[row, col].axis('off')
-
     plt.tight_layout()
     st.pyplot(fig)
 
-# Hàm phân tích phân phối pixel
 def analyze_pixel_distribution(data):
     st.subheader("📈 Phân phối Giá trị Pixel")
-
     plt.figure(figsize=(10, 4))
 
-    # Trước chuẩn hóa
     plt.subplot(1, 2, 1)
     plt.hist(data.flatten(), bins=50, color='blue', alpha=0.7)
     plt.title('Phân phối gốc')
     plt.xlabel('Giá trị pixel')
     plt.ylabel('Tần suất')
 
-    # Sau chuẩn hóa
     plt.subplot(1, 2, 2)
     scaler = MinMaxScaler()
     scaled_data = scaler.fit_transform(data)
@@ -63,11 +53,10 @@ def analyze_pixel_distribution(data):
     st.pyplot(plt)
 
 def main():
-    st.title("🔠 Tiền Xử lý Ảnh Chữ cái Nâng cao + Huấn luyện")
+    st.title("🔠 Tiền Xử lý, Huấn luyện & Dự đoán ảnh chữ cái")
 
     show_explanations()
 
-    # Tải lên dữ liệu
     with st.expander("📤 Tải lên Dữ liệu", expanded=True):
         col1, col2 = st.columns(2)
         with col1:
@@ -77,7 +66,6 @@ def main():
 
     if X_file and y_file:
         try:
-            # Đọc dữ liệu
             X = np.load(X_file)
             y = np.load(y_file).astype(str)
 
@@ -96,9 +84,10 @@ def main():
             df['label'] = y_encoded
 
             # Tabs
-            tab1, tab2, tab3, tab4 = st.tabs(["🖼️ Ảnh & Phân tích", "📊 Dữ liệu", "🔤 Nhãn", "🤖 Huấn luyện"])
+            tab1, tab2, tab3, tab4, tab5 = st.tabs([
+                "🖼️ Ảnh & Phân tích", "📊 Dữ liệu", "🔤 Nhãn", "🤖 Huấn luyện", "🎯 Dự đoán"
+            ])
 
-            # Ảnh và phân phối
             with tab1:
                 st.subheader("Thông tin Dataset")
                 col1, col2, col3 = st.columns(3)
@@ -125,11 +114,15 @@ def main():
             with tab4:
                 st.subheader("🤖 Huấn luyện mô hình")
 
-                # Chọn thuật toán
                 algo = st.selectbox("Chọn thuật toán", ["Logistic Regression", "KNN"])
-
+                n_samples = st.slider("Số lượng mẫu để huấn luyện", 100, len(X), 1000, step=100)
                 test_size = st.slider("Tỷ lệ test", 0.1, 0.5, 0.2, 0.05)
-                X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=test_size, random_state=42)
+
+                # Trích mẫu
+                X_sample = X_scaled[:n_samples]
+                y_sample = y_encoded[:n_samples]
+
+                X_train, X_test, y_train, y_test = train_test_split(X_sample, y_sample, test_size=test_size, random_state=42)
 
                 if algo == "Logistic Regression":
                     model = LogisticRegression(max_iter=1000)
@@ -142,14 +135,33 @@ def main():
                     y_pred = model.predict(X_test)
                     acc = accuracy_score(y_test, y_pred)
 
+                    joblib.dump(model, "trained_model.pkl")
+                    joblib.dump(le, "label_encoder.pkl")
                     st.success(f"🎯 Độ chính xác: {acc * 100:.2f}%")
 
-                    # Ma trận nhầm lẫn
                     fig, ax = plt.subplots(figsize=(8, 6))
                     cm = confusion_matrix(y_test, y_pred)
                     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=le.classes_)
                     disp.plot(ax=ax, cmap="Blues", xticks_rotation=45)
                     st.pyplot(fig)
+
+            with tab5:
+                st.subheader("🎯 Dự đoán từ ảnh")
+                if not joblib.os.path.exists("trained_model.pkl"):
+                    st.warning("⚠️ Vui lòng huấn luyện mô hình trước!")
+                else:
+                    model = joblib.load("trained_model.pkl")
+                    le = joblib.load("label_encoder.pkl")
+
+                    test_idx = st.slider("Chọn chỉ số ảnh test", 0, len(X_scaled) - 1, 0)
+                    image = X_scaled[test_idx].reshape(1, -1)
+                    true_label = y[test_idx]
+
+                    pred_label = le.inverse_transform(model.predict(image))[0]
+
+                    st.image(X[test_idx], width=150, caption="Ảnh cần dự đoán")
+                    st.write(f"🔍 **Dự đoán:** `{pred_label}`")
+                    st.write(f"✅ **Nhãn thật:** `{true_label}`")
 
             # Tải xuống
             st.download_button(
