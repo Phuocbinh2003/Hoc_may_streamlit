@@ -11,7 +11,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_s
 # ----------- Giải thích quy trình ----------------
 def show_explanations():
     st.markdown("""
-    ## 📚 Giải thích Quy trình Tiền xửlý
+    ## 📚 Giải thích Quy trình Tiền xử lý.
     1. **Tải dữ liệu**: Nhập tập tin ảnh (.npy) và nhãn tương ứng  
     2. **Kiểm tra kích thước**: Đảm bảo số lượng ảnh và nhãn khớp nhau  
     3. **Làm phẳng ảnh**: Chuyển ảnh 2D (28x28) thành vector 1D  
