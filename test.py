@@ -29,10 +29,15 @@ def display_sample_images(X, y, n_rows=3, n_cols=5):
         row = i // n_cols
         col = i % n_cols
         idx = np.random.randint(0, len(X))
-        axes[row, col].imshow(X[idx].reshape(28, 28), cmap='gray')
-        axes[row, col].set_title(f"Label: {y[idx]}", fontsize=8)
-        axes[row, col].axis('off')
+        try:
+            img = X[idx].reshape(28, 28)
+            axes[row, col].imshow(img, cmap='gray')
+            axes[row, col].set_title(f"Label: {y[idx]}", fontsize=8)
+            axes[row, col].axis('off')
+        except Exception as e:
+            st.warning(f"Lỗi khi hiển thị ảnh: {e}")
     st.pyplot(fig)
+    plt.close()
 
 # ----------- Phân phối pixel ----------------
 def analyze_pixel_distribution(X_flat):
@@ -57,6 +62,7 @@ def analyze_pixel_distribution(X_flat):
 
     plt.tight_layout()
     st.pyplot(plt)
+    plt.close()
 
 # ----------- Main App ----------------
 def main():
@@ -79,6 +85,9 @@ def main():
 
             if len(X) != len(y):
                 st.error("❌ Số lượng ảnh và nhãn không khớp.")
+                return
+            if X.shape[1:] != (28, 28):
+                st.error("⚠️ Ảnh cần có kích thước (28x28).")
                 return
 
             st.subheader("📦 Thông tin Dataset")
@@ -121,13 +130,14 @@ def main():
 
                 if model_type == "KNN":
                     n_neighbors = st.slider("Số láng giềng (K)", 1, 15, 3)
-                if st.button("🚀 Bắt đầu Huấn luyện"):
-                    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=test_size, random_state=42)
 
-                    if model_type == "Logistic Regression":
-                        model = LogisticRegression(max_iter=1000)
-                    else:
-                        model = KNeighborsClassifier(n_neighbors=n_neighbors)
+                if st.button("🚀 Bắt đầu Huấn luyện"):
+                    X_train, X_test, y_train, y_test = train_test_split(
+                        X_scaled, y_encoded, test_size=test_size, random_state=42)
+
+                    model = (LogisticRegression(max_iter=1000)
+                             if model_type == "Logistic Regression"
+                             else KNeighborsClassifier(n_neighbors=n_neighbors))
 
                     model.fit(X_train, y_train)
                     y_pred = model.predict(X_test)
@@ -137,10 +147,11 @@ def main():
                     # Confusion matrix
                     cm = confusion_matrix(y_test, y_pred)
                     labels_present = le.inverse_transform(np.unique(y_test))
-                    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels_present)
                     fig, ax = plt.subplots(figsize=(8, 6))
+                    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels_present)
                     disp.plot(ax=ax, cmap='Blues')
                     st.pyplot(fig)
+                    plt.close()
 
                     # Dự đoán ảnh mới
                     st.subheader("🔍 Dự đoán Ảnh Mới")
